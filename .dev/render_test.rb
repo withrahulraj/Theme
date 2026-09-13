@@ -96,6 +96,61 @@ puts "\n--- product-assurance ---"
 out = check('assurance box') { render_snippet('product-assurance', base_ctx) }
 expect('  -> tracking highlight', out, 'Each Package Includes Tracking.')
 
+puts "\n--- store tokens ---"
+body = '<p>Email [[email_link]] or call [[phone]]. We are open [[hours_days]], [[hours_time]]. ' \
+       'You have [[returns_days]] days to return. Delivery takes [[delivery_min]]-[[delivery_max]] ' \
+       'business days ([[handling_min]]-[[handling_max]] handling, [[transit_min]]-[[transit_max]] transit). ' \
+       'We ship to [[shipping_countries]]. See our <a href="[[refund_policy_url]]">refund policy</a> ' \
+       'or <a href="[[track_url]]">track an order</a>. (c) [[year]] [[store_name]].</p>'
+
+out = check('tokens resolve from settings') { render_snippet('store-tokens', base_ctx.merge('content' => body)) }
+expect('  -> email becomes a mailto link', out, '<a href="mailto:hello@lumen.test">hello@lumen.test</a>')
+expect('  -> phone', out, '+1 555 0142')
+expect('  -> working days', out, 'Monday – Friday')
+expect('  -> working hours', out, '10:00 AM – 6:00 PM EST')
+expect('  -> returns window from settings', out, 'You have 30 days to return')
+expect('  -> delivery window is computed, not hardcoded', out, 'Delivery takes 6-11 business days')
+expect('  -> handling and transit', out, '(1-2 handling, 5-9 transit)')
+expect('  -> shipping countries', out, 'We ship to US, CA, GB, AU')
+expect('  -> refund policy url', out, 'href="/policies/refund-policy"')
+expect('  -> track order url', out, 'href="/pages/track-order"')
+expect('  -> store name', out, 'Lumen Studio')
+expect('  -> year', out, Time.now.year.to_s)
+expect('  -> no tokens left behind', (out.to_s =~ /\[\[[a-z_]+\]\]/ ? 'leftover' : 'clean'), 'clean')
+
+out = check('tokens follow a changed setting') {
+  render_snippet('store-tokens',
+    base_ctx('settings' => { 'trust_returns_days' => 60, 'sd_handling_max' => 3, 'sd_transit_max' => 14,
+                             'store_hours_days' => 'Monday – Saturday',
+                             'store_email_override' => 'help@brightloft.test' })
+      .merge('content' => body))
+}
+expect('  -> new returns window', out, 'You have 60 days to return')
+expect('  -> recomputed delivery window', out, 'Delivery takes 6-17 business days')
+expect('  -> new hours', out, 'Monday – Saturday')
+expect('  -> override email wins', out, 'mailto:help@brightloft.test')
+expect('  -> old email gone', (out.to_s.include?('hello@lumen.test') ? 'stale' : 'updated'), 'updated')
+
+out = check('tokens on a store with no phone or address') {
+  render_snippet('store-tokens',
+    base_ctx('shop' => shop('phone' => nil, 'address' => {}))
+      .merge('content' => '<p>Call [[phone_link]] at [[address]].</p>'))
+}
+expect('  -> renders without raising', out, '<p>Call')
+expect('  -> no empty tel link', (out.to_s.include?('href="tel:"') ? 'bad' : 'clean'), 'clean')
+
+out = check('content with no tokens is passed through untouched') {
+  render_snippet('store-tokens', base_ctx.merge('content' => '<p>Plain <strong>content</strong> &amp; markup.</p>'))
+}
+expect('  -> unchanged', out.to_s.strip, '<p>Plain <strong>content</strong> &amp; markup.</p>')
+
+out = check('liquid in page content is not executed') {
+  render_snippet('store-tokens',
+    base_ctx.merge('content' => '<p>{{ shop.email }} {% assign x = 1 %}[[store_name]]</p>'))
+}
+expect('  -> liquid left as literal text', out, '{{ shop.email }}')
+expect('  -> but real tokens still resolve', out, 'Lumen Studio')
+
 puts "\n--- auto menus ---"
 cols = [{ 'title' => 'Floor lamps', 'url' => '/collections/floor-lamps', 'handle' => 'floor-lamps', 'all_products_count' => 12 },
         { 'title' => 'Table lamps', 'url' => '/collections/table-lamps', 'handle' => 'table-lamps', 'all_products_count' => 8 }]

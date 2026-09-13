@@ -53,7 +53,7 @@
       </header>
 
       <div class="legal-page__body rte">
-        {{ legal_body }}
+        {% render 'store-tokens', content: legal_body %}
       </div>
 
       {%- if section.settings.show_footer_help -%}

@@ -63,6 +63,38 @@ pages renamed: `contact-us`, `track-your-order`, `order-tracking`, `tracking`,
 Until a page exists, links point at the handle above so nothing 404s silently
 once you create it.
 
+## Page tokens — write it once, keep it current
+
+Legal pages usually go stale because the support email or returns window is
+typed into the text. Write a token instead and the page follows your settings.
+
+Type `[[email]]` in any page body and the live address renders. Tokens work on
+every page and on the policy template.
+
+| Token | Comes from |
+|---|---|
+| `[[store_name]]` | Store name (or the theme override) |
+| `[[email]]` / `[[email_link]]` | Support email — plain, or as a `mailto:` link |
+| `[[phone]]` / `[[phone_link]]` | Phone — plain, or as a `tel:` link |
+| `[[address]]` | Store address, on one line |
+| `[[hours_days]]` / `[[hours_time]]` | Working days and hours |
+| `[[support_note]]` | Support note |
+| `[[returns_days]]` | Returns window |
+| `[[handling_min]]` / `[[handling_max]]` | Handling time |
+| `[[transit_min]]` / `[[transit_max]]` | Transit time |
+| `[[delivery_min]]` / `[[delivery_max]]` | Handling + transit, added up for you |
+| `[[shipping_countries]]` | Countries you ship to |
+| `[[free_shipping_label]]` | Free shipping label |
+| `[[contact_url]]` / `[[track_url]]` / `[[about_url]]` | Those pages, resolved by handle |
+| `[[refund_policy_url]]` / `[[shipping_policy_url]]` / `[[privacy_policy_url]]` / `[[terms_url]]` | Policy links, policy first then page |
+| `[[year]]` | Current year |
+
+A token with no value behind it renders empty rather than breaking the page, so
+check the result if you leave a store setting blank.
+
+Only this fixed list is substituted. Liquid written into a page body is **not**
+executed — `{{ shop.email }}` in a page stays literal text.
+
 ## Policies
 
 Shopify renders `/policies/*` URLs itself and they **cannot be themed** — there

@@ -1,0 +1,133 @@
+{% doc %}
+  Substitutes store-information tokens in page or policy content, so legal text
+  written once in the page editor keeps itself in step with
+  Settings → Store details and the theme's own settings.
+
+  Merchants write `[[email]]` in the page body; this renders the live value. No
+  Liquid is executed from page content — only this fixed list of tokens is
+  replaced, so a page author cannot reach anything else.
+
+  @param {string} content - The HTML to substitute tokens in.
+
+  @example
+  {% render 'store-tokens', content: page.content %}
+{% enddoc %}
+
+{%- liquid
+  assign output = content
+
+  capture token_name
+    render 'store-info', field: 'name'
+  endcapture
+  assign token_name = token_name | strip
+
+  capture token_email
+    render 'store-info', field: 'email'
+  endcapture
+  assign token_email = token_email | strip
+
+  capture token_phone
+    render 'store-info', field: 'phone'
+  endcapture
+  assign token_phone = token_phone | strip
+
+  capture token_phone_href
+    render 'store-info', field: 'phone_href'
+  endcapture
+  assign token_phone_href = token_phone_href | strip
+
+  capture token_address
+    render 'store-info', field: 'address_inline'
+  endcapture
+  assign token_address = token_address | strip
+
+  capture token_contact_url
+    render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
+  endcapture
+  assign token_contact_url = token_contact_url | strip
+
+  capture token_track_url
+    render 'resolve-url', handles: 'track-order,track-your-order,order-tracking,tracking,track-my-order', fallback: '/pages/track-order'
+  endcapture
+  assign token_track_url = token_track_url | strip
+
+  capture token_about_url
+    render 'resolve-url', handles: 'about-us,about,our-story,who-we-are', fallback: '/pages/about-us'
+  endcapture
+  assign token_about_url = token_about_url | strip
+
+  capture token_refund_url
+    render 'policy-url', policy: 'refund'
+  endcapture
+  assign token_refund_url = token_refund_url | strip
+
+  capture token_shipping_url
+    render 'policy-url', policy: 'shipping'
+  endcapture
+  assign token_shipping_url = token_shipping_url | strip
+
+  capture token_privacy_url
+    render 'policy-url', policy: 'privacy'
+  endcapture
+  assign token_privacy_url = token_privacy_url | strip
+
+  capture token_terms_url
+    render 'policy-url', policy: 'terms'
+  endcapture
+  assign token_terms_url = token_terms_url | strip
+
+  assign handling_min = settings.sd_handling_min | default: 1
+  assign handling_max = settings.sd_handling_max | default: 2
+  assign transit_min = settings.sd_transit_min | default: 5
+  assign transit_max = settings.sd_transit_max | default: 9
+  assign delivery_min = handling_min | plus: transit_min
+  assign delivery_max = handling_max | plus: transit_max
+  assign current_year = 'now' | date: '%Y'
+
+  comment
+    Links first: a bare token is not a substring of its _link variant, but
+    resolving in this order keeps the intent obvious when reading the list.
+  endcomment
+  if token_email != blank
+    assign email_link = '<a href="mailto:' | append: token_email | append: '">' | append: token_email | append: '</a>'
+  else
+    assign email_link = ''
+  endif
+
+  if token_phone != blank
+    assign phone_link = '<a href="tel:' | append: token_phone_href | append: '">' | append: token_phone | append: '</a>'
+  else
+    assign phone_link = ''
+  endif
+
+  assign output = output | replace: '[[store_name]]', token_name
+  assign output = output | replace: '[[email_link]]', email_link
+  assign output = output | replace: '[[email]]', token_email
+  assign output = output | replace: '[[phone_link]]', phone_link
+  assign output = output | replace: '[[phone]]', token_phone
+  assign output = output | replace: '[[address]]', token_address
+  assign output = output | replace: '[[hours_days]]', settings.store_hours_days
+  assign output = output | replace: '[[hours_time]]', settings.store_hours_time
+  assign output = output | replace: '[[support_note]]', settings.store_support_note
+
+  assign output = output | replace: '[[returns_days]]', settings.trust_returns_days
+  assign output = output | replace: '[[free_shipping_label]]', settings.trust_free_shipping_label
+  assign output = output | replace: '[[handling_min]]', handling_min
+  assign output = output | replace: '[[handling_max]]', handling_max
+  assign output = output | replace: '[[transit_min]]', transit_min
+  assign output = output | replace: '[[transit_max]]', transit_max
+  assign output = output | replace: '[[delivery_min]]', delivery_min
+  assign output = output | replace: '[[delivery_max]]', delivery_max
+  assign output = output | replace: '[[shipping_countries]]', settings.sd_shipping_countries
+
+  assign output = output | replace: '[[contact_url]]', token_contact_url
+  assign output = output | replace: '[[track_url]]', token_track_url
+  assign output = output | replace: '[[about_url]]', token_about_url
+  assign output = output | replace: '[[refund_policy_url]]', token_refund_url
+  assign output = output | replace: '[[shipping_policy_url]]', token_shipping_url
+  assign output = output | replace: '[[privacy_policy_url]]', token_privacy_url
+  assign output = output | replace: '[[terms_url]]', token_terms_url
+
+  assign output = output | replace: '[[year]]', current_year
+-%}
+{{- output -}}
