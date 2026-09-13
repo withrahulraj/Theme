@@ -1,0 +1,56 @@
+{% doc %}
+  Outputs the handle of the first collection that actually exists and has
+  products on this store, so a homepage works on any store without the merchant
+  wiring collections up by hand.
+
+  Tries each candidate handle in order, then falls back to the store's own
+  collections, skipping the ones Shopify creates automatically.
+
+  Capture the result — this snippet prints a bare handle, or nothing when the
+  store has no collections at all.
+
+  @param {string} [handles] - Comma separated candidate handles, in priority order.
+  @param {number} [skip] - Skip this many matches from the automatic fallback, so several sections on one page can show different collections.
+
+  @example
+  {% capture handle %}{% render 'resolve-collection', handles: 'best-sellers,featured' %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign resolved = ''
+
+  if handles != blank
+    assign candidates = handles | split: ','
+    for candidate in candidates
+      assign candidate_handle = candidate | strip | downcase
+      assign candidate_collection = collections[candidate_handle]
+      if candidate_collection.handle != blank and candidate_collection.all_products_count > 0
+        assign resolved = candidate_collection.handle
+        break
+      endif
+    endfor
+  endif
+
+  comment
+    Nothing matched, so fall back to the store's own collections. `frontpage` is
+    created automatically on every store and usually duplicates what is already
+    on the page, so it goes last rather than first.
+  endcomment
+  if resolved == blank
+    assign skip_count = skip | default: 0
+    assign seen = 0
+    for store_collection in collections
+      if store_collection.all_products_count == 0
+        continue
+      endif
+      if store_collection.handle == 'frontpage'
+        continue
+      endif
+      if seen >= skip_count
+        assign resolved = store_collection.handle
+        break
+      endif
+      assign seen = seen | plus: 1
+    endfor
+  endif
+-%}
+{{- resolved -}}

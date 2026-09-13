@@ -161,11 +161,26 @@ To use the store's own Shopify navigation instead, turn off
 **Theme settings → Navigation (auto menu) → Use the automatic menu**. The
 header section's Menu setting then takes over as in stock Dawn.
 
+## Nothing is wired per store
+
+The homepage carries no collection handles. `Featured products (auto)` resolves
+a collection at render time — it tries the handles you list (`best-sellers`,
+`featured`, …), then falls back to the store's own collections, skipping
+`frontpage` and anything empty. `Collections (auto)` just lists what the store
+has. Pick a collection explicitly and that always wins.
+
+So the same homepage populates itself on a store with `best-sellers` and on one
+whose collections are called `lampes-murales` and `suspensions`. On a store with
+no products yet, both sections render nothing on the storefront and show a note
+in the theme editor instead of an empty row.
+
 ## Sections added
 
 `store-footer`, `hero-lighting`, `trust-strip`, `info-with-image`,
-`contact-details`, `order-lookup`. All of Dawn's own sections are untouched and
-still available.
+`contact-details`, `order-lookup`, `auto-featured-products`,
+`auto-collection-list`, `main-policy`. All of Dawn's own sections are untouched
+and still available — including its stock `featured-collection` and
+`collection-list` if you would rather pick collections by hand.
 
 ## Product blocks added
 

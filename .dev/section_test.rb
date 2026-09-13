@@ -91,6 +91,88 @@ out = check('policy template also serves a plain page') {
 expect('  -> page title used', out, 'Payment Policy')
 expect('  -> page content used', out, 'Cards and wallets.')
 
+puts "\n--- universality: homepage on an unseen store ---"
+def coll(handle, title, count, products = nil)
+  products ||= (1..count).map { |i| { 'title' => "#{title} #{i}", 'url' => "/products/#{handle}-#{i}", 'handle' => "#{handle}-#{i}" } }
+  { 'handle' => handle, 'title' => title, 'url' => "/collections/#{handle}",
+    'all_products_count' => count, 'products' => products, 'featured_image' => nil }
+end
+
+# A store that happens to use the preferred handles.
+named = [coll('frontpage', 'Home page', 1), coll('best-sellers', 'Best Sellers', 8), coll('new-arrivals', 'New Arrivals', 6)]
+out = check('auto products picks the preferred handle') {
+  render_section('auto-featured-products', 'collections' => named)
+}
+expect('  -> used best-sellers', out, '/products/best-sellers-1')
+expect('  -> eight cards', out.to_s.scan(/grid__item/).size.to_s, '8')
+
+# A store whose collections are named nothing like the defaults.
+unnamed = [coll('frontpage', 'Home page', 2), coll('lampes-murales', 'Lampes murales', 5), coll('suspensions', 'Suspensions', 3)]
+out = check('auto products falls back on a store with unfamiliar handles') {
+  render_section('auto-featured-products', 'collections' => unnamed)
+}
+expect('  -> used the first real collection', out, '/products/lampes-murales-1')
+expect('  -> skipped frontpage', (out.to_s.include?('/products/frontpage-') ? 'used' : 'skipped'), 'skipped')
+
+out = check('a second row offsets so it does not repeat the first') {
+  render_section('auto-featured-products',
+    'section_settings' => { 'fallback_offset' => 1 }, 'collections' => unnamed)
+}
+expect('  -> used the second collection', out, '/products/suspensions-1')
+expect('  -> not the first', (out.to_s.include?('/products/lampes-murales-') ? 'repeated' : 'distinct'), 'distinct')
+
+out = check('an explicitly chosen collection always wins') {
+  render_section('auto-featured-products',
+    'section_settings' => { 'collection' => coll('sale', 'Sale', 4) }, 'collections' => named)
+}
+expect('  -> used the chosen collection', out, '/products/sale-1')
+
+out = check('auto products on a store with no collections at all') {
+  render_section('auto-featured-products', 'collections' => [])
+}
+expect('  -> renders no grid', (out.to_s.include?('grid__item') ? 'grid' : 'clean'), 'clean')
+expect('  -> and no empty heading block on the storefront',
+       (out.to_s.include?('This section fills itself in') ? 'note shown' : 'silent'), 'silent')
+
+out = check('auto products on a store whose collections are all empty') {
+  render_section('auto-featured-products', 'collections' => [coll('coming-soon', 'Coming soon', 0, [])])
+}
+expect('  -> renders no cards', (out.to_s.include?('grid__item') ? 'grid' : 'clean'), 'clean')
+
+out = check('fewer products than columns does not leave gaps') {
+  render_section('auto-featured-products', 'collections' => [coll('tiny', 'Tiny', 2)])
+}
+expect('  -> grid narrows to 2 columns', out, 'grid--2-col-desktop')
+expect('  -> view all hidden when nothing is left over',
+       (out.to_s.include?('button--primary') ? 'shown' : 'hidden'), 'hidden')
+
+puts "\n--- universality: collection grid ---"
+out = check('auto collection list uses the store\'s own collections') {
+  render_section('auto-collection-list', 'collections' => unnamed)
+}
+expect('  -> first collection listed', out, '/collections/lampes-murales')
+expect('  -> second collection listed', out, '/collections/suspensions')
+expect('  -> frontpage excluded by default', (out.to_s.include?('/collections/frontpage') ? 'listed' : 'skipped'), 'skipped')
+expect('  -> grid narrows to what exists', out, 'grid--2-col-desktop')
+
+out = check('auto collection list hides empty collections') {
+  render_section('auto-collection-list',
+    'collections' => [coll('full', 'Full', 3), coll('empty', 'Empty', 0, [])])
+}
+expect('  -> empty one skipped', (out.to_s.include?('/collections/empty') ? 'listed' : 'skipped'), 'skipped')
+
+out = check('auto collection list respects its limit') {
+  render_section('auto-collection-list',
+    'section_settings' => { 'collections_to_show' => 2 },
+    'collections' => [coll('a', 'A', 1), coll('b', 'B', 1), coll('c', 'C', 1)])
+}
+expect('  -> only two cards', out.to_s.scan(/grid__item/).size.to_s, '2')
+
+out = check('auto collection list on an empty store') {
+  render_section('auto-collection-list', 'collections' => [])
+}
+expect('  -> renders nothing on the storefront', (out.to_s.include?('grid__item') ? 'grid' : 'clean'), 'clean')
+
 puts "\n--- contact-details ---"
 out = check('contact-details renders all four cards') { render_section('contact-details') }
 expect('  -> email card', out, 'hello@lumen.test')

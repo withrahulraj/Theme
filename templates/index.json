@@ -36,9 +36,9 @@
         "heading_size": "h0",
         "subheading": "Sculptural lamps and warm, diffused glow — built to last, shipped free, returnable for 30 days.",
         "button_label_1": "Shop all lighting",
-        "button_link_1": "shopify://collections/all",
+        "button_link_1": "",
         "button_label_2": "Best sellers",
-        "button_link_2": "shopify://collections/best-sellers",
+        "button_link_2": "",
         "show_usps": true,
         "content_position": "left",
         "overlay_direction": "to right",
@@ -51,78 +51,51 @@
       }
     },
     "collections": {
-      "type": "collection-list",
-      "blocks": {
-        "collection_1": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "wall-lights"
-          }
-        },
-        "collection_2": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "pendant-lights"
-          }
-        },
-        "collection_3": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "best-sellers"
-          }
-        },
-        "collection_4": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "new-arrivals"
-          }
-        }
-      },
-      "block_order": [
-        "collection_1",
-        "collection_2",
-        "collection_3",
-        "collection_4"
-      ],
+      "type": "auto-collection-list",
       "settings": {
-        "title": "Shop by fixture",
+        "title": "Shop by category",
         "heading_size": "h2",
-        "image_ratio": "square",
+        "center_heading": false,
+        "description": "",
+        "collections_to_show": 4,
+        "hide_empty": true,
+        "exclude_handles": "frontpage",
         "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "show_view_all": true,
         "columns_mobile": "2",
-        "swipe_on_mobile": true,
+        "image_ratio": "square",
+        "show_view_all": true,
+        "empty_note": "This section fills itself in once the store has collections with products.",
+        "color_scheme": "scheme-1",
         "padding_top": 56,
-        "padding_bottom": 28
+        "padding_bottom": 24
       }
     },
     "featured_bestsellers": {
-      "type": "featured-collection",
+      "type": "auto-featured-products",
       "settings": {
+        "collection": "",
+        "collection_handles": "best-sellers, bestsellers, featured, popular, top-sellers",
+        "fallback_offset": 0,
         "title": "Best sellers",
+        "use_collection_title": false,
         "heading_size": "h2",
-        "description": "The lamps our customers keep coming back for.",
-        "show_description": true,
-        "description_style": "body",
-        "collection": "best-sellers",
+        "center_heading": false,
+        "description": "The pieces our customers keep coming back for.",
         "products_to_show": 8,
         "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": true,
+        "columns_mobile": "2",
         "image_ratio": "square",
         "image_shape": "default",
         "show_secondary_image": true,
         "show_vendor": false,
         "show_rating": true,
         "quick_add": "standard",
-        "columns_mobile": "2",
-        "padding_top": 44,
-        "padding_bottom": 36
+        "show_view_all": true,
+        "view_all_style": "primary",
+        "empty_note": "This section fills itself in once the store has a collection with products.",
+        "color_scheme": "scheme-1",
+        "padding_top": 48,
+        "padding_bottom": 40
       }
     },
     "info_with_image": {
@@ -165,38 +138,38 @@
         "heading_size": "h1",
         "text": "<p>Every lamp we ship is built around the quality of the light it throws. Frosted, seamless shades soften the output so a room reads calm instead of clinical, and dimmable LEDs let you tune the mood from a working brightness down to a low evening glow.</p>",
         "button_label": "Explore the collection",
-        "button_link": "shopify://collections/all",
+        "button_link": "",
         "color_scheme": "scheme-1",
         "padding_top": 56,
         "padding_bottom": 56
       }
     },
     "featured_new": {
-      "type": "featured-collection",
+      "type": "auto-featured-products",
       "settings": {
+        "collection": "",
+        "collection_handles": "new-arrivals, new, latest, just-in",
+        "fallback_offset": 1,
         "title": "New arrivals",
+        "use_collection_title": false,
         "heading_size": "h2",
+        "center_heading": false,
         "description": "Fresh shapes, just landed.",
-        "show_description": true,
-        "description_style": "body",
-        "collection": "new-arrivals",
         "products_to_show": 4,
         "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "outline",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": true,
+        "columns_mobile": "2",
         "image_ratio": "square",
         "image_shape": "default",
         "show_secondary_image": true,
         "show_vendor": false,
         "show_rating": true,
         "quick_add": "standard",
-        "columns_mobile": "2",
-        "padding_top": 36,
-        "padding_bottom": 36
+        "show_view_all": true,
+        "view_all_style": "secondary",
+        "empty_note": "This section fills itself in once the store has a collection with products.",
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     },
     "trust_strip": {

@@ -1,0 +1,248 @@
+{% comment %}
+  A collection grid that builds itself from the store's own collections.
+
+  Dawn's collection-list needs one block per collection, each pointing at a
+  handle — which is exactly the kind of per-store wiring that stops a theme being
+  portable. This section just lists what the store has.
+{% endcomment %}
+
+{%- liquid
+  assign shown = 0
+  assign limit = section.settings.collections_to_show
+
+  assign skip_handles = section.settings.exclude_handles | downcase | split: ','
+  assign skip_list = ''
+  for skip_handle in skip_handles
+    assign skip_list = skip_list | append: '|' | append: skip_handle | strip | append: '|'
+  endfor
+
+  assign eligible = 0
+  for store_collection in collections
+    if store_collection.all_products_count == 0 and section.settings.hide_empty
+      continue
+    endif
+    assign needle = '|' | append: store_collection.handle | append: '|'
+    if skip_list contains needle
+      continue
+    endif
+    assign eligible = eligible | plus: 1
+  endfor
+
+  assign columns = section.settings.columns_desktop
+  if eligible < columns and eligible > 0
+    assign columns = eligible
+  endif
+  if columns < 1
+    assign columns = 1
+  endif
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    {%- if section.settings.title != blank -%}
+      <div class="auto-products__header{% if section.settings.center_heading %} auto-products__header--center{% endif %}">
+        <h2 class="auto-products__heading {{ section.settings.heading_size }}">{{ section.settings.title }}</h2>
+        {%- if section.settings.description != blank -%}
+          <p class="auto-products__description">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if eligible > 0 -%}
+      <ul
+        class="auto-products__grid grid grid--{{ columns }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down contains-card contains-card--collection{% if settings.collection_card_style == 'standard' %} contains-card--standard{% endif %}"
+        role="list"
+      >
+        {%- for store_collection in collections -%}
+          {%- liquid
+            if shown >= limit
+              break
+            endif
+            if store_collection.all_products_count == 0 and section.settings.hide_empty
+              continue
+            endif
+            assign needle = '|' | append: store_collection.handle | append: '|'
+            if skip_list contains needle
+              continue
+            endif
+            assign shown = shown | plus: 1
+          -%}
+          <li class="grid__item">
+            {% render 'card-collection',
+              card_collection: store_collection,
+              media_aspect_ratio: section.settings.image_ratio,
+              columns: columns
+            %}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if section.settings.show_view_all -%}
+        <div class="auto-products__footer center">
+          <a href="{{ routes.collections_url }}" class="button button--secondary">
+            {{ 'sections.collection_list.view_all' | t }}
+          </a>
+        </div>
+      {%- endif -%}
+    {%- elsif request.design_mode -%}
+      <p class="auto-products__empty center">{{ section.settings.empty_note }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collections (auto)",
+  "tag": "section",
+  "class": "auto-collection-list-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Lists the store's own collections, so there is nothing to wire up per store. Collections are shown in the order Shopify returns them."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Shop by category"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h3", "label": "Small" },
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "checkbox",
+      "id": "center_heading",
+      "label": "Center the heading",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Collections"
+    },
+    {
+      "type": "range",
+      "id": "collections_to_show",
+      "label": "Collections to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_empty",
+      "label": "Hide collections with no products",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "exclude_handles",
+      "label": "Handles to skip",
+      "default": "frontpage",
+      "info": "Comma separated. `frontpage` is created automatically on every store and usually duplicates the homepage."
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show a \"View all\" button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "empty_note",
+      "label": "Editor note when the store has no collections",
+      "default": "This section fills itself in once the store has collections with products."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections (auto)"
+    }
+  ]
+}
+{% endschema %}

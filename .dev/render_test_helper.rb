@@ -54,6 +54,27 @@ class ThemeFs
 end
 Liquid::Template.file_system = ThemeFs.new
 
+# Shopify's `collections` supports both iteration and lookup by handle
+# (`collections['best-sellers']`), and reports `.size`. A plain array models only
+# the first of those, which would hide real bugs in handle resolution.
+class CollectionsLookup
+  include Enumerable
+
+  def initialize(list) = @list = list
+  def each(&block) = @list.each(&block)
+  def size = @list.size
+  def to_liquid = self
+
+  def key?(key)
+    key.to_s == 'size' || @list.any? { |c| c['handle'].to_s == key.to_s }
+  end
+
+  def [](key)
+    return @list.size if key.to_s == 'size'
+    @list.find { |c| c['handle'].to_s == key.to_s }
+  end
+end
+
 # --- stub data ------------------------------------------------------------
 # Theme setting defaults come from settings_schema.json itself, so the stubs
 # cannot drift away from the real schema as settings are added.
@@ -96,7 +117,7 @@ def base_ctx(over = {})
     'shop' => shop(over.delete('shop') || {}),
     'routes' => ROUTES,
     'pages' => over.delete('pages') || {},
-    'collections' => over.delete('collections') || [],
+    'collections' => CollectionsLookup.new(over.delete('collections') || []),
     'request' => { 'path' => '/', 'page_type' => 'index', 'origin' => 'https://lumen.test',
                    'locale' => { 'endonym_name' => 'English' } },
     'cart' => { 'currency' => { 'iso_code' => 'USD' } },

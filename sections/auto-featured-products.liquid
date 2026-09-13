@@ -1,0 +1,343 @@
+{% comment %}
+  A featured products row that picks its own collection.
+
+  Dawn's featured-collection section needs a merchant to choose a collection, and
+  renders placeholder cards until they do. This one resolves a collection at
+  render time from a list of candidate handles, falling back to whatever
+  collections the store actually has — so the homepage is populated on any store
+  the moment the theme is installed.
+
+  Set a collection explicitly and that always wins.
+{% endcomment %}
+
+{%- liquid
+  assign target = section.settings.collection
+
+  comment
+    A blank collection setting can come back as nil or as an empty drop
+    depending on how it was saved, so test the handle rather than the object.
+  endcomment
+  if target.handle == blank
+    capture resolved_handle
+      render 'resolve-collection', handles: section.settings.collection_handles, skip: section.settings.fallback_offset
+    endcapture
+    assign resolved_handle = resolved_handle | strip
+    if resolved_handle != blank
+      assign target = collections[resolved_handle]
+    endif
+  endif
+
+  assign products_to_show = section.settings.products_to_show
+  assign product_count = target.products.size | default: 0
+  if product_count < products_to_show
+    assign products_to_show = product_count
+  endif
+
+  assign columns = section.settings.columns_desktop
+  if products_to_show < columns
+    assign columns = products_to_show
+  endif
+  if columns < 1
+    assign columns = 1
+  endif
+
+  assign heading = section.settings.title
+  if section.settings.use_collection_title and target.title != blank
+    assign heading = target.title
+  endif
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    {%- if heading != blank or section.settings.description != blank -%}
+      <div class="auto-products__header{% if section.settings.center_heading %} auto-products__header--center{% endif %}">
+        {%- if heading != blank -%}
+          <h2 class="auto-products__heading {{ section.settings.heading_size }}">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="auto-products__description">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if products_to_show > 0 -%}
+      <ul
+        class="auto-products__grid grid product-grid grid--{{ columns }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %}"
+        role="list"
+      >
+        {%- for product in target.products limit: products_to_show -%}
+          <li class="grid__item">
+            {% render 'card-product',
+              card_product: product,
+              media_aspect_ratio: section.settings.image_ratio,
+              image_shape: section.settings.image_shape,
+              show_secondary_image: section.settings.show_secondary_image,
+              show_vendor: section.settings.show_vendor,
+              show_rating: section.settings.show_rating,
+              quick_add: section.settings.quick_add,
+              section_id: section.id,
+              skip_styles: true
+            %}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if section.settings.show_view_all and target.all_products_count > products_to_show -%}
+        <div class="auto-products__footer center">
+          <a
+            href="{{ target.url | default: routes.all_products_collection_url }}"
+            class="button button--{{ section.settings.view_all_style }}"
+          >
+            {{ 'sections.featured_collection.view_all' | t }}
+          </a>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      {%- comment -%}
+        No collection on this store has products yet. Show the theme editor a
+        note rather than a silently empty section, and render nothing at all on
+        the live storefront.
+      {%- endcomment -%}
+      {%- if request.design_mode -%}
+        <p class="auto-products__empty center">{{ section.settings.empty_note }}</p>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Featured products (auto)",
+  "tag": "section",
+  "class": "auto-products-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Leave the collection empty and this section finds one itself, so the homepage is never blank on a new store. Pick a collection to override that."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Optional. Leave blank to resolve automatically."
+    },
+    {
+      "type": "text",
+      "id": "collection_handles",
+      "label": "Preferred collection handles",
+      "default": "best-sellers, bestsellers, featured, popular",
+      "info": "Comma separated, tried in order. The first one that exists and has products is used."
+    },
+    {
+      "type": "range",
+      "id": "fallback_offset",
+      "label": "Skip this many collections",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "default": 0,
+      "info": "Only applies when nothing above matches. Use 1 on a second row so it does not repeat the first."
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Best sellers"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_collection_title",
+      "label": "Use the resolved collection's own title",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h3", "label": "Small" },
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "checkbox",
+      "id": "center_heading",
+      "label": "Center the heading",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "arch", "label": "Arch" },
+        { "value": "blob", "label": "Blob" },
+        { "value": "chevronleft", "label": "Chevron left" },
+        { "value": "chevronright", "label": "Chevron right" },
+        { "value": "diamond", "label": "Diamond" },
+        { "value": "parallelogram", "label": "Parallelogram" },
+        { "value": "round", "label": "Round" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show second image on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "label": "Quick add",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "bulk", "label": "Bulk" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "header",
+      "content": "View all"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show a \"View all\" button",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "view_all_style",
+      "label": "Button style",
+      "options": [
+        { "value": "primary", "label": "Solid" },
+        { "value": "secondary", "label": "Outline" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "text",
+      "id": "empty_note",
+      "label": "Editor note when the store has no products",
+      "default": "This section fills itself in once the store has a collection with products."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured products (auto)"
+    }
+  ]
+}
+{% endschema %}
