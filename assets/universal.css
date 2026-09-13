@@ -632,11 +632,15 @@
 }
 
 .product__stock {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
+  margin: 0;
   font-size: 1.4rem;
   font-weight: 500;
+}
+
+.product__stock-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .product__stock-dot {

@@ -1,6 +1,4 @@
 {%- liquid
-  assign store_name = settings.store_name_override | default: shop.name
-
   capture store_address
     render 'store-info', field: 'address'
   endcapture

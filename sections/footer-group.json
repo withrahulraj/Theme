@@ -2,27 +2,33 @@
   "name": "t:sections.footer.name",
   "type": "footer",
   "sections": {
-    "footer": {
-      "type": "footer",
-      "blocks": {},
-      "block_order": [],
+    "store-footer": {
+      "type": "store-footer",
       "settings": {
         "color_scheme": "scheme-1",
-        "newsletter_enable": true,
-        "newsletter_heading": "Subscribe to our emails",
-        "enable_follow_on_shop": true,
+        "show_logo": true,
+        "store_tagline": "Sculptural lighting for rooms that deserve better than a bare bulb.",
+        "policies_heading": "Policies",
+        "payment_policy_label": "Payment Policy",
+        "policies_empty_note": "Policies are being updated.",
+        "help_heading": "Help Center",
+        "help_contact_label": "Contact Us",
+        "help_about_label": "About Us",
+        "help_track_label": "Track Your Order",
+        "help_faq_label": "FAQs",
+        "help_account_label": "My Account",
+        "help_extra_label": "",
+        "help_extra_link": "",
+        "newsletter_heading": "Newsletter",
+        "newsletter_text": "New arrivals, lighting ideas and subscriber-only offers. No spam, ever.",
+        "newsletter_disclaimer": "By subscribing you agree to receive marketing emails. Unsubscribe anytime.",
         "show_social": true,
-        "enable_country_selector": true,
-        "enable_language_selector": true,
-        "payment_enable": true,
-        "show_policy": true,
+        "show_powered_by": false,
         "margin_top": 0,
-        "padding_top": 36,
+        "padding_top": 56,
         "padding_bottom": 36
       }
     }
   },
-  "order": [
-    "footer"
-  ]
+  "order": ["store-footer"]
 }

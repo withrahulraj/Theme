@@ -5,27 +5,47 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "settings": {
-        "color_scheme": "scheme-1",
-        "show_line_separator": true,
+        "color_scheme": "scheme-3",
+        "show_line_separator": false,
         "show_social": false,
-        "auto_rotate": false,
+        "auto_rotate": true,
         "change_slides_speed": 5,
         "enable_country_selector": false,
         "enable_language_selector": false
       },
       "blocks": {
-        "announcement-bar-0": {
+        "announcement-shipping": {
           "type": "announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "Free shipping on every order — tracking included",
             "text_alignment": "center",
-            "color_scheme": "scheme-1",
+            "color_scheme": "scheme-3",
+            "link": ""
+          }
+        },
+        "announcement-returns": {
+          "type": "announcement",
+          "settings": {
+            "text": "30-day returns, no questions asked",
+            "text_alignment": "center",
+            "color_scheme": "scheme-3",
+            "link": ""
+          }
+        },
+        "announcement-support": {
+          "type": "announcement",
+          "settings": {
+            "text": "Real support Mon–Fri, answered within 24 hours",
+            "text_alignment": "center",
+            "color_scheme": "scheme-3",
             "link": ""
           }
         }
       },
       "block_order": [
-        "announcement-bar-0"
+        "announcement-shipping",
+        "announcement-returns",
+        "announcement-support"
       ]
     },
     "header": {
@@ -36,7 +56,7 @@
         "logo_position": "middle-left",
         "menu": "main-menu",
         "menu_type_desktop": "dropdown",
-        "sticky_header_type": "on-scroll-up",
+        "sticky_header_type": "always",
         "show_line_separator": true,
         "enable_country_selector": true,
         "enable_language_selector": true,
@@ -47,8 +67,5 @@
       }
     }
   },
-  "order": [
-    "announcement-bar",
-    "header"
-  ]
+  "order": ["announcement-bar", "header"]
 }

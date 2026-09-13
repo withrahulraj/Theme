@@ -24,6 +24,10 @@
     render 'resolve-url', handles: 'about-us,about,our-story,who-we-are', fallback: '/pages/about-us'
   endcapture
 
+  assign track_url = track_url | strip
+  assign contact_url = contact_url | strip
+  assign about_url = about_url | strip
+
   assign policy_url = shop.policies.refund_policy.url
   if policy_url == blank
     capture policy_url
@@ -32,6 +36,8 @@
         fallback: '/policies/refund-policy'
     endcapture
   endif
+
+  assign policy_url = policy_url | strip
 
   assign home_label = settings.nav_home_label | default: 'Home'
   assign shop_label = settings.nav_shop_label | default: 'Shop'
@@ -42,18 +48,15 @@
 
   assign records = ''
   assign records = records | append: home_label | append: '^^' | append: routes.root_url | append: '^^link'
-  assign records = records
-    | append: '||'
-    | append: shop_label
-    | append: '^^'
-    | append: routes.all_products_collection_url
-    | append: '^^shop'
+  assign shop_record = shop_label | append: '^^' | append: routes.all_products_collection_url | append: '^^shop'
+  assign records = records | append: '||' | append: shop_record
   assign records = records | append: '||' | append: about_label | append: '^^' | append: about_url | append: '^^link'
   assign records = records | append: '||' | append: contact_label | append: '^^' | append: contact_url | append: '^^link'
   assign records = records | append: '||' | append: track_label | append: '^^' | append: track_url | append: '^^link'
 
   if settings.nav_show_policy and policy_url != blank
-    assign records = records | append: '||' | append: policy_label | append: '^^' | append: policy_url | append: '^^link'
+    assign policy_record = policy_label | append: '^^' | append: policy_url | append: '^^link'
+    assign records = records | append: '||' | append: policy_record
   endif
 -%}
 {{- records -}}

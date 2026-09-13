@@ -22,7 +22,7 @@
       {%- for block in section.blocks -%}
         <div class="trust-strip__item" {{ block.shopify_attributes }}>
           <span class="trust-strip__icon" aria-hidden="true">
-            {%- render 'universal-icon', icon: block.settings.icon, size: 22 -%}
+            {%- render 'universal-icon', icon: block.settings.icon, size: '22' -%}
           </span>
           <div>
             <h3 class="trust-strip__title">{{ block.settings.title | escape }}</h3>

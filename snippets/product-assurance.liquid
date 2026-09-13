@@ -1,0 +1,22 @@
+{% doc %}
+  Renders the packaging and tracking assurance box shown under the payment
+  icons on the product page. Copy comes from
+  Theme settings → Shipping, returns & trust.
+
+  @example
+  {% render 'product-assurance' %}
+{% enddoc %}
+
+{%- if settings.trust_tracking_text != blank or settings.trust_tracking_highlight != blank -%}
+  <div class="product__assurance">
+    <span class="product__assurance-icon" aria-hidden="true">
+      {%- render 'universal-icon', icon: 'box', size: '26' -%}
+    </span>
+    <p class="product__assurance-text">
+      {{ settings.trust_tracking_text }}
+      {%- if settings.trust_tracking_highlight != blank %}
+        <span class="product__assurance-highlight">{{ settings.trust_tracking_highlight }}</span>
+      {%- endif -%}
+    </p>
+  </div>
+{%- endif -%}

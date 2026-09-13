@@ -192,6 +192,47 @@
                       {%- endif -%}
                     {%- endif -%}
                   </p>
+                {%- when 'rating_line' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {%- render 'product-rating-line', product: product, rating_text: block.settings.rating_text -%}
+                  </div>
+                {%- when 'stock_status' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {%- render 'product-stock-status',
+                      product: product,
+                      section_id: section.id,
+                      in_stock_text: block.settings.in_stock_text,
+                      low_stock_text: block.settings.low_stock_text,
+                      out_of_stock_text: block.settings.out_of_stock_text
+                    -%}
+                  </div>
+                {%- when 'shipping_row' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {%- render 'product-shipping-row', ships_prefix: block.settings.ships_prefix -%}
+                  </div>
+                {%- when 'payment_icons' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {%- render 'payment-icons', size: 'small' -%}
+                  </div>
+                {%- when 'assurance' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {%- render 'product-assurance' -%}
+                  </div>
+                {%- when 'usp_list' -%}
+                  <ul class="product__usp-list" role="list" {{ block.shopify_attributes }}>
+                    {%- assign usp_lines = block.settings.items | newline_to_br | split: '<br />' -%}
+                    {%- for usp_line in usp_lines -%}
+                      {%- assign usp_text = usp_line | strip -%}
+                      {%- if usp_text != blank -%}
+                        <li class="product__usp">
+                          <span class="product__usp-icon" aria-hidden="true">
+                            {%- render 'universal-icon', icon: block.settings.icon, size: '18' -%}
+                          </span>
+                          <span>{{ usp_text }}</span>
+                        </li>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </ul>
                 {%- when 'description' -%}
                   {%- if product.description != blank -%}
                     <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
@@ -2142,6 +2183,140 @@
           "default": "t:sections.main-product.blocks.icon_with_text.settings.heading_3.default",
           "label": "t:sections.main-product.blocks.icon_with_text.settings.heading_3.label",
           "info": "t:sections.main-product.blocks.icon_with_text.settings.heading.info"
+        }
+      ]
+    },
+    {
+      "type": "rating_line",
+      "name": "Rating line",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Uses your reviews app's rating when one is installed, and the fallback values in Theme settings → Product page otherwise."
+        },
+        {
+          "type": "text",
+          "id": "rating_text",
+          "label": "Text before the review count",
+          "default": "Rated"
+        }
+      ]
+    },
+    {
+      "type": "stock_status",
+      "name": "Stock status",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Reads the selected variant's real inventory. The low-stock threshold is set in Theme settings → Product page."
+        },
+        {
+          "type": "text",
+          "id": "in_stock_text",
+          "label": "In stock text",
+          "default": "In stock and ready to ship"
+        },
+        {
+          "type": "text",
+          "id": "low_stock_text",
+          "label": "Low stock text",
+          "default": "Almost sold out"
+        },
+        {
+          "type": "text",
+          "id": "out_of_stock_text",
+          "label": "Out of stock text",
+          "default": "Sold out"
+        }
+      ]
+    },
+    {
+      "type": "shipping_row",
+      "name": "Ships by + free shipping",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "The ship date is today plus the handling time set in Theme settings → Shipping, returns & trust, skipped past the weekend."
+        },
+        {
+          "type": "text",
+          "id": "ships_prefix",
+          "label": "Text before the date",
+          "default": "Ships by"
+        }
+      ]
+    },
+    {
+      "type": "payment_icons",
+      "name": "Payment icons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Renders whether or not a payment provider is activated yet. Choose which icons in Theme settings → Shipping, returns & trust."
+        }
+      ]
+    },
+    {
+      "type": "assurance",
+      "name": "Packaging & tracking box",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Copy comes from Theme settings → Shipping, returns & trust so it stays identical across every product."
+        }
+      ]
+    },
+    {
+      "type": "usp_list",
+      "name": "Benefit list",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "bulb",
+              "label": "Lighting"
+            },
+            {
+              "value": "leaf",
+              "label": "Energy saving"
+            },
+            {
+              "value": "spark",
+              "label": "Quality"
+            },
+            {
+              "value": "shield",
+              "label": "Secure"
+            },
+            {
+              "value": "truck",
+              "label": "Shipping"
+            },
+            {
+              "value": "refresh",
+              "label": "Returns"
+            }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "textarea",
+          "id": "items",
+          "label": "Benefits",
+          "default": "Warm, dimmable LED glow\nSeamless shade with no hot spots\nWeather-resistant, indoor or out",
+          "info": "One benefit per line."
         }
       ]
     }

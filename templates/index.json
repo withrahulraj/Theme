@@ -1,53 +1,73 @@
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
+    "hero": {
+      "type": "hero-lighting",
       "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
-          }
+        "usp_shipping": {
+          "type": "usp",
+          "settings": { "icon": "truck", "text": "Free worldwide shipping" }
         },
-        "button": {
-          "type": "buttons",
-          "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
-          }
+        "usp_returns": {
+          "type": "usp",
+          "settings": { "icon": "refresh", "text": "30-day returns" }
+        },
+        "usp_secure": {
+          "type": "usp",
+          "settings": { "icon": "shield", "text": "Secure checkout" }
         }
       },
-      "block_order": [
-        "heading",
-        "button"
-      ],
+      "block_order": ["usp_shipping", "usp_returns", "usp_secure"],
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
-        "image_behavior": "none",
-        "desktop_content_alignment": "center",
+        "eyebrow": "Designer lighting, direct to you",
+        "heading": "Light that makes the room",
+        "heading_size": "h0",
+        "subheading": "Sculptural lamps and warm, diffused glow — built to last, shipped free, returnable for 30 days.",
+        "button_label_1": "Shop all lighting",
+        "button_link_1": "",
+        "button_label_2": "Best sellers",
+        "button_link_2": "",
+        "show_usps": true,
+        "content_position": "left",
+        "overlay_direction": "to right",
+        "overlay_opacity": 55,
+        "height_mobile": 520,
+        "height_desktop": 660,
         "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "padding_top": 64,
+        "padding_bottom": 64
       }
     },
-    "featured_collection": {
+    "collections": {
+      "type": "collection-list",
+      "blocks": {
+        "collection_1": { "type": "featured_collection", "settings": {} },
+        "collection_2": { "type": "featured_collection", "settings": {} },
+        "collection_3": { "type": "featured_collection", "settings": {} },
+        "collection_4": { "type": "featured_collection", "settings": {} }
+      },
+      "block_order": ["collection_1", "collection_2", "collection_3", "collection_4"],
+      "settings": {
+        "title": "Shop by room",
+        "heading_size": "h2",
+        "image_ratio": "square",
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1",
+        "show_view_all": true,
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 56,
+        "padding_bottom": 28
+      }
+    },
+    "featured_bestsellers": {
       "type": "featured-collection",
       "settings": {
-        "title": "Featured products",
+        "title": "Best sellers",
         "heading_size": "h2",
-        "description": "",
-        "show_description": false,
+        "description": "The lamps our customers keep coming back for.",
+        "show_description": true,
         "description_style": "body",
-        "collection": "all",
+        "collection": "",
         "products_to_show": 8,
         "columns_desktop": 4,
         "color_scheme": "scheme-1",
@@ -55,21 +75,142 @@
         "show_view_all": true,
         "view_all_style": "solid",
         "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
-        "image_ratio": "adapt",
+        "swipe_on_mobile": true,
+        "image_ratio": "square",
         "image_shape": "default",
         "show_secondary_image": true,
         "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
+        "show_rating": true,
+        "quick_add": "standard",
         "columns_mobile": "2",
         "padding_top": 44,
         "padding_bottom": 36
       }
+    },
+    "info_with_image": {
+      "type": "info-with-image",
+      "blocks": {
+        "point_1": {
+          "type": "point",
+          "settings": {
+            "icon": "bulb",
+            "title": "Dimmable warm LED",
+            "text": "2700K–4000K, tuned by touch or remote."
+          }
+        },
+        "point_2": {
+          "type": "point",
+          "settings": {
+            "icon": "leaf",
+            "title": "Low draw",
+            "text": "Up to 85% less energy than incandescent."
+          }
+        },
+        "point_3": {
+          "type": "point",
+          "settings": {
+            "icon": "spark",
+            "title": "Seamless shades",
+            "text": "No visible joints, no hot spots in the glow."
+          }
+        }
+      },
+      "block_order": ["point_1", "point_2", "point_3"],
+      "settings": {
+        "image_position": "left",
+        "eyebrow": "Why our lighting",
+        "heading": "Warm, diffused light — not a harsh bulb in a shade",
+        "heading_size": "h1",
+        "text": "<p>Every lamp we ship is built around the quality of the light it throws. Frosted, seamless shades soften the output so a room reads calm instead of clinical, and dimmable LEDs let you tune the mood from a working brightness down to a low evening glow.</p>",
+        "button_label": "Explore the collection",
+        "button_link": "",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "featured_new": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "New arrivals",
+        "heading_size": "h2",
+        "description": "Fresh shapes, just landed.",
+        "show_description": true,
+        "description_style": "body",
+        "collection": "",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1",
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "outline",
+        "enable_desktop_slider": false,
+        "swipe_on_mobile": true,
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": true,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "trust_strip": {
+      "type": "trust-strip",
+      "blocks": {
+        "shipping": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping",
+            "text": "On every order, tracking included."
+          }
+        },
+        "returns": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "30-day returns",
+            "text": "Not the right glow? Send it back."
+          }
+        },
+        "secure": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "Secure checkout",
+            "text": "Encrypted payments, every time."
+          }
+        },
+        "support": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "title": "Real support",
+            "text": "Mon–Fri, answered within 24 hours."
+          }
+        }
+      },
+      "block_order": ["shipping", "returns", "secure", "support"],
+      "settings": {
+        "heading": "Buying from us",
+        "heading_size": "h2",
+        "layout": "stacked",
+        "show_payment_icons": true,
+        "color_scheme": "scheme-2",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
     }
   },
   "order": [
-    "image_banner",
-    "featured_collection"
+    "hero",
+    "collections",
+    "featured_bestsellers",
+    "info_with_image",
+    "featured_new",
+    "trust_strip"
   ]
 }

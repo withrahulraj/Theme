@@ -3,11 +3,10 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "vendor": {
-          "type": "text",
+        "rating_line": {
+          "type": "rating_line",
           "settings": {
-            "text": "{{ product.vendor }}",
-            "text_style": "uppercase"
+            "rating_text": "Rated"
           }
         },
         "title": {
@@ -16,11 +15,19 @@
         "price": {
           "type": "price"
         },
+        "stock_status": {
+          "type": "stock_status",
+          "settings": {
+            "in_stock_text": "In stock and ready to ship",
+            "low_stock_text": "Almost sold out",
+            "out_of_stock_text": "Sold out"
+          }
+        },
         "variant_picker": {
           "type": "variant_picker",
           "settings": {
             "picker_type": "button",
-            "swatch_shape": "circle"
+            "swatch_shape": "square"
           }
         },
         "quantity_selector": {
@@ -30,11 +37,54 @@
           "type": "buy_buttons",
           "settings": {
             "show_dynamic_checkout": true,
-            "show_gift_card_recipient": true
+            "show_gift_card_recipient": false
           }
+        },
+        "shipping_row": {
+          "type": "shipping_row",
+          "settings": {
+            "ships_prefix": "Ships by"
+          }
+        },
+        "payment_icons": {
+          "type": "payment_icons"
+        },
+        "assurance": {
+          "type": "assurance"
         },
         "description": {
           "type": "description"
+        },
+        "usp_list": {
+          "type": "usp_list",
+          "settings": {
+            "icon": "check",
+            "items": "Warm, dimmable LED glow — bright enough to work by, soft enough to unwind by\nSeamless diffused shade, so there are no hot spots or glare\nPlug-and-play: no wiring, no electrician, no fuss"
+          }
+        },
+        "tab_returns": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "30-Day Returns",
+            "icon": "return",
+            "content": "<p>Not the right light for the room? Send it back within 30 days of delivery for a full refund. The lamp needs to be in its original packaging and in resaleable condition. Start a return by emailing us and we will send a label and instructions the same working day.</p>"
+          }
+        },
+        "tab_shipping": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Free Shipping",
+            "icon": "truck",
+            "content": "<p>Shipping is free on every order, with no minimum spend. Orders are packed and dispatched within 1–2 working days, and you get a tracking number by email the moment your parcel leaves us. Delivery typically takes 5–9 working days depending on your address.</p>"
+          }
+        },
+        "tab_payments": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Secure Payments",
+            "icon": "lock",
+            "content": "<p>Every payment runs through Shopify's encrypted checkout. Your card details are never stored on our servers and never visible to us. Pay with any major card, or with Apple Pay, Google Pay, Shop Pay or PayPal.</p>"
+          }
         },
         "share": {
           "type": "share",
@@ -44,29 +94,83 @@
         }
       },
       "block_order": [
-        "vendor",
+        "rating_line",
         "title",
         "price",
+        "stock_status",
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
+        "shipping_row",
+        "payment_icons",
+        "assurance",
         "description",
+        "usp_list",
+        "tab_returns",
+        "tab_shipping",
+        "tab_payments",
         "share"
       ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
         "media_position": "left",
-        "gallery_layout": "stacked",
+        "gallery_layout": "thumbnail",
         "media_size": "large",
         "constrain_to_viewport": true,
         "media_fit": "contain",
         "image_zoom": "lightbox",
-        "mobile_thumbnails": "hide",
+        "mobile_thumbnails": "columns",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
         "padding_bottom": 12
+      }
+    },
+    "trust_strip": {
+      "type": "trust-strip",
+      "blocks": {
+        "shipping": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping",
+            "text": "On every order, tracking included."
+          }
+        },
+        "returns": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "30-day returns",
+            "text": "Not the right glow? Send it back."
+          }
+        },
+        "secure": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "Secure checkout",
+            "text": "Encrypted payments, every time."
+          }
+        },
+        "support": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "title": "Real support",
+            "text": "Mon–Fri, answered within 24 hours."
+          }
+        }
+      },
+      "block_order": ["shipping", "returns", "secure", "support"],
+      "settings": {
+        "heading": "",
+        "layout": "stacked",
+        "show_payment_icons": false,
+        "color_scheme": "scheme-2",
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     },
     "disclosures": {
@@ -79,7 +183,7 @@
     "related-products": {
       "type": "related-products",
       "settings": {
-        "heading": "You may also like",
+        "heading": "Pairs well with",
         "heading_size": "h2",
         "products_to_show": 4,
         "columns_desktop": 4,
@@ -95,9 +199,5 @@
       }
     }
   },
-  "order": [
-    "main",
-    "disclosures",
-    "related-products"
-  ]
+  "order": ["main", "trust_strip", "disclosures", "related-products"]
 }

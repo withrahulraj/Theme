@@ -1,0 +1,71 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 0
+      }
+    },
+    "order_lookup": {
+      "type": "order-lookup",
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "title": "Order placed",
+            "text": "A confirmation email lands in your inbox straight away."
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "title": "Packed and shipped",
+            "text": "We send a tracking number as soon as it leaves us."
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "title": "On the way",
+            "text": "Track it here at any time until it reaches your door."
+          }
+        }
+      },
+      "block_order": ["step_1", "step_2", "step_3"],
+      "settings": {
+        "heading": "Track your order",
+        "heading_size": "h1",
+        "subheading": "<p>Enter the tracking number from your shipping confirmation email to see where your order is right now.</p>",
+        "tracking_provider_url": "https://t.17track.net/en#nums=",
+        "input_label": "Tracking number",
+        "button_label": "Track my order",
+        "error_text": "Enter the tracking number from your shipping confirmation email.",
+        "account_button_label": "View my orders",
+        "support_button_label": "Contact support",
+        "footnote": "<p>Tracking can take 24–48 hours to update after your order ships. Still stuck? Email us at</p>",
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "contact_details": {
+      "type": "contact-details",
+      "settings": {
+        "heading": "Need a hand?",
+        "heading_size": "h2",
+        "center_heading": true,
+        "subheading": "<p>Our support team is on Monday to Friday and replies to every message.</p>",
+        "email_title": "Email us",
+        "phone_title": "Call us",
+        "hours_title": "Opening hours",
+        "address_title": "Our address",
+        "empty_note": "Add your contact details in Settings → Store details and they will appear here.",
+        "color_scheme": "scheme-2",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    }
+  },
+  "order": ["main", "order_lookup", "contact_details"]
+}

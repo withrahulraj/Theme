@@ -1,0 +1,53 @@
+{% doc %}
+  Renders the "ships by <date>" and free shipping row under the buy buttons.
+  The date is calculated from today plus the handling time set in
+  Theme settings → Shipping, returns & trust, so it is always in the future.
+
+  @param {string} [ships_prefix] - Text before the date.
+  @param {string} [date_format] - strftime format for the date.
+
+  @example
+  {% render 'product-shipping-row' %}
+{% enddoc %}
+
+{%- liquid
+  assign lead_days = settings.trust_lead_time_days | default: 2
+  assign lead_seconds = lead_days | times: 86400
+  assign ships_timestamp = 'now' | date: '%s' | plus: lead_seconds
+  assign ships_weekday = ships_timestamp | date: '%w' | plus: 0
+
+  comment
+    Nudge the promise off the weekend so it lands on a day orders actually leave.
+  endcomment
+  if ships_weekday == 0
+    assign ships_timestamp = ships_timestamp | plus: 86400
+  elsif ships_weekday == 6
+    assign ships_timestamp = ships_timestamp | plus: 172800
+  endif
+
+  assign ships_format = date_format | default: '%a %d %b'
+  assign ships_date = ships_timestamp | date: ships_format
+-%}
+
+{%- if settings.trust_show_ships_by or settings.trust_free_shipping -%}
+  <div class="product__shipping-row">
+    {%- if settings.trust_show_ships_by -%}
+      <span class="product__shipping-item product__shipping-item--ships">
+        <span class="product__stock-dot" aria-hidden="true"></span>
+        <span>
+          {{ ships_prefix | default: 'Ships by' }}
+          <span class="product__shipping-strong">{{ ships_date }}</span>
+        </span>
+      </span>
+    {%- endif -%}
+
+    {%- if settings.trust_free_shipping -%}
+      <span class="product__shipping-item">
+        <span aria-hidden="true">{%- render 'universal-icon', icon: 'truck', size: '20' -%}</span>
+        <span class="product__shipping-strong">
+          {{- settings.trust_free_shipping_label | default: 'Free Shipping' -}}
+        </span>
+      </span>
+    {%- endif -%}
+  </div>
+{%- endif -%}

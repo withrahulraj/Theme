@@ -1,0 +1,44 @@
+{% doc %}
+  Renders a stock status line for the selected variant. Falls back to a plain
+  "in stock" state when inventory is not tracked, so the line stays truthful on
+  stores that do not manage stock in Shopify.
+
+  @param {object} product - The product being displayed.
+  @param {string} [in_stock_text]
+  @param {string} [low_stock_text]
+  @param {string} [out_of_stock_text]
+  @param {string} [section_id]
+
+  @example
+  {% render 'product-stock-status', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign threshold = settings.product_stock_low_threshold | default: 20
+  assign state = 'in'
+
+  if variant.available == false
+    assign state = 'out'
+  elsif variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'
+    if variant.inventory_quantity <= threshold
+      assign state = 'low'
+    endif
+  endif
+
+  assign label = in_stock_text | default: 'In stock and ready to ship'
+  if state == 'low'
+    assign label = low_stock_text | default: 'Almost sold out'
+  elsif state == 'out'
+    assign label = out_of_stock_text | default: 'Sold out'
+  endif
+-%}
+
+{%- if settings.product_show_stock -%}
+  <p class="product__stock" id="ProductStock-{{ section_id }}" role="status">
+    <span class="product__stock-state product__stock--{{ state }}">
+      <span class="product__stock-dot" aria-hidden="true"></span>
+      {{ label }}
+    </span>
+  </p>
+{%- endif -%}

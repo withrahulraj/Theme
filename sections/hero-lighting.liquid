@@ -82,7 +82,7 @@
         <ul class="hero__usps" role="list">
           {%- for block in section.blocks -%}
             <li class="hero__usp" {{ block.shopify_attributes }}>
-              <span aria-hidden="true">{%- render 'universal-icon', icon: block.settings.icon, size: 18 -%}</span>
+              <span aria-hidden="true">{%- render 'universal-icon', icon: block.settings.icon, size: '18' -%}</span>
               {{ block.settings.text | escape }}
             </li>
           {%- endfor -%}

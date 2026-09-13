@@ -3,12 +3,84 @@
     "main": {
       "type": "main-page",
       "settings": {
-        "padding_top": 28,
+        "padding_top": 36,
         "padding_bottom": 28
+      }
+    },
+    "trust_strip": {
+      "type": "trust-strip",
+      "blocks": {
+        "shipping": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping",
+            "text": "On every order, tracking included."
+          }
+        },
+        "returns": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "30-day returns",
+            "text": "Not the right glow? Send it back."
+          }
+        },
+        "secure": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "Secure checkout",
+            "text": "Encrypted payments, every time."
+          }
+        },
+        "support": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "title": "Real support",
+            "text": "Mon–Fri, answered within 24 hours."
+          }
+        }
+      },
+      "block_order": ["shipping", "returns", "secure", "support"],
+      "settings": {
+        "heading": "",
+        "layout": "stacked",
+        "show_payment_icons": false,
+        "color_scheme": "scheme-2",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Stay in the loop",
+            "heading_size": "h2"
+          }
+        },
+        "paragraph": {
+          "type": "paragraph",
+          "settings": {
+            "paragraph": "<p>New arrivals, lighting ideas and subscriber-only offers. No spam, ever.</p>"
+          }
+        },
+        "email_form": {
+          "type": "email_form"
+        }
+      },
+      "block_order": ["heading", "paragraph", "email_form"],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main", "trust_strip", "newsletter"]
 }
