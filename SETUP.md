@@ -46,6 +46,7 @@ exist.
 |---|---|---|
 | `contact` | `page.contact` | Contact cards + contact form + trust strip |
 | `track-order` | `page.track-order` | Tracking form + timeline + contact cards |
+| `refund-policy`, `shipping-policy`, `terms-of-service`, `payment-policy` | `page.policy` | Narrow legal layout with a last-updated line and a help box |
 | `about-us` | `page` (default) | Your content + trust strip + newsletter |
 | anything else | `page` (default) | Your content + trust strip + newsletter |
 
@@ -55,6 +56,21 @@ pages renamed: `contact-us`, `track-your-order`, `order-tracking`, `tracking`,
 
 Until a page exists, links point at the handle above so nothing 404s silently
 once you create it.
+
+## Policies
+
+Shopify renders `/policies/*` URLs itself and they **cannot be themed** — there
+is no `policy` template type. So the theme covers policies two ways:
+
+1. **Settings → Policies** — the footer links these first. They also appear at
+   checkout, which is what Merchant Center and Shopify's own compliance checks
+   read, so publish them here whenever you can.
+2. **Pages** — a page whose handle is `refund-policy`, `shipping-policy`,
+   `terms-of-service`, `privacy-policy` or `payment-policy`. Assign it the
+   **policy** template for the narrow legal layout.
+
+The footer prefers a published policy and falls back to a matching page, so the
+column populates either way and never shows a dead link.
 
 ## Tracking page
 

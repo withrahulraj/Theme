@@ -2,9 +2,12 @@
 {% comment %}
   Renders a legal document in a narrow, readable column.
 
-  Serves both routes a store can use for policies: the `policy` object on
-  /policies/* pages published under Settings → Policies, and a normal page
-  assigned the "policy" template. Whichever exists is what renders.
+  Assign a page to the "policy" template and it renders here.
+
+  Note: Shopify has no `policy` template type — /policies/* URLs are rendered by
+  Shopify itself and cannot be themed. So legal documents that need this layout
+  are published as pages. The `policy` fallback below costs nothing and covers a
+  store that does reach this section with a policy object.
 {% endcomment %}
 
 {%- liquid
