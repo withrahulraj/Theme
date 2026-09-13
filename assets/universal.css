@@ -741,3 +741,86 @@
   margin-top: 0.1rem;
   opacity: 0.7;
 }
+
+/* --------------------------------------------------------------------------
+   Legal pages — policies and any page on the policy template
+   -------------------------------------------------------------------------- */
+.legal-page {
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.legal-page__header {
+  margin-bottom: 3.2rem;
+  padding-bottom: 2.4rem;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.1);
+}
+
+.legal-page__title {
+  margin: 0;
+}
+
+.legal-page__meta {
+  margin: 1.2rem 0 0;
+  font-size: 1.3rem;
+  opacity: 0.6;
+}
+
+.legal-page__body {
+  font-size: 1.5rem;
+  line-height: 1.75;
+}
+
+.legal-page__body h2 {
+  margin: 3.6rem 0 1.2rem;
+  font-size: 1.9rem;
+  line-height: 1.3;
+}
+
+.legal-page__body h3 {
+  margin: 2.8rem 0 1rem;
+  font-size: 1.6rem;
+}
+
+.legal-page__body > :first-child {
+  margin-top: 0;
+}
+
+.legal-page__body p,
+.legal-page__body ul,
+.legal-page__body ol {
+  margin: 0 0 1.6rem;
+}
+
+.legal-page__body ul,
+.legal-page__body ol {
+  padding-left: 2.2rem;
+}
+
+.legal-page__body li {
+  margin-bottom: 0.8rem;
+}
+
+.legal-page__body a {
+  color: rgb(var(--color-foreground));
+  text-underline-offset: 0.3rem;
+}
+
+.legal-page__help {
+  margin-top: 4rem;
+  padding: 2.8rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  border-radius: 1rem;
+}
+
+.legal-page__help-title {
+  margin: 0 0 0.8rem;
+  font-size: 1.7rem;
+}
+
+.legal-page__help-text {
+  margin: 0 0 1.8rem;
+  font-size: 1.4rem;
+  line-height: 1.6;
+  opacity: 0.85;
+}

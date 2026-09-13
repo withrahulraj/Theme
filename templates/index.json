@@ -5,27 +5,40 @@
       "blocks": {
         "usp_shipping": {
           "type": "usp",
-          "settings": { "icon": "truck", "text": "Free worldwide shipping" }
+          "settings": {
+            "icon": "truck",
+            "text": "Free worldwide shipping"
+          }
         },
         "usp_returns": {
           "type": "usp",
-          "settings": { "icon": "refresh", "text": "30-day returns" }
+          "settings": {
+            "icon": "refresh",
+            "text": "30-day returns"
+          }
         },
         "usp_secure": {
           "type": "usp",
-          "settings": { "icon": "shield", "text": "Secure checkout" }
+          "settings": {
+            "icon": "shield",
+            "text": "Secure checkout"
+          }
         }
       },
-      "block_order": ["usp_shipping", "usp_returns", "usp_secure"],
+      "block_order": [
+        "usp_shipping",
+        "usp_returns",
+        "usp_secure"
+      ],
       "settings": {
         "eyebrow": "Designer lighting, direct to you",
         "heading": "Light that makes the room",
         "heading_size": "h0",
         "subheading": "Sculptural lamps and warm, diffused glow — built to last, shipped free, returnable for 30 days.",
         "button_label_1": "Shop all lighting",
-        "button_link_1": "",
+        "button_link_1": "shopify://collections/all",
         "button_label_2": "Best sellers",
-        "button_link_2": "",
+        "button_link_2": "shopify://collections/best-sellers",
         "show_usps": true,
         "content_position": "left",
         "overlay_direction": "to right",
@@ -40,14 +53,39 @@
     "collections": {
       "type": "collection-list",
       "blocks": {
-        "collection_1": { "type": "featured_collection", "settings": {} },
-        "collection_2": { "type": "featured_collection", "settings": {} },
-        "collection_3": { "type": "featured_collection", "settings": {} },
-        "collection_4": { "type": "featured_collection", "settings": {} }
+        "collection_1": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "wall-lights"
+          }
+        },
+        "collection_2": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "pendant-lights"
+          }
+        },
+        "collection_3": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "best-sellers"
+          }
+        },
+        "collection_4": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "new-arrivals"
+          }
+        }
       },
-      "block_order": ["collection_1", "collection_2", "collection_3", "collection_4"],
+      "block_order": [
+        "collection_1",
+        "collection_2",
+        "collection_3",
+        "collection_4"
+      ],
       "settings": {
-        "title": "Shop by room",
+        "title": "Shop by fixture",
         "heading_size": "h2",
         "image_ratio": "square",
         "columns_desktop": 4,
@@ -67,7 +105,7 @@
         "description": "The lamps our customers keep coming back for.",
         "show_description": true,
         "description_style": "body",
-        "collection": "",
+        "collection": "best-sellers",
         "products_to_show": 8,
         "columns_desktop": 4,
         "color_scheme": "scheme-1",
@@ -115,7 +153,11 @@
           }
         }
       },
-      "block_order": ["point_1", "point_2", "point_3"],
+      "block_order": [
+        "point_1",
+        "point_2",
+        "point_3"
+      ],
       "settings": {
         "image_position": "left",
         "eyebrow": "Why our lighting",
@@ -123,7 +165,7 @@
         "heading_size": "h1",
         "text": "<p>Every lamp we ship is built around the quality of the light it throws. Frosted, seamless shades soften the output so a room reads calm instead of clinical, and dimmable LEDs let you tune the mood from a working brightness down to a low evening glow.</p>",
         "button_label": "Explore the collection",
-        "button_link": "",
+        "button_link": "shopify://collections/all",
         "color_scheme": "scheme-1",
         "padding_top": 56,
         "padding_bottom": 56
@@ -137,7 +179,7 @@
         "description": "Fresh shapes, just landed.",
         "show_description": true,
         "description_style": "body",
-        "collection": "",
+        "collection": "new-arrivals",
         "products_to_show": 4,
         "columns_desktop": 4,
         "color_scheme": "scheme-1",
@@ -193,7 +235,12 @@
           }
         }
       },
-      "block_order": ["shipping", "returns", "secure", "support"],
+      "block_order": [
+        "shipping",
+        "returns",
+        "secure",
+        "support"
+      ],
       "settings": {
         "heading": "Buying from us",
         "heading_size": "h2",

@@ -589,7 +589,7 @@
       {
         "type": "font_picker",
         "id": "type_header_font",
-        "default": "assistant_n4",
+        "default": "playfair_display_n4",
         "label": "t:settings_schema.typography.settings.type_header_font.label"
       },
       {
@@ -600,7 +600,7 @@
         "step": 5,
         "unit": "%",
         "label": "t:settings_schema.typography.settings.heading_scale.label",
-        "default": 100
+        "default": 105
       },
       {
         "type": "header",
@@ -609,7 +609,7 @@
       {
         "type": "font_picker",
         "id": "type_body_font",
-        "default": "assistant_n4",
+        "default": "dm_sans_n4",
         "label": "t:settings_schema.typography.settings.type_body_font.label"
       },
       {

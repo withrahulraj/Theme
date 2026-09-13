@@ -1,0 +1,54 @@
+{% doc %}
+  Outputs the display title for a policy link — the published policy's own
+  title, the matching page's title, or the supplied fallback.
+
+  @param {string} policy - privacy, shipping, refund, terms, subscription or contact.
+  @param {string} fallback - Title used when neither a policy nor a page exists.
+
+  @example
+  {% capture refund_title %}{% render 'policy-title', policy: 'refund', fallback: 'Refund Policy' %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign policy_object = nil
+  assign handles = ''
+
+  case policy
+    when 'privacy'
+      assign policy_object = shop.policies.privacy_policy
+      assign handles = 'privacy-policy,privacy'
+    when 'shipping'
+      assign policy_object = shop.policies.shipping_policy
+      assign handles = 'shipping-policy,shipping,delivery-policy'
+    when 'refund'
+      assign policy_object = shop.policies.refund_policy
+      assign handles = 'refund-policy,return-policy,returns,return-and-refund-policy'
+    when 'terms'
+      assign policy_object = shop.policies.terms_of_service
+      assign handles = 'terms-of-service,terms,terms-and-conditions'
+    when 'subscription'
+      assign policy_object = shop.policies.subscription_policy
+      assign handles = 'subscription-policy,cancellation-policy'
+    when 'contact'
+      assign policy_object = shop.policies.contact_information
+      assign handles = 'contact-information'
+  endcase
+
+  assign resolved = policy_object.title
+
+  if resolved == blank and handles != blank
+    assign candidates = handles | split: ','
+    for candidate in candidates
+      assign candidate_handle = candidate | strip
+      assign candidate_page = pages[candidate_handle]
+      if candidate_page.handle != blank
+        assign resolved = candidate_page.title
+        break
+      endif
+    endfor
+  endif
+
+  if resolved == blank
+    assign resolved = fallback
+  endif
+-%}
+{{- resolved -}}

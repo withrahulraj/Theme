@@ -42,6 +42,55 @@ expect('  -> real contact page', out, '/pages/contact-us')
 expect('  -> FAQ link appears', out, '/pages/faq')
 expect('  -> payment policy appears', out, '/pages/payment-policy')
 
+puts "\n--- store-footer: policies kept as pages ---"
+# brightloft's situation: Settings -> Policies is empty except privacy, and the
+# legal documents live as pages instead. The column must still populate.
+out = check('store-footer resolves policies from pages') {
+  render_section('store-footer',
+    'shop' => shop('policies' => {}),
+    'pages' => {
+      'refund-policy' => { 'handle' => 'refund-policy', 'url' => '/pages/refund-policy', 'title' => 'Return and Refund Policy' },
+      'shipping-policy' => { 'handle' => 'shipping-policy', 'url' => '/pages/shipping-policy', 'title' => 'Shipping Policy' },
+      'terms-of-service' => { 'handle' => 'terms-of-service', 'url' => '/pages/terms-of-service', 'title' => 'Terms of Service' },
+      'payment-policy' => { 'handle' => 'payment-policy', 'url' => '/pages/payment-policy', 'title' => 'Payment Policy' },
+    })
+}
+expect('  -> refund page linked', out, '/pages/refund-policy')
+expect('  -> refund title from the page', out, 'Return and Refund Policy')
+expect('  -> shipping page linked', out, '/pages/shipping-policy')
+expect('  -> terms page linked', out, '/pages/terms-of-service')
+expect('  -> payment policy linked', out, '/pages/payment-policy')
+expect('  -> no "policies being updated" note', (out.to_s.include?('Policies are being updated') ? 'shown' : 'hidden'), 'hidden')
+
+out = check('store-footer prefers a real policy over a page of the same name') {
+  render_section('store-footer',
+    'pages' => { 'refund-policy' => { 'handle' => 'refund-policy', 'url' => '/pages/refund-policy', 'title' => 'Page version' } })
+}
+expect('  -> policy URL wins', out, '/policies/refund-policy')
+expect('  -> page version not linked', (out.to_s.include?('/pages/refund-policy') ? 'leaked' : 'clean'), 'clean')
+
+out = check('store-footer with neither policies nor pages') {
+  render_section('store-footer', 'shop' => shop('policies' => {}))
+}
+expect('  -> falls back to the note', out, 'Policies are being updated.')
+
+puts "\n--- policy template ---"
+out = check('policy page renders from the policy object') {
+  render_section('main-policy',
+    'policy' => { 'title' => 'Return and Refund Policy', 'body' => '<h2>30 days</h2><p>Send it back.</p>' })
+}
+expect('  -> title', out, 'Return and Refund Policy')
+expect('  -> body', out, '<p>Send it back.</p>')
+expect('  -> last updated line', out, 'Last updated')
+expect('  -> help box email', out, 'hello@lumen.test')
+
+out = check('policy template also serves a plain page') {
+  render_section('main-policy',
+    'page' => { 'title' => 'Payment Policy', 'content' => '<p>Cards and wallets.</p>' })
+}
+expect('  -> page title used', out, 'Payment Policy')
+expect('  -> page content used', out, 'Cards and wallets.')
+
 puts "\n--- contact-details ---"
 out = check('contact-details renders all four cards') { render_section('contact-details') }
 expect('  -> email card', out, 'hello@lumen.test')

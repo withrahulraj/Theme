@@ -1,0 +1,168 @@
+{% comment %}theme-check-disable UndefinedObject{% endcomment %}
+{% comment %}
+  Renders a legal document in a narrow, readable column.
+
+  Serves both routes a store can use for policies: the `policy` object on
+  /policies/* pages published under Settings → Policies, and a normal page
+  assigned the "policy" template. Whichever exists is what renders.
+{% endcomment %}
+
+{%- liquid
+  assign legal_title = policy.title | default: page.title
+  assign legal_body = policy.body | default: page.content
+
+  capture contact_url
+    render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
+  endcapture
+  assign contact_url = contact_url | strip
+
+  capture store_email
+    render 'store-info', field: 'email'
+  endcapture
+  assign store_email = store_email | strip
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    <article class="legal-page">
+      <header class="legal-page__header">
+        <h1 class="legal-page__title {{ section.settings.heading_size }}">{{ legal_title }}</h1>
+        {%- if section.settings.show_updated -%}
+          <p class="legal-page__meta">
+            {{ section.settings.updated_label }}
+            {{ 'now' | date: section.settings.date_format }}
+          </p>
+        {%- endif -%}
+      </header>
+
+      <div class="legal-page__body rte">
+        {{ legal_body }}
+      </div>
+
+      {%- if section.settings.show_footer_help -%}
+        <aside class="legal-page__help">
+          <h2 class="legal-page__help-title">{{ section.settings.help_heading }}</h2>
+          <p class="legal-page__help-text">
+            {{ section.settings.help_text }}
+            {%- if store_email != blank %}
+              <a href="mailto:{{ store_email }}">{{ store_email }}</a>.
+            {%- endif -%}
+          </p>
+          <a href="{{ contact_url }}" class="button button--secondary">{{ section.settings.help_button_label }}</a>
+        </aside>
+      {%- endif -%}
+    </article>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Policy content",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Renders the policy or page assigned to this template. The text itself is edited in Settings → Policies, or on the page in Content → Pages."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Title size",
+      "options": [
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" },
+        { "value": "h0", "label": "Extra large" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_updated",
+      "label": "Show a last-updated line",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "updated_label",
+      "label": "Last-updated label",
+      "default": "Last updated"
+    },
+    {
+      "type": "text",
+      "id": "date_format",
+      "label": "Date format",
+      "default": "%B %Y",
+      "info": "Uses Liquid date formatting. %B %Y gives \"September 2026\"."
+    },
+    {
+      "type": "header",
+      "content": "Help box"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_footer_help",
+      "label": "Show the help box",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Heading",
+      "default": "Still have a question?"
+    },
+    {
+      "type": "text",
+      "id": "help_text",
+      "label": "Text",
+      "default": "We answer every message ourselves, Monday to Friday. Email us at"
+    },
+    {
+      "type": "text",
+      "id": "help_button_label",
+      "label": "Button label",
+      "default": "Contact us"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ]
+}
+{% endschema %}

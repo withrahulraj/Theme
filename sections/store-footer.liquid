@@ -55,6 +55,51 @@
   endcapture
   assign payment_policy_url = payment_policy_url | strip
 
+  comment
+    Each legal link prefers the policy published under Settings -> Policies and
+    falls back to a page with a matching handle, so the column is populated on a
+    store that keeps its policies either way.
+  endcomment
+  capture privacy_url
+    render 'policy-url', policy: 'privacy'
+  endcapture
+  assign privacy_url = privacy_url | strip
+  capture privacy_title
+    render 'policy-title', policy: 'privacy', fallback: 'Privacy Policy'
+  endcapture
+
+  capture shipping_url
+    render 'policy-url', policy: 'shipping'
+  endcapture
+  assign shipping_url = shipping_url | strip
+  capture shipping_title
+    render 'policy-title', policy: 'shipping', fallback: 'Shipping Policy'
+  endcapture
+
+  capture refund_url
+    render 'policy-url', policy: 'refund'
+  endcapture
+  assign refund_url = refund_url | strip
+  capture refund_title
+    render 'policy-title', policy: 'refund', fallback: 'Return and Refund Policy'
+  endcapture
+
+  capture terms_url
+    render 'policy-url', policy: 'terms'
+  endcapture
+  assign terms_url = terms_url | strip
+  capture terms_title
+    render 'policy-title', policy: 'terms', fallback: 'Terms of Service'
+  endcapture
+
+  capture subscription_url
+    render 'policy-url', policy: 'subscription'
+  endcapture
+  assign subscription_url = subscription_url | strip
+  capture subscription_title
+    render 'policy-title', policy: 'subscription', fallback: 'Cancellation Policy'
+  endcapture
+
   assign has_social = false
   if settings.social_facebook_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_tiktok_link != blank or settings.social_twitter_link != blank or settings.social_pinterest_link != blank or settings.social_snapchat_link != blank or settings.social_tumblr_link != blank or settings.social_vimeo_link != blank
     assign has_social = true
@@ -170,12 +215,8 @@
       <div class="store-footer__column">
         <h2 class="store-footer__heading">{{ section.settings.policies_heading }}</h2>
         <ul class="store-footer__links list-unstyled" role="list">
-          {%- if shop.policies.privacy_policy != blank -%}
-            <li>
-              <a href="{{ shop.policies.privacy_policy.url }}" class="store-footer__link">
-                {{- shop.policies.privacy_policy.title -}}
-              </a>
-            </li>
+          {%- if privacy_url != blank -%}
+            <li><a href="{{ privacy_url }}" class="store-footer__link">{{ privacy_title }}</a></li>
           {%- endif -%}
 
           {%- if payment_policy_url != blank -%}
@@ -184,43 +225,23 @@
             </li>
           {%- endif -%}
 
-          {%- if shop.policies.shipping_policy != blank -%}
-            <li>
-              <a href="{{ shop.policies.shipping_policy.url }}" class="store-footer__link">
-                {{- shop.policies.shipping_policy.title -}}
-              </a>
-            </li>
+          {%- if shipping_url != blank -%}
+            <li><a href="{{ shipping_url }}" class="store-footer__link">{{ shipping_title }}</a></li>
           {%- endif -%}
 
-          {%- if shop.policies.refund_policy != blank -%}
-            <li>
-              <a href="{{ shop.policies.refund_policy.url }}" class="store-footer__link">
-                {{- shop.policies.refund_policy.title -}}
-              </a>
-            </li>
+          {%- if refund_url != blank -%}
+            <li><a href="{{ refund_url }}" class="store-footer__link">{{ refund_title }}</a></li>
           {%- endif -%}
 
-          {%- if shop.policies.terms_of_service != blank -%}
-            <li>
-              <a href="{{ shop.policies.terms_of_service.url }}" class="store-footer__link">
-                {{- shop.policies.terms_of_service.title -}}
-              </a>
-            </li>
+          {%- if terms_url != blank -%}
+            <li><a href="{{ terms_url }}" class="store-footer__link">{{ terms_title }}</a></li>
           {%- endif -%}
 
-          {%- if shop.policies.subscription_policy != blank -%}
-            <li>
-              <a href="{{ shop.policies.subscription_policy.url }}" class="store-footer__link">
-                {{- shop.policies.subscription_policy.title -}}
-              </a>
-            </li>
+          {%- if subscription_url != blank -%}
+            <li><a href="{{ subscription_url }}" class="store-footer__link">{{ subscription_title }}</a></li>
           {%- endif -%}
 
-          {%- if shop.policies.privacy_policy == blank
-            and shop.policies.refund_policy == blank
-            and shop.policies.shipping_policy == blank
-            and shop.policies.terms_of_service == blank
-          -%}
+          {%- if privacy_url == blank and shipping_url == blank and refund_url == blank and terms_url == blank -%}
             <li class="store-footer__empty-note">{{ section.settings.policies_empty_note }}</li>
           {%- endif -%}
         </ul>

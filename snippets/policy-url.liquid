@@ -1,0 +1,53 @@
+{% doc %}
+  Outputs the URL for one of the store's legal policies. Prefers the real policy
+  published under Settings → Policies, and falls back to a page with a matching
+  handle so the link still works on a store that keeps its policies as pages.
+
+  Capture the result — this snippet prints a bare URL, or nothing when neither
+  a policy nor a page exists.
+
+  @param {string} policy - privacy, shipping, refund, terms, subscription or contact.
+
+  @example
+  {% capture refund_url %}{% render 'policy-url', policy: 'refund' %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign policy_object = nil
+  assign handles = ''
+
+  case policy
+    when 'privacy'
+      assign policy_object = shop.policies.privacy_policy
+      assign handles = 'privacy-policy,privacy'
+    when 'shipping'
+      assign policy_object = shop.policies.shipping_policy
+      assign handles = 'shipping-policy,shipping,delivery-policy'
+    when 'refund'
+      assign policy_object = shop.policies.refund_policy
+      assign handles = 'refund-policy,return-policy,returns,return-and-refund-policy'
+    when 'terms'
+      assign policy_object = shop.policies.terms_of_service
+      assign handles = 'terms-of-service,terms,terms-and-conditions'
+    when 'subscription'
+      assign policy_object = shop.policies.subscription_policy
+      assign handles = 'subscription-policy,cancellation-policy'
+    when 'contact'
+      assign policy_object = shop.policies.contact_information
+      assign handles = 'contact-information'
+  endcase
+
+  assign resolved = policy_object.url
+
+  if resolved == blank and handles != blank
+    assign candidates = handles | split: ','
+    for candidate in candidates
+      assign candidate_handle = candidate | strip
+      assign candidate_page = pages[candidate_handle]
+      if candidate_page.handle != blank
+        assign resolved = candidate_page.url
+        break
+      endif
+    endfor
+  endif
+-%}
+{{- resolved -}}
