@@ -530,7 +530,8 @@
   },
   "universal": {
     "nav": {
-      "all_products": "All products"
+      "all_products": "All products",
+      "home": "Home"
     },
     "footer": {
       "rights": "All rights reserved."

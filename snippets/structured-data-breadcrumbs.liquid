@@ -1,0 +1,68 @@
+{% comment %}
+  BreadcrumbList markup for product, collection, page, blog and article
+  templates. Google shows it in search results and uses it to understand where
+  a product sits in the catalogue.
+
+  Usage:
+  {% render 'structured-data-breadcrumbs' %}
+{% endcomment %}
+
+{%- liquid
+  assign sd_crumbs = ''
+
+  case request.page_type
+    when 'product'
+      if collection.url != blank
+        assign sd_crumbs = collection.title | append: '^^' | append: collection.url
+        assign sd_crumbs = sd_crumbs | append: '||' | append: product.title | append: '^^' | append: product.url
+      else
+        assign sd_crumbs = product.title | append: '^^' | append: product.url
+      endif
+
+    when 'collection'
+      if collection.handle != blank
+        assign sd_crumbs = collection.title | append: '^^' | append: collection.url
+      endif
+
+    when 'list-collections'
+      assign sd_crumbs = 'Collections^^' | append: routes.collections_url
+
+    when 'page'
+      assign sd_crumbs = page.title | append: '^^' | append: page.url
+
+    when 'blog'
+      assign sd_crumbs = blog.title | append: '^^' | append: blog.url
+
+    when 'article'
+      assign sd_crumbs = blog.title | append: '^^' | append: blog.url
+      assign sd_crumbs = sd_crumbs | append: '||' | append: article.title | append: '^^' | append: article.url
+  endcase
+
+  assign sd_crumb_list = sd_crumbs | split: '||'
+-%}
+
+{%- if sd_crumb_list.size > 0 -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": {{ 'universal.nav.home' | t | json }},
+        "item": {{ request.origin | append: routes.root_url | json }}
+      },
+      {%- for sd_crumb in sd_crumb_list -%}
+        {%- assign sd_parts = sd_crumb | split: '^^' -%}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.index | plus: 1 }},
+          "name": {{ sd_parts[0] | json }},
+          "item": {{ request.origin | append: sd_parts[1] | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+{%- endif -%}

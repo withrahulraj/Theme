@@ -68,6 +68,73 @@ opened in a new tab. Change it, or clear it to hide the form entirely, under:
 If you use a tracking app (Parcel Panel, TrackingMore, AfterShip), put its
 public tracking URL there instead so tracking numbers stay inside your stack.
 
+## Google Merchant Center structured data
+
+The theme emits its own JSON-LD instead of Shopify's `structured_data` filter,
+because that filter cannot carry the shipping, returns and identifier fields
+Merchant Center reads. It is rendered once from `layout/theme.liquid`, so no
+entity is ever emitted twice — duplicate `Product` markup is a common cause of
+disapprovals.
+
+| Template | Markup |
+|---|---|
+| Every page | `Organization` (name, logo, address, telephone, email, contactPoint, sameAs) |
+| Home | `WebSite` with `SearchAction` |
+| Product | `Product` with one `Offer` per variant |
+| Collection | `ItemList` of the products on the page |
+| Product, collection, page, blog, article | `BreadcrumbList` |
+
+Each `Offer` carries what Merchant Center and free listings look for:
+`price`, `priceCurrency`, `priceValidUntil`, `availability`, `itemCondition`,
+`url`, `sku`, `gtin`, `mpn`, `seller`, `shippingDetails` and
+`hasMerchantReturnPolicy`.
+
+### Set these per store
+
+Theme settings → **Structured data (Google)**:
+
+- **Ships to** — two-letter country codes. Must match the countries your
+  shipping profile actually covers.
+- **Shipping rate** — 0 for free shipping.
+- **Handling and transit times** — these become `handlingTime` and
+  `transitTime`, and Google compares them against your delivery promises.
+- **Return method and return shipping cost** — the returns window itself comes
+  from Theme settings → Shipping, returns & trust.
+- **Item condition** — New unless you sell used or refurbished stock.
+
+These values are published to Google. Merchant Center suspends accounts over
+markup that contradicts the store, so they have to be true, not aspirational.
+
+### Where the product fields come from
+
+| Field | Source |
+|---|---|
+| `sku` | The variant's SKU |
+| `gtin` | The variant's barcode — published only when it is 8, 12, 13 or 14 digits, so an internal code never goes out as an invalid GTIN |
+| `mpn` | `custom.mpn` metafield on the variant, falling back to the product |
+| `brand` | Product vendor, then the Brand fallback setting, then the store name |
+| `category` | Product type |
+| `aggregateRating` | The `reviews.rating` metafields a review app writes |
+
+**Ratings are never faked.** The placeholder rating shown on the product page
+(Theme settings → Product page) is display-only and is never marked up. The
+`aggregateRating` field appears only once a reviews app has written real values,
+which is what Google's policy requires.
+
+### Fill in per product
+
+Structured data can only publish what the product record holds. For the best
+Merchant Center coverage, set on each product: **vendor** (brand), **product
+type** (category), and a **barcode** per variant (GTIN). Products without a GTIN
+still list, but match less well against Google's catalogue.
+
+### Verify
+
+After publishing, run a product URL through
+[Google's Rich Results Test](https://search.google.com/test/rich-results) and
+the [Schema Markup Validator](https://validator.schema.org/). In Merchant
+Center, check Products → Diagnostics for identifier or landing-page mismatches.
+
 ## Auto menu
 
 On by default. It renders Home, Shop (with a dropdown of the store's

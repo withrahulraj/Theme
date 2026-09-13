@@ -1,0 +1,95 @@
+{% comment %}
+  Organization markup, built from Settings → Store details and the theme's
+  Store information settings so it stays in step with the footer and contact
+  page. Google Merchant Center uses it to verify the seller behind the listings.
+
+  Usage:
+  {% render 'structured-data-organization' %}
+{% endcomment %}
+
+{%- liquid
+  assign sd_org_name = settings.store_name_override | default: shop.name
+
+  capture sd_org_phone
+    render 'store-info', field: 'phone'
+  endcapture
+  assign sd_org_phone = sd_org_phone | strip
+
+  capture sd_org_email
+    render 'store-info', field: 'email'
+  endcapture
+  assign sd_org_email = sd_org_email | strip
+
+  assign sd_org_street = shop.address.street | default: shop.address.address1
+  assign sd_org_has_address = false
+  if sd_org_street != blank and shop.address.city != blank
+    assign sd_org_has_address = true
+  endif
+
+  assign sd_social_links = settings.social_twitter_link | append: ',' | append: settings.social_facebook_link
+  assign sd_social_links = sd_social_links | append: ',' | append: settings.social_pinterest_link
+  assign sd_social_links = sd_social_links | append: ',' | append: settings.social_instagram_link
+  assign sd_social_links = sd_social_links | append: ',' | append: settings.social_tiktok_link
+  assign sd_social_links = sd_social_links | append: ',' | append: settings.social_youtube_link
+  assign sd_social_links = sd_social_links | append: ',' | append: settings.social_tumblr_link
+  assign sd_social_links = sd_social_links | append: ',' | append: settings.social_snapchat_link
+  assign sd_social_links = sd_social_links | append: ',' | append: settings.social_vimeo_link
+  assign sd_social_list = sd_social_links | split: ','
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": {{ request.origin | append: '/#organization' | json }},
+  "name": {{ sd_org_name | json }},
+  "url": {{ request.origin | append: routes.root_url | json }},
+  {%- if settings.logo != blank %}
+    "logo": {{ settings.logo | image_url: width: 500 | prepend: 'https:' | json }},
+  {%- endif %}
+  {%- if sd_org_email != blank %}
+    "email": {{ sd_org_email | json }},
+  {%- endif %}
+  {%- if sd_org_phone != blank %}
+    "telephone": {{ sd_org_phone | json }},
+  {%- endif %}
+  {%- if sd_org_has_address %}
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": {{ sd_org_street | json }},
+      "addressLocality": {{ shop.address.city | json }},
+      {%- if shop.address.province_code != blank %}
+        "addressRegion": {{ shop.address.province_code | json }},
+      {%- endif %}
+      {%- if shop.address.zip != blank %}
+        "postalCode": {{ shop.address.zip | json }},
+      {%- endif %}
+      "addressCountry": {{ shop.address.country_code | default: shop.address.country | json }}
+    },
+  {%- endif %}
+  {%- if sd_org_email != blank or sd_org_phone != blank %}
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      {%- if sd_org_email != blank %}
+        "email": {{ sd_org_email | json }},
+      {%- endif %}
+      {%- if sd_org_phone != blank %}
+        "telephone": {{ sd_org_phone | json }},
+      {%- endif %}
+      "availableLanguage": {{ request.locale.endonym_name | default: 'English' | json }}
+    },
+  {%- endif %}
+  "sameAs": [
+    {%- assign sd_social_rendered = 0 -%}
+    {%- for sd_link in sd_social_list -%}
+      {%- assign sd_link = sd_link | strip -%}
+      {%- if sd_link != blank -%}
+        {%- if sd_social_rendered > 0 %},{% endif -%}
+        {{ sd_link | json }}
+        {%- assign sd_social_rendered = sd_social_rendered | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>

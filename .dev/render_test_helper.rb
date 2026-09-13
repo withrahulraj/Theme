@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'liquid'
+require 'json'
 
 THEME = File.expand_path('..', __dir__)
 
@@ -20,6 +21,7 @@ module ShopifyFilters
   def t(key, _opts = {}) "[#{key}]" end
   def money(v) "$#{v}" end
   def handleize(s) s.to_s.downcase.gsub(/[^a-z0-9]+/, '-') end
+  def json(input) JSON.generate(input) end
 end
 Liquid::Template.register_filter(ShopifyFilters)
 
@@ -53,28 +55,20 @@ end
 Liquid::Template.file_system = ThemeFs.new
 
 # --- stub data ------------------------------------------------------------
+# Theme setting defaults come from settings_schema.json itself, so the stubs
+# cannot drift away from the real schema as settings are added.
+SCHEMA_DEFAULTS = begin
+  groups = JSON.parse(File.read(File.join(THEME, 'config', 'settings_schema.json')))
+  groups.flat_map { |g| g['settings'] || [] }
+        .select { |st| st['id'] }
+        .each_with_object({}) { |st, acc| acc[st['id']] = st['default'] }
+end.freeze
+
 def settings(overrides = {})
-  {
-    'store_name_override' => '', 'store_address_override' => '',
-    'store_phone_override' => '', 'store_email_override' => '',
-    'store_hours_days' => 'Monday – Friday', 'store_hours_time' => '10:00 AM – 6:00 PM EST',
-    'store_support_note' => 'We reply within 24 hours.', 'store_map_link' => '',
-    'nav_auto' => true, 'nav_home_label' => 'Home', 'nav_shop_label' => 'Shop',
-    'nav_shop_dropdown' => true, 'nav_shop_dropdown_limit' => 8,
-    'nav_track_label' => 'Track Your Order', 'nav_contact_label' => 'Contact Us',
-    'nav_about_label' => 'About Us', 'nav_show_policy' => true,
-    'nav_policy_label' => 'Return and Refund Policy',
-    'trust_free_shipping' => true, 'trust_free_shipping_label' => 'Free Shipping',
-    'trust_show_ships_by' => true, 'trust_lead_time_days' => 2, 'trust_returns_days' => 30,
-    'trust_tracking_text' => 'Our Products Are Carefully Packaged And Shipped.',
-    'trust_tracking_highlight' => 'Each Package Includes Tracking.',
-    'trust_tracking_provider_url' => '',
-    'show_payment_icons' => true,
-    'payment_icons_list' => 'amex, apple_pay, google_pay, mastercard, paypal, shop_pay, unionpay, visa, link, jcb',
-    'product_show_rating' => true, 'product_rating_value' => '4.7', 'product_rating_count' => '2,617+',
-    'product_show_stock' => true, 'product_stock_low_threshold' => 20,
-    'logo' => nil, 'menu_color_scheme' => 'scheme-1',
-  }.merge(overrides)
+  SCHEMA_DEFAULTS.merge(
+    'logo' => nil,
+    'menu_color_scheme' => 'scheme-1',
+  ).merge(overrides)
 end
 
 def shop(overrides = {})
@@ -93,7 +87,8 @@ def shop(overrides = {})
   }.merge(overrides)
 end
 
-ROUTES = { 'root_url' => '/', 'all_products_collection_url' => '/collections/all', 'account_url' => '/account' }
+ROUTES = { 'root_url' => '/', 'all_products_collection_url' => '/collections/all', 'account_url' => '/account',
+           'search_url' => '/search', 'collections_url' => '/collections' }
 
 def base_ctx(over = {})
   {
@@ -102,7 +97,9 @@ def base_ctx(over = {})
     'routes' => ROUTES,
     'pages' => over.delete('pages') || {},
     'collections' => over.delete('collections') || [],
-    'request' => { 'path' => '/', 'page_type' => 'index' },
+    'request' => { 'path' => '/', 'page_type' => 'index', 'origin' => 'https://lumen.test',
+                   'locale' => { 'endonym_name' => 'English' } },
+    'cart' => { 'currency' => { 'iso_code' => 'USD' } },
     'section' => { 'id' => 'sec1', 'settings' => { 'menu_color_scheme' => 'scheme-1' }, 'blocks' => [] },
   }.merge(over)
 end

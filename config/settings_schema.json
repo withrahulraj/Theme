@@ -312,6 +312,180 @@
     ]
   },
   {
+    "name": "Structured data (Google)",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Builds the Product, Organization, Breadcrumb and ItemList markup that Google Merchant Center and free listings read. These values are published to Google, so they must match your real shipping and returns policy — Merchant Center suspends accounts over markup that contradicts the store."
+      },
+      {
+        "type": "checkbox",
+        "id": "sd_enabled",
+        "label": "Output structured data",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Product"
+      },
+      {
+        "type": "select",
+        "id": "sd_condition",
+        "label": "Item condition",
+        "options": [
+          {
+            "value": "NewCondition",
+            "label": "New"
+          },
+          {
+            "value": "UsedCondition",
+            "label": "Used"
+          },
+          {
+            "value": "RefurbishedCondition",
+            "label": "Refurbished"
+          },
+          {
+            "value": "DamagedCondition",
+            "label": "Damaged"
+          }
+        ],
+        "default": "NewCondition"
+      },
+      {
+        "type": "text",
+        "id": "sd_brand_fallback",
+        "label": "Brand fallback",
+        "info": "Used when a product has no vendor set. Leave blank to use the store name."
+      },
+      {
+        "type": "checkbox",
+        "id": "sd_ratings_enabled",
+        "label": "Include review ratings",
+        "default": true,
+        "info": "Only published when a reviews app has written real ratings to the product. The placeholder rating shown on the page is never marked up."
+      },
+      {
+        "type": "header",
+        "content": "Shipping details"
+      },
+      {
+        "type": "checkbox",
+        "id": "sd_shipping_enabled",
+        "label": "Include shipping details",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sd_shipping_rate",
+        "label": "Shipping rate",
+        "default": "0",
+        "info": "In your store currency. 0 for free shipping."
+      },
+      {
+        "type": "text",
+        "id": "sd_shipping_countries",
+        "label": "Ships to",
+        "default": "US, CA, GB, AU",
+        "info": "Comma separated two-letter country codes. Must match the countries your shipping profile actually covers."
+      },
+      {
+        "type": "range",
+        "id": "sd_handling_min",
+        "label": "Handling time, fastest",
+        "min": 0,
+        "max": 14,
+        "step": 1,
+        "unit": "d",
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "sd_handling_max",
+        "label": "Handling time, slowest",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": "d",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "sd_transit_min",
+        "label": "Transit time, fastest",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": "d",
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "sd_transit_max",
+        "label": "Transit time, slowest",
+        "min": 0,
+        "max": 60,
+        "step": 1,
+        "unit": "d",
+        "default": 9
+      },
+      {
+        "type": "header",
+        "content": "Return policy"
+      },
+      {
+        "type": "checkbox",
+        "id": "sd_returns_enabled",
+        "label": "Include return policy",
+        "default": true,
+        "info": "The returns window comes from Theme settings → Shipping, returns & trust."
+      },
+      {
+        "type": "select",
+        "id": "sd_return_method",
+        "label": "Return method",
+        "options": [
+          {
+            "value": "ReturnByMail",
+            "label": "By mail"
+          },
+          {
+            "value": "ReturnInStore",
+            "label": "In store"
+          },
+          {
+            "value": "ReturnAtKiosk",
+            "label": "At a kiosk"
+          }
+        ],
+        "default": "ReturnByMail"
+      },
+      {
+        "type": "select",
+        "id": "sd_return_fees",
+        "label": "Return shipping cost",
+        "options": [
+          {
+            "value": "FreeReturn",
+            "label": "Free returns"
+          },
+          {
+            "value": "ReturnShippingFees",
+            "label": "Customer pays return shipping"
+          }
+        ],
+        "default": "FreeReturn"
+      },
+      {
+        "type": "text",
+        "id": "sd_return_fee_amount",
+        "label": "Return shipping fee",
+        "default": "0",
+        "info": "Only used when the customer pays return shipping."
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.logo.name",
     "settings": [
       {

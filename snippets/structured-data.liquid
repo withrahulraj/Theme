@@ -1,0 +1,46 @@
+{% comment %}
+  Single entry point for the theme's structured data. Rendered once from
+  layout/theme.liquid so every template gets consistent markup and nothing is
+  emitted twice — duplicate Product entities are a common cause of Merchant
+  Center disapprovals.
+
+  Usage:
+  {% render 'structured-data' %}
+{% endcomment %}
+
+{%- if settings.sd_enabled -%}
+  {%- render 'structured-data-organization' -%}
+
+  {%- if request.page_type == 'index' -%}
+    {%- assign sd_search_target = request.origin | append: routes.search_url | append: '?q={search_term_string}' -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": {{ request.origin | append: '/#website' | json }},
+      "name": {{ shop.name | json }},
+      "url": {{ request.origin | append: routes.root_url | json }},
+      "publisher": {
+        "@id": {{ request.origin | append: '/#organization' | json }}
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": {{ sd_search_target | json }}
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+  {%- endif -%}
+
+  {%- render 'structured-data-breadcrumbs' -%}
+
+  {%- case request.page_type -%}
+    {%- when 'product' -%}
+      {%- render 'structured-data-product', product: product -%}
+    {%- when 'collection' -%}
+      {%- render 'structured-data-collection' -%}
+  {%- endcase -%}
+{%- endif -%}

@@ -1,0 +1,30 @@
+{% comment %}
+  ItemList markup for collection pages, so Google can read the products a
+  category page links to rather than guessing from the HTML.
+
+  Usage:
+  {% render 'structured-data-collection' %}
+{% endcomment %}
+
+{%- if collection.products.size > 0 -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": {{ request.origin | append: collection.url | append: '#itemlist' | json }},
+    "name": {{ collection.title | json }},
+    "url": {{ request.origin | append: collection.url | json }},
+    "numberOfItems": {{ collection.products.size }},
+    "itemListElement": [
+      {%- for sd_product in collection.products limit: 30 -%}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.index }},
+          "url": {{ request.origin | append: sd_product.url | json }},
+          "name": {{ sd_product.title | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+{%- endif -%}
