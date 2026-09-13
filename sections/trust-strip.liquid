@@ -1,0 +1,194 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="trust-strip color-{{ section.settings.color_scheme }} gradient{% if section.settings.layout == 'inline' %} trust-strip--inline{% endif %}">
+  <div class="page-width section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="trust-strip__heading {{ section.settings.heading_size }} center">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="trust-strip__grid trust-strip__grid--{{ section.blocks.size }}">
+      {%- for block in section.blocks -%}
+        <div class="trust-strip__item" {{ block.shopify_attributes }}>
+          <span class="trust-strip__icon" aria-hidden="true">
+            {%- render 'universal-icon', icon: block.settings.icon, size: 22 -%}
+          </span>
+          <div>
+            <h3 class="trust-strip__title">{{ block.settings.title | escape }}</h3>
+            {%- if block.settings.text != blank -%}
+              <p class="trust-strip__text">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.show_payment_icons -%}
+      <div class="trust-strip__payments center" style="margin-top: 2.8rem;">
+        {%- render 'payment-icons', size: 'small', class: 'payment-icons--centered' -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .payment-icons--centered {
+    justify-content: center;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Trust strip",
+  "tag": "section",
+  "class": "trust-strip-section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h3", "label": "Small" },
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "stacked", "label": "Icon above text" },
+        { "value": "inline", "label": "Icon beside text" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show payment icons",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "truck", "label": "Shipping" },
+            { "value": "refresh", "label": "Returns" },
+            { "value": "shield", "label": "Secure" },
+            { "value": "box", "label": "Packaging" },
+            { "value": "headset", "label": "Support" },
+            { "value": "bulb", "label": "Lighting" },
+            { "value": "leaf", "label": "Energy saving" },
+            { "value": "spark", "label": "Quality" },
+            { "value": "check", "label": "Check" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Free shipping"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "On every order, with tracking included."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust strip",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping",
+            "text": "On every order, tracking included."
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "30-day returns",
+            "text": "Not the right glow? Send it back."
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "Secure checkout",
+            "text": "Encrypted payments, every time."
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "title": "Real support",
+            "text": "Mon–Fri, answered within 24 hours."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

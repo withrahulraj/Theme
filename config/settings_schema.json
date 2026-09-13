@@ -8,6 +8,310 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "Store information",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "These details are pulled automatically from Settings → Store details. Update them there once and they change across the footer, contact page and tracking page. Fill a field below only if you want to override the store setting for this theme."
+      },
+      {
+        "type": "text",
+        "id": "store_name_override",
+        "label": "Store name (override)",
+        "info": "Leave blank to use your Shopify store name."
+      },
+      {
+        "type": "textarea",
+        "id": "store_address_override",
+        "label": "Address (override)",
+        "info": "Leave blank to use the address in Settings → Store details."
+      },
+      {
+        "type": "text",
+        "id": "store_phone_override",
+        "label": "Phone number (override)"
+      },
+      {
+        "type": "text",
+        "id": "store_email_override",
+        "label": "Support email (override)"
+      },
+      {
+        "type": "header",
+        "content": "Working hours"
+      },
+      {
+        "type": "text",
+        "id": "store_hours_days",
+        "label": "Working days",
+        "default": "Monday – Friday"
+      },
+      {
+        "type": "text",
+        "id": "store_hours_time",
+        "label": "Working hours",
+        "default": "10:00 AM – 6:00 PM EST"
+      },
+      {
+        "type": "text",
+        "id": "store_support_note",
+        "label": "Support note",
+        "default": "We reply to every email within 24 hours."
+      },
+      {
+        "type": "header",
+        "content": "Map"
+      },
+      {
+        "type": "text",
+        "id": "store_map_link",
+        "label": "Map link",
+        "info": "Leave blank to auto-build a Google Maps link from your store address."
+      }
+    ]
+  },
+  {
+    "name": "Navigation (auto menu)",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The auto menu builds itself on any store, with no navigation setup required. Turn it off to use the menu chosen in the header section instead."
+      },
+      {
+        "type": "checkbox",
+        "id": "nav_auto",
+        "label": "Use the automatic menu",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Home"
+      },
+      {
+        "type": "text",
+        "id": "nav_home_label",
+        "label": "Label",
+        "default": "Home"
+      },
+      {
+        "type": "header",
+        "content": "Shop"
+      },
+      {
+        "type": "text",
+        "id": "nav_shop_label",
+        "label": "Label",
+        "default": "Shop"
+      },
+      {
+        "type": "checkbox",
+        "id": "nav_shop_dropdown",
+        "label": "Show collections in a dropdown",
+        "default": true,
+        "info": "Collections are listed automatically — no manual links needed."
+      },
+      {
+        "type": "range",
+        "id": "nav_shop_dropdown_limit",
+        "label": "Collections to list",
+        "min": 3,
+        "max": 20,
+        "step": 1,
+        "default": 8
+      },
+      {
+        "type": "header",
+        "content": "Track order"
+      },
+      {
+        "type": "text",
+        "id": "nav_track_label",
+        "label": "Label",
+        "default": "Track Your Order"
+      },
+      {
+        "type": "header",
+        "content": "Contact"
+      },
+      {
+        "type": "text",
+        "id": "nav_contact_label",
+        "label": "Label",
+        "default": "Contact Us"
+      },
+      {
+        "type": "header",
+        "content": "About"
+      },
+      {
+        "type": "text",
+        "id": "nav_about_label",
+        "label": "Label",
+        "default": "About Us"
+      },
+      {
+        "type": "header",
+        "content": "Extra link"
+      },
+      {
+        "type": "checkbox",
+        "id": "nav_show_policy",
+        "label": "Add \"Return and Refund Policy\"",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "nav_policy_label",
+        "label": "Label",
+        "default": "Return and Refund Policy"
+      }
+    ]
+  },
+  {
+    "name": "Shipping, returns & trust",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Shipping"
+      },
+      {
+        "type": "checkbox",
+        "id": "trust_free_shipping",
+        "label": "Advertise free shipping",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "trust_free_shipping_label",
+        "label": "Free shipping label",
+        "default": "Free Shipping"
+      },
+      {
+        "type": "checkbox",
+        "id": "trust_show_ships_by",
+        "label": "Show a \"Ships by\" date on products",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "trust_lead_time_days",
+        "label": "Handling + transit time (days)",
+        "min": 1,
+        "max": 30,
+        "step": 1,
+        "default": 2,
+        "info": "Used to calculate the \"Ships by\" date shown on the product page."
+      },
+      {
+        "type": "header",
+        "content": "Returns"
+      },
+      {
+        "type": "range",
+        "id": "trust_returns_days",
+        "label": "Returns window (days)",
+        "min": 7,
+        "max": 90,
+        "step": 1,
+        "default": 30
+      },
+      {
+        "type": "header",
+        "content": "Tracking"
+      },
+      {
+        "type": "text",
+        "id": "trust_tracking_text",
+        "label": "Tracking note",
+        "default": "Our Products Are Carefully Packaged And Shipped."
+      },
+      {
+        "type": "text",
+        "id": "trust_tracking_highlight",
+        "label": "Tracking note highlight",
+        "default": "Each Package Includes Tracking."
+      },
+      {
+        "type": "text",
+        "id": "trust_tracking_provider_url",
+        "label": "Tracking lookup URL",
+        "info": "Optional. Leave blank to use Shopify's own order lookup on the tracking page."
+      },
+      {
+        "type": "header",
+        "content": "Payment icons"
+      },
+      {
+        "type": "paragraph",
+        "content": "These icons always render, even before a payment provider is activated on the store."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_payment_icons",
+        "label": "Show payment icons",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "payment_icons_list",
+        "label": "Icons to show",
+        "default": "amex, apple_pay, google_pay, mastercard, paypal, shop_pay, unionpay, visa, link, jcb",
+        "info": "Comma separated. Available: amex, apple_pay, google_pay, mastercard, paypal, shop_pay, unionpay, visa, link, jcb, discover, diners, maestro, klarna, afterpay, amazon, bancontact, ideal, sofort, elo, venmo."
+      }
+    ]
+  },
+  {
+    "name": "Product page",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Rating"
+      },
+      {
+        "type": "paragraph",
+        "content": "Real review data is used when a reviews app is installed. These values are the fallback so the rating line never renders empty."
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_rating",
+        "label": "Show the rating line",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "product_rating_value",
+        "label": "Fallback rating",
+        "default": "4.7"
+      },
+      {
+        "type": "text",
+        "id": "product_rating_count",
+        "label": "Fallback review count",
+        "default": "2,617+"
+      },
+      {
+        "type": "header",
+        "content": "Stock urgency"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_stock",
+        "label": "Show a stock status line",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "product_stock_low_threshold",
+        "label": "\"Almost sold out\" below",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "default": 20,
+        "unit": "qty"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.logo.name",
     "settings": [
       {

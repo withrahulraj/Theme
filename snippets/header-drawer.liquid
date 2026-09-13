@@ -24,6 +24,9 @@
       <div class="menu-drawer__inner-container">
         <div class="menu-drawer__navigation-container">
           <nav class="menu-drawer__navigation">
+            {%- if settings.nav_auto -%}
+              {% render 'auto-menu-drawer' %}
+            {%- else -%}
             <ul class="menu-drawer__menu has-submenu list-menu" role="list">
               {%- for link in section.settings.menu.links -%}
                 <li>
@@ -138,6 +141,7 @@
                 </li>
               {%- endfor -%}
             </ul>
+            {%- endif -%}
           </nav>
           <div class="menu-drawer__utility-links">
             {%- if show_country_selector or show_language_selector -%}

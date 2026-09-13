@@ -1,0 +1,240 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    <div class="info-media info-media--image-{{ section.settings.image_position }}">
+      <div class="info-media__media">
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 1600
+            | image_tag:
+              loading: 'lazy',
+              sizes: '(min-width: 750px) 50vw, 100vw',
+              widths: '400, 600, 800, 1000, 1200, 1600',
+              alt: section.settings.image.alt
+          }}
+        {%- else -%}
+          <div class="info-media__placeholder">
+            {{ 'detailed-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="info-media__content">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="info-media__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="info-media__heading {{ section.settings.heading_size }}">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.text != blank -%}
+          <div class="info-media__text rte">{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+          <ul class="info-media__list" role="list">
+            {%- for block in section.blocks -%}
+              <li class="info-media__list-item" {{ block.shopify_attributes }}>
+                <span class="info-media__list-icon" aria-hidden="true">
+                  {%- render 'universal-icon', icon: block.settings.icon, size: 18 -%}
+                </span>
+                <span>
+                  <strong>{{ block.settings.title | escape }}</strong>
+                  {%- if block.settings.text != blank %} — {{ block.settings.text | escape }}{% endif -%}
+                </span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        {%- if section.settings.button_label != blank -%}
+          <div class="info-media__buttons">
+            <a
+              href="{{ section.settings.button_link | default: routes.all_products_collection_url }}"
+              class="button button--primary"
+            >
+              {{ section.settings.button_label | escape }}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Info with image",
+  "tag": "section",
+  "class": "info-with-image-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Why our lighting"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Warm, diffused light — not a harsh bulb in a shade"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" },
+        { "value": "h0", "label": "Extra large" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Every lamp we ship is built around the quality of the light it throws. Frosted, seamless shades soften the output so a room reads calm instead of clinical, and dimmable LEDs let you tune the mood from a working brightness down to a low evening glow.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Explore the collection"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Point",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "check", "label": "Check" },
+            { "value": "bulb", "label": "Lighting" },
+            { "value": "leaf", "label": "Energy saving" },
+            { "value": "spark", "label": "Quality" },
+            { "value": "shield", "label": "Secure" },
+            { "value": "truck", "label": "Shipping" },
+            { "value": "refresh", "label": "Returns" }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Dimmable"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Tune from task-bright to evening-low."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Info with image",
+      "blocks": [
+        {
+          "type": "point",
+          "settings": {
+            "icon": "bulb",
+            "title": "Dimmable warm LED",
+            "text": "2700K–4000K, tuned by touch or remote."
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "icon": "leaf",
+            "title": "Low draw",
+            "text": "Up to 85% less energy than incandescent."
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "icon": "spark",
+            "title": "Seamless shades",
+            "text": "No visible joints, no hot spots in the glow."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,94 @@
+{% comment %}
+  Renders the mobile drawer auto menu. Mirrors Dawn's menu-drawer markup so the
+  existing drawer JS, focus trapping and submenu animation all keep working.
+
+  Usage:
+  {% render 'auto-menu-drawer' %}
+{% endcomment %}
+
+{%- capture nav_records %}{% render 'auto-menu-links' %}{% endcapture -%}
+{%- assign nav_items = nav_records | split: '||' -%}
+
+<ul class="menu-drawer__menu has-submenu list-menu" role="list">
+  {%- for nav_item in nav_items -%}
+    {%- liquid
+      assign parts = nav_item | split: '^^'
+      assign label = parts[0]
+      assign url = parts[1]
+      assign kind = parts[2]
+      assign is_current = false
+      if url == request.path
+        assign is_current = true
+      endif
+    -%}
+    <li>
+      {%- if kind == 'shop' and settings.nav_shop_dropdown and collections.size > 0 -%}
+        <details id="Details-menu-drawer-auto-{{ forloop.index }}">
+          <summary
+            id="HeaderDrawer-auto-shop"
+            class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if request.page_type == 'collection' %} menu-drawer__menu-item--active{% endif %}"
+          >
+            {{ label | escape }}
+            <span class="svg-wrapper">
+              {{- 'icon-arrow.svg' | inline_asset_content -}}
+            </span>
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </summary>
+          <div
+            id="link-auto-shop"
+            class="menu-drawer__submenu has-submenu gradient motion-reduce"
+            tabindex="-1"
+          >
+            <div class="menu-drawer__inner-submenu">
+              <button class="menu-drawer__close-button link link--text focus-inset" aria-expanded="true">
+                <span class="svg-wrapper">
+                  {{- 'icon-arrow.svg' | inline_asset_content -}}
+                </span>
+                {{ label | escape }}
+              </button>
+              <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
+                <li>
+                  <a
+                    href="{{ url }}"
+                    class="menu-drawer__menu-item link link--text list-menu__item focus-inset"
+                  >
+                    {{ 'universal.nav.all_products' | t }}
+                  </a>
+                </li>
+                {%- assign collection_limit = settings.nav_shop_dropdown_limit | default: 8 -%}
+                {%- for collection in collections limit: collection_limit -%}
+                  {%- if collection.all_products_count > 0 or collection.handle == 'all' -%}
+                    <li>
+                      <a
+                        href="{{ collection.url }}"
+                        class="menu-drawer__menu-item link link--text list-menu__item focus-inset{% if request.path == collection.url %} menu-drawer__menu-item--active{% endif %}"
+                        {% if request.path == collection.url %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{ collection.title | escape }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+          </div>
+        </details>
+      {%- else -%}
+        <a
+          id="HeaderDrawer-auto-{{ forloop.index }}"
+          href="{{ url }}"
+          class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if is_current %} menu-drawer__menu-item--active{% endif %}"
+          {% if is_current %}
+            aria-current="page"
+          {% endif %}
+        >
+          {{ label | escape }}
+        </a>
+      {%- endif -%}
+    </li>
+  {%- endfor -%}
+</ul>

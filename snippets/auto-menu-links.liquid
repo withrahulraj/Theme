@@ -1,0 +1,59 @@
+{% doc %}
+  Resolves every auto-menu destination on the current store and prints them as a
+  pipe separated string of `label^^url^^kind` records, so both the desktop menu
+  and the mobile drawer build from one source of truth.
+
+  `kind` is either `link` or `shop` (the entry that carries the collection
+  dropdown). Capture the output and split it on `||`.
+
+  @example
+  {% capture nav_records %}{% render 'auto-menu-links' %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  capture track_url
+    render 'resolve-url',
+      handles: 'track-order,track-your-order,order-tracking,tracking,track-my-order',
+      fallback: '/pages/track-order'
+  endcapture
+
+  capture contact_url
+    render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
+  endcapture
+
+  capture about_url
+    render 'resolve-url', handles: 'about-us,about,our-story,who-we-are', fallback: '/pages/about-us'
+  endcapture
+
+  assign policy_url = shop.policies.refund_policy.url
+  if policy_url == blank
+    capture policy_url
+      render 'resolve-url',
+        handles: 'refund-policy,return-policy,returns,return-and-refund-policy',
+        fallback: '/policies/refund-policy'
+    endcapture
+  endif
+
+  assign home_label = settings.nav_home_label | default: 'Home'
+  assign shop_label = settings.nav_shop_label | default: 'Shop'
+  assign track_label = settings.nav_track_label | default: 'Track Your Order'
+  assign contact_label = settings.nav_contact_label | default: 'Contact Us'
+  assign about_label = settings.nav_about_label | default: 'About Us'
+  assign policy_label = settings.nav_policy_label | default: 'Return and Refund Policy'
+
+  assign records = ''
+  assign records = records | append: home_label | append: '^^' | append: routes.root_url | append: '^^link'
+  assign records = records
+    | append: '||'
+    | append: shop_label
+    | append: '^^'
+    | append: routes.all_products_collection_url
+    | append: '^^shop'
+  assign records = records | append: '||' | append: about_label | append: '^^' | append: about_url | append: '^^link'
+  assign records = records | append: '||' | append: contact_label | append: '^^' | append: contact_url | append: '^^link'
+  assign records = records | append: '||' | append: track_label | append: '^^' | append: track_url | append: '^^link'
+
+  if settings.nav_show_policy and policy_url != blank
+    assign records = records | append: '||' | append: policy_label | append: '^^' | append: policy_url | append: '^^link'
+  endif
+-%}
+{{- records -}}

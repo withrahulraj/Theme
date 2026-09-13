@@ -1,0 +1,33 @@
+{% doc %}
+  Outputs the first URL that actually exists on the store for a list of candidate
+  page handles, so links work on any store without manual setup.
+
+  Capture the result — this snippet prints a bare URL string.
+
+  @param {string} handles - Comma separated page handles to look for, in priority order.
+  @param {string} fallback - URL printed when none of the handles exist.
+
+  @example
+  {% capture contact_url %}
+    {% render 'resolve-url', handles: 'contact,contact-us', fallback: '/pages/contact' %}
+  {% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign resolved = ''
+  assign candidates = handles | split: ','
+
+  for candidate in candidates
+    assign candidate_handle = candidate | strip
+    assign candidate_page = pages[candidate_handle]
+
+    if candidate_page.handle != blank
+      assign resolved = candidate_page.url
+      break
+    endif
+  endfor
+
+  if resolved == blank
+    assign resolved = fallback
+  endif
+-%}
+{{- resolved -}}

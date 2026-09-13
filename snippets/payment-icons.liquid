@@ -1,0 +1,130 @@
+{% doc %}
+  Renders payment badges from the theme's own list rather than from
+  `shop.enabled_payment_types`, so the row is never empty on a store that has
+  not finished activating a payment provider yet.
+
+  Shopify's own artwork is used when the platform recognises the payment type;
+  a neutral wordmark badge is drawn as a fallback so nothing renders blank.
+
+  @param {string} [list] - Comma separated icon keys. Defaults to the theme setting.
+  @param {string} [class] - Extra class for the wrapping list.
+  @param {string} [size] - 'small' or 'default'.
+
+  @example
+  {% render 'payment-icons', size: 'small' %}
+{% enddoc %}
+
+{%- liquid
+  assign icon_list = list | default: settings.payment_icons_list
+  assign icon_keys = icon_list | split: ','
+-%}
+
+{%- if settings.show_payment_icons and icon_keys.size > 0 -%}
+  <ul class="payment-icons {% if size == 'small' %}payment-icons--small{% endif %} {{ class }}" role="list">
+    {%- for icon_key in icon_keys -%}
+      {%- liquid
+        assign key = icon_key | strip | downcase | replace: '-', '_'
+        assign shopify_type = ''
+        assign label = ''
+
+        case key
+          when 'visa'
+            assign shopify_type = 'visa'
+            assign label = 'Visa'
+          when 'master', 'mastercard'
+            assign shopify_type = 'master'
+            assign label = 'Mastercard'
+          when 'amex', 'american_express'
+            assign shopify_type = 'american_express'
+            assign label = 'American Express'
+          when 'paypal'
+            assign shopify_type = 'paypal'
+            assign label = 'PayPal'
+          when 'shop_pay', 'shopify_pay'
+            assign shopify_type = 'shopify_pay'
+            assign label = 'Shop Pay'
+          when 'apple_pay'
+            assign shopify_type = 'apple_pay'
+            assign label = 'Apple Pay'
+          when 'google_pay'
+            assign shopify_type = 'google_pay'
+            assign label = 'Google Pay'
+          when 'unionpay'
+            assign shopify_type = 'unionpay'
+            assign label = 'UnionPay'
+          when 'jcb'
+            assign shopify_type = 'jcb'
+            assign label = 'JCB'
+          when 'discover'
+            assign shopify_type = 'discover'
+            assign label = 'Discover'
+          when 'diners', 'diners_club'
+            assign shopify_type = 'diners_club'
+            assign label = 'Diners Club'
+          when 'maestro'
+            assign shopify_type = 'maestro'
+            assign label = 'Maestro'
+          when 'elo'
+            assign shopify_type = 'elo'
+            assign label = 'Elo'
+          when 'klarna'
+            assign shopify_type = 'klarna'
+            assign label = 'Klarna'
+          when 'afterpay'
+            assign shopify_type = 'afterpay'
+            assign label = 'Afterpay'
+          when 'amazon'
+            assign shopify_type = 'amazon'
+            assign label = 'Amazon Pay'
+          when 'bancontact'
+            assign shopify_type = 'bancontact'
+            assign label = 'Bancontact'
+          when 'ideal'
+            assign shopify_type = 'ideal'
+            assign label = 'iDEAL'
+          when 'sofort'
+            assign shopify_type = 'sofort'
+            assign label = 'Sofort'
+          when 'venmo'
+            assign shopify_type = 'venmo'
+            assign label = 'Venmo'
+          when 'link'
+            assign label = 'Link'
+          else
+            assign shopify_type = key
+            assign label = key | replace: '_', ' ' | capitalize
+        endcase
+      -%}
+
+      {%- capture shopify_icon -%}
+        {%- if shopify_type != blank -%}{{ shopify_type | payment_type_svg_tag: class: 'payment-icons__svg' }}{%- endif -%}
+      {%- endcapture -%}
+
+      <li class="payment-icons__item">
+        {%- if shopify_icon contains '<svg' -%}
+          {{ shopify_icon }}
+        {%- elsif key == 'link' -%}
+          <svg class="payment-icons__svg" viewBox="0 0 38 24" role="img" aria-hidden="true" focusable="false">
+            <rect width="38" height="24" rx="4" fill="#B7F6D5"/>
+            <path d="M14.4 8.6 12 11l2.4 2.4M17 8.6 19.4 11 17 13.4" fill="none" stroke="#0B0B0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20.6 9.4h3.2a2.6 2.6 0 0 1 0 5.2h-3.2" fill="none" stroke="#0B0B0B" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        {%- else -%}
+          <svg class="payment-icons__svg payment-icons__svg--fallback" viewBox="0 0 38 24" role="img" aria-hidden="true" focusable="false">
+            <rect x="0.5" y="0.5" width="37" height="23" rx="3.5" fill="#ffffff" stroke="#D9D9D9"/>
+            <text
+              x="19"
+              y="15"
+              text-anchor="middle"
+              font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+              font-size="6.5"
+              font-weight="700"
+              fill="#1A1A1A"
+            >{{ label | truncate: 10, '' | upcase }}</text>
+          </svg>
+        {%- endif -%}
+        <span class="visually-hidden">{{ label }}</span>
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

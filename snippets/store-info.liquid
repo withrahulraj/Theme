@@ -1,0 +1,69 @@
+{% doc %}
+  Outputs one piece of store information, preferring the theme override and
+  falling back to Settings → Store details. Update the store settings once and
+  every place that renders this snippet follows.
+
+  Capture the result — this snippet prints a bare value with no markup.
+
+  @param {string} field - One of: name, address, address_inline, street, city, region, phone, phone_href, email, map.
+
+  @example
+  {% capture store_phone %}{% render 'store-info', field: 'phone' %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign value = ''
+
+  case field
+    when 'name'
+      assign value = settings.store_name_override | default: shop.name
+
+    when 'address'
+      if settings.store_address_override != blank
+        assign value = settings.store_address_override
+      else
+        assign value = shop.address.summary
+      endif
+
+    when 'address_inline'
+      if settings.store_address_override != blank
+        assign value = settings.store_address_override | newline_to_br | strip_newlines | replace: '<br />', ', '
+      else
+        assign value = shop.address.summary
+      endif
+
+    when 'street'
+      assign value = shop.address.street
+
+    when 'city'
+      assign value = shop.address.city
+
+    when 'region'
+      assign region_parts = shop.address.province_code | append: ' ' | append: shop.address.zip
+      assign value = region_parts | strip
+
+    when 'phone'
+      assign value = settings.store_phone_override | default: shop.phone
+
+    when 'phone_href'
+      assign raw_phone = settings.store_phone_override | default: shop.phone
+      assign value = raw_phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' | remove: '.'
+
+    when 'email'
+      assign value = settings.store_email_override | default: shop.email
+
+    when 'map'
+      if settings.store_map_link != blank
+        assign value = settings.store_map_link
+      else
+        if settings.store_address_override != blank
+          assign map_query = settings.store_address_override | strip_newlines
+        else
+          assign map_query = shop.address.summary
+        endif
+        if map_query != blank
+          assign value = map_query | url_encode | prepend: 'https://maps.google.com/?q='
+        endif
+      endif
+  endcase
+-%}
+{{- value -}}

@@ -1,0 +1,294 @@
+{%- liquid
+  capture contact_url
+    render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
+  endcapture
+  assign contact_url = contact_url | strip
+
+  capture store_email
+    render 'store-info', field: 'email'
+  endcapture
+  assign store_email = store_email | strip
+
+  assign provider_url = section.settings.tracking_provider_url | default: settings.trust_tracking_provider_url
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    <div class="order-lookup">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="{{ section.settings.heading_size }} center">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="order-lookup__note center" style="font-size: 1.5rem; opacity: 0.85;">
+          {{ section.settings.subheading }}
+        </p>
+      {%- endif -%}
+
+      {%- if provider_url != blank -%}
+        <order-tracking-form data-provider="{{ provider_url | escape }}" style="display: block; margin-top: 2.8rem;">
+          <form class="order-lookup__form" novalidate>
+            <div class="field">
+              <input
+                id="OrderTracking-number-{{ section.id }}"
+                class="field__input"
+                type="text"
+                name="tracking_number"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="{{ section.settings.input_label | escape }}"
+                required
+              >
+              <label class="field__label" for="OrderTracking-number-{{ section.id }}">
+                {{ section.settings.input_label | escape }}
+              </label>
+            </div>
+            <button type="submit" class="button button--primary">
+              {{ section.settings.button_label | escape }}
+            </button>
+          </form>
+          <p class="order-lookup__note" data-tracking-error hidden>{{ section.settings.error_text | escape }}</p>
+        </order-tracking-form>
+      {%- endif -%}
+
+      <div class="order-lookup__actions" style="margin-top: 2.4rem; display: flex; flex-wrap: wrap; gap: 1.2rem;">
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{{ routes.account_url }}" class="button button--secondary">
+            {{ section.settings.account_button_label | escape }}
+          </a>
+        {%- endif -%}
+        <a href="{{ contact_url }}" class="button button--secondary">
+          {{ section.settings.support_button_label | escape }}
+        </a>
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <ol class="order-lookup__steps order-lookup__steps--{{ section.blocks.size }}">
+          {%- for block in section.blocks -%}
+            <li class="order-lookup__step" {{ block.shopify_attributes }}>
+              <span>
+                <strong>{{ block.settings.title | escape }}</strong><br>
+                {{ block.settings.text | escape }}
+              </span>
+            </li>
+          {%- endfor -%}
+        </ol>
+      {%- endif -%}
+
+      {%- if section.settings.footnote != blank -%}
+        <div class="order-lookup__note rte">
+          {{ section.settings.footnote }}
+          {%- if store_email != blank %}
+            <a href="mailto:{{ store_email }}">{{ store_email }}</a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  if (!customElements.get('order-tracking-form')) {
+    customElements.define(
+      'order-tracking-form',
+      class OrderTrackingForm extends HTMLElement {
+        connectedCallback() {
+          this.form = this.querySelector('form');
+          this.input = this.querySelector('input[name="tracking_number"]');
+          this.error = this.querySelector('[data-tracking-error]');
+          if (!this.form) return;
+          this.form.addEventListener('submit', this.onSubmit.bind(this));
+        }
+
+        onSubmit(event) {
+          event.preventDefault();
+          const value = (this.input.value || '').trim();
+
+          if (!value) {
+            if (this.error) this.error.hidden = false;
+            this.input.focus();
+            return;
+          }
+
+          if (this.error) this.error.hidden = true;
+          const provider = this.dataset.provider;
+          window.open(provider + encodeURIComponent(value), '_blank', 'noopener');
+        }
+      }
+    );
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Order lookup",
+  "tag": "section",
+  "class": "order-lookup-section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Track your order"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" },
+        { "value": "h0", "label": "Extra large" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Enter the tracking number from your shipping confirmation email to see where your order is right now.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tracking form"
+    },
+    {
+      "type": "text",
+      "id": "tracking_provider_url",
+      "label": "Tracking lookup URL",
+      "default": "https://t.17track.net/en#nums=",
+      "info": "The tracking number is appended to this URL and opened in a new tab. Replace it with your tracking app's URL, or clear it to hide the form entirely."
+    },
+    {
+      "type": "text",
+      "id": "input_label",
+      "label": "Input label",
+      "default": "Tracking number"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Track my order"
+    },
+    {
+      "type": "text",
+      "id": "error_text",
+      "label": "Empty field message",
+      "default": "Enter the tracking number from your shipping confirmation email."
+    },
+    {
+      "type": "header",
+      "content": "Other actions"
+    },
+    {
+      "type": "text",
+      "id": "account_button_label",
+      "label": "Account button label",
+      "default": "View my orders",
+      "info": "Shown only when customer accounts are enabled on the store."
+    },
+    {
+      "type": "text",
+      "id": "support_button_label",
+      "label": "Support button label",
+      "default": "Contact support"
+    },
+    {
+      "type": "richtext",
+      "id": "footnote",
+      "label": "Footnote",
+      "default": "<p>Tracking can take 24–48 hours to update after your order ships. Still stuck? Email us at</p>"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Order placed"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "You get a confirmation email straight away."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Order lookup",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Order placed",
+            "text": "A confirmation email lands in your inbox straight away."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Packed and shipped",
+            "text": "We send a tracking number as soon as it leaves us."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "On the way",
+            "text": "Track it here at any time until it reaches your door."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

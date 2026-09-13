@@ -1,0 +1,88 @@
+{% comment %}
+  Renders the desktop auto menu. Uses Dawn's own list-menu markup and classes so
+  it inherits the theme's styling, keyboard behaviour and <header-menu> JS.
+
+  Usage:
+  {% render 'auto-menu-desktop' %}
+{% endcomment %}
+
+{%- capture nav_records %}{% render 'auto-menu-links' %}{% endcapture -%}
+{%- assign nav_items = nav_records | split: '||' -%}
+
+<nav class="header__inline-menu">
+  <ul class="list-menu list-menu--inline" role="list">
+    {%- for nav_item in nav_items -%}
+      {%- liquid
+        assign parts = nav_item | split: '^^'
+        assign label = parts[0]
+        assign url = parts[1]
+        assign kind = parts[2]
+        assign is_current = false
+        if url == request.path
+          assign is_current = true
+        endif
+      -%}
+      <li>
+        {%- if kind == 'shop' and settings.nav_shop_dropdown and collections.size > 0 -%}
+          <header-menu>
+            <details id="Details-HeaderMenu-auto-{{ forloop.index }}">
+              <summary
+                id="HeaderMenu-auto-shop"
+                class="header__menu-item list-menu__item link focus-inset"
+              >
+                <span{% if request.page_type == 'collection' or request.page_type == 'product' %} class="header__active-menu-item"{% endif %}>
+                  {{- label | escape -}}
+                </span>
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </summary>
+              <ul
+                id="HeaderMenu-MenuList-auto-{{ forloop.index }}"
+                class="header__submenu list-menu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup"
+                role="list"
+                tabindex="-1"
+              >
+                <li>
+                  <a
+                    href="{{ url }}"
+                    class="header__menu-item list-menu__item link link--text focus-inset caption-large"
+                  >
+                    {{ 'universal.nav.all_products' | t }}
+                  </a>
+                </li>
+                {%- assign collection_limit = settings.nav_shop_dropdown_limit | default: 8 -%}
+                {%- for collection in collections limit: collection_limit -%}
+                  {%- if collection.all_products_count > 0 or collection.handle == 'all' -%}
+                    <li>
+                      <a
+                        href="{{ collection.url }}"
+                        class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if request.path == collection.url %} list-menu__item--active{% endif %}"
+                        {% if request.path == collection.url %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{ collection.title | escape }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </details>
+          </header-menu>
+        {%- else -%}
+          <a
+            id="HeaderMenu-auto-{{ forloop.index }}"
+            href="{{ url }}"
+            class="header__menu-item list-menu__item link link--text focus-inset"
+            {% if is_current %}
+              aria-current="page"
+            {% endif %}
+          >
+            <span{% if is_current %} class="header__active-menu-item"{% endif %}>
+              {{- label | escape -}}
+            </span>
+          </a>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>

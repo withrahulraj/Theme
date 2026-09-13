@@ -1,0 +1,529 @@
+{% comment %}theme-check-disable UndefinedObject{% endcomment %}
+{{ 'component-newsletter.css' | asset_url | stylesheet_tag }}
+{{ 'component-list-social.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign store_name = settings.store_name_override | default: shop.name
+
+  capture store_address
+    render 'store-info', field: 'address'
+  endcapture
+  assign store_address = store_address | strip
+
+  capture store_phone
+    render 'store-info', field: 'phone'
+  endcapture
+  assign store_phone = store_phone | strip
+
+  capture store_phone_href
+    render 'store-info', field: 'phone_href'
+  endcapture
+  assign store_phone_href = store_phone_href | strip
+
+  capture store_email
+    render 'store-info', field: 'email'
+  endcapture
+  assign store_email = store_email | strip
+
+  capture store_map
+    render 'store-info', field: 'map'
+  endcapture
+  assign store_map = store_map | strip
+
+  capture contact_url
+    render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
+  endcapture
+  assign contact_url = contact_url | strip
+
+  capture about_url
+    render 'resolve-url', handles: 'about-us,about,our-story,who-we-are', fallback: '/pages/about-us'
+  endcapture
+  assign about_url = about_url | strip
+
+  capture track_url
+    render 'resolve-url',
+      handles: 'track-order,track-your-order,order-tracking,tracking,track-my-order',
+      fallback: '/pages/track-order'
+  endcapture
+  assign track_url = track_url | strip
+
+  capture faq_url
+    render 'resolve-url', handles: 'faq,faqs,frequently-asked-questions,help', fallback: ''
+  endcapture
+  assign faq_url = faq_url | strip
+
+  capture payment_policy_url
+    render 'resolve-url', handles: 'payment-policy,payment-methods,payments', fallback: ''
+  endcapture
+  assign payment_policy_url = payment_policy_url | strip
+
+  assign has_social = false
+  if settings.social_facebook_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_tiktok_link != blank or settings.social_twitter_link != blank or settings.social_pinterest_link != blank or settings.social_snapchat_link != blank or settings.social_tumblr_link != blank or settings.social_vimeo_link != blank
+    assign has_social = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .store-footer {
+    margin-top: {{ section.settings.margin_top | times: 0.75 | round: 0 }}px;
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} .store-footer {
+      margin-top: {{ section.settings.margin_top }}px;
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<footer class="store-footer color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width">
+    <div class="store-footer__grid">
+      {%- comment -%} Column 1 — store details, straight from Settings → Store details {%- endcomment -%}
+      <div class="store-footer__column store-footer__column--store">
+        {%- if settings.logo != blank and section.settings.show_logo -%}
+          {%- assign logo_height = 90 | divided_by: settings.logo.aspect_ratio -%}
+          <a href="{{ routes.root_url }}" class="store-footer__logo-link">
+            {{
+              settings.logo
+              | image_url: width: 270
+              | image_tag:
+                loading: 'lazy',
+                width: 90,
+                height: logo_height,
+                class: 'store-footer__logo',
+                alt: store_name
+            }}
+          </a>
+        {%- else -%}
+          <h2 class="store-footer__heading store-footer__heading--store">{{ store_name }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.store_tagline != blank -%}
+          <p class="store-footer__tagline">{{ section.settings.store_tagline }}</p>
+        {%- endif -%}
+
+        <ul class="store-footer__details list-unstyled" role="list">
+          {%- if store_address != blank -%}
+            <li class="store-footer__detail">
+              <span class="store-footer__detail-icon" aria-hidden="true">
+                {%- render 'universal-icon', icon: 'pin' -%}
+              </span>
+              <span class="store-footer__detail-text">
+                {%- if store_map != blank -%}
+                  <a href="{{ store_map }}" target="_blank" rel="noopener" class="store-footer__link">
+                    {{- store_address | newline_to_br -}}
+                  </a>
+                {%- else -%}
+                  {{ store_address | newline_to_br }}
+                {%- endif -%}
+              </span>
+            </li>
+          {%- endif -%}
+
+          {%- if store_phone != blank -%}
+            <li class="store-footer__detail">
+              <span class="store-footer__detail-icon" aria-hidden="true">
+                {%- render 'universal-icon', icon: 'phone' -%}
+              </span>
+              <span class="store-footer__detail-text">
+                <a href="tel:{{ store_phone_href }}" class="store-footer__link">{{ store_phone }}</a>
+              </span>
+            </li>
+          {%- endif -%}
+
+          {%- if store_email != blank -%}
+            <li class="store-footer__detail">
+              <span class="store-footer__detail-icon" aria-hidden="true">
+                {%- render 'universal-icon', icon: 'mail' -%}
+              </span>
+              <span class="store-footer__detail-text">
+                <a href="mailto:{{ store_email }}" class="store-footer__link">{{ store_email }}</a>
+              </span>
+            </li>
+          {%- endif -%}
+
+          {%- if settings.store_hours_days != blank or settings.store_hours_time != blank -%}
+            <li class="store-footer__detail">
+              <span class="store-footer__detail-icon" aria-hidden="true">
+                {%- render 'universal-icon', icon: 'clock' -%}
+              </span>
+              <span class="store-footer__detail-text">
+                {%- if settings.store_hours_days != blank -%}
+                  <span class="store-footer__detail-strong">{{ settings.store_hours_days }}</span>
+                {%- endif -%}
+                {%- if settings.store_hours_time != blank -%}
+                  <br>{{ settings.store_hours_time }}
+                {%- endif -%}
+              </span>
+            </li>
+          {%- endif -%}
+        </ul>
+
+        {%- if settings.store_support_note != blank -%}
+          <p class="store-footer__support-note">{{ settings.store_support_note }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Column 2 — policies, auto-linked from the store's policy pages {%- endcomment -%}
+      <div class="store-footer__column">
+        <h2 class="store-footer__heading">{{ section.settings.policies_heading }}</h2>
+        <ul class="store-footer__links list-unstyled" role="list">
+          {%- if shop.policies.privacy_policy != blank -%}
+            <li>
+              <a href="{{ shop.policies.privacy_policy.url }}" class="store-footer__link">
+                {{- shop.policies.privacy_policy.title -}}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if payment_policy_url != blank -%}
+            <li>
+              <a href="{{ payment_policy_url }}" class="store-footer__link">{{ section.settings.payment_policy_label }}</a>
+            </li>
+          {%- endif -%}
+
+          {%- if shop.policies.shipping_policy != blank -%}
+            <li>
+              <a href="{{ shop.policies.shipping_policy.url }}" class="store-footer__link">
+                {{- shop.policies.shipping_policy.title -}}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if shop.policies.refund_policy != blank -%}
+            <li>
+              <a href="{{ shop.policies.refund_policy.url }}" class="store-footer__link">
+                {{- shop.policies.refund_policy.title -}}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if shop.policies.terms_of_service != blank -%}
+            <li>
+              <a href="{{ shop.policies.terms_of_service.url }}" class="store-footer__link">
+                {{- shop.policies.terms_of_service.title -}}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if shop.policies.subscription_policy != blank -%}
+            <li>
+              <a href="{{ shop.policies.subscription_policy.url }}" class="store-footer__link">
+                {{- shop.policies.subscription_policy.title -}}
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if shop.policies.privacy_policy == blank
+            and shop.policies.refund_policy == blank
+            and shop.policies.shipping_policy == blank
+            and shop.policies.terms_of_service == blank
+          -%}
+            <li class="store-footer__empty-note">{{ section.settings.policies_empty_note }}</li>
+          {%- endif -%}
+        </ul>
+      </div>
+
+      {%- comment -%} Column 3 — help centre {%- endcomment -%}
+      <div class="store-footer__column">
+        <h2 class="store-footer__heading">{{ section.settings.help_heading }}</h2>
+        <ul class="store-footer__links list-unstyled" role="list">
+          <li><a href="{{ contact_url }}" class="store-footer__link">{{ section.settings.help_contact_label }}</a></li>
+          <li><a href="{{ about_url }}" class="store-footer__link">{{ section.settings.help_about_label }}</a></li>
+          <li><a href="{{ track_url }}" class="store-footer__link">{{ section.settings.help_track_label }}</a></li>
+          {%- if faq_url != blank -%}
+            <li><a href="{{ faq_url }}" class="store-footer__link">{{ section.settings.help_faq_label }}</a></li>
+          {%- endif -%}
+          {%- if shop.customer_accounts_enabled -%}
+            <li>
+              <a href="{{ routes.account_url }}" class="store-footer__link">{{ section.settings.help_account_label }}</a>
+            </li>
+          {%- endif -%}
+          {%- if section.settings.help_extra_label != blank and section.settings.help_extra_link != blank -%}
+            <li>
+              <a href="{{ section.settings.help_extra_link }}" class="store-footer__link">
+                {{- section.settings.help_extra_label -}}
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      </div>
+
+      {%- comment -%} Column 4 — newsletter {%- endcomment -%}
+      <div class="store-footer__column store-footer__column--newsletter">
+        <h2 class="store-footer__heading">{{ section.settings.newsletter_heading }}</h2>
+        {%- if section.settings.newsletter_text != blank -%}
+          <p class="store-footer__newsletter-text">{{ section.settings.newsletter_text }}</p>
+        {%- endif -%}
+
+        {%- form 'customer', id: 'StoreFooterNewsletter', class: 'store-footer__newsletter-form newsletter-form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div class="store-footer__newsletter-field field">
+            <input
+              id="StoreFooterNewsletter-email"
+              type="email"
+              name="contact[email]"
+              class="field__input"
+              value="{{ form.email }}"
+              aria-required="true"
+              autocorrect="off"
+              autocapitalize="off"
+              autocomplete="email"
+              {% if form.errors %}
+                autofocus
+                aria-invalid="true"
+                aria-describedby="StoreFooterNewsletter-error"
+              {% elsif form.posted_successfully? %}
+                aria-describedby="StoreFooterNewsletter-success"
+              {% endif %}
+              placeholder="{{ 'newsletter.label' | t }}"
+              required
+            >
+            <label class="field__label" for="StoreFooterNewsletter-email">{{ 'newsletter.label' | t }}</label>
+            <button
+              type="submit"
+              class="store-footer__newsletter-button field__button"
+              name="commit"
+              id="StoreFooterNewsletter-submit"
+              aria-label="{{ 'newsletter.button_label' | t }}"
+            >
+              <span class="svg-wrapper">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
+            </button>
+          </div>
+
+          {%- if form.errors -%}
+            <small class="newsletter-form__message form__message" id="StoreFooterNewsletter-error">
+              <span class="svg-wrapper">{{ 'icon-error.svg' | inline_asset_content }}</span>
+              {{- form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email -}}
+            </small>
+          {%- endif -%}
+
+          {%- if form.posted_successfully? -%}
+            <h3
+              class="newsletter-form__message newsletter-form__message--success form__message"
+              id="StoreFooterNewsletter-success"
+              tabindex="-1"
+              autofocus
+            >
+              <span class="svg-wrapper">{{ 'icon-success.svg' | inline_asset_content }}</span>
+              {{- 'newsletter.success' | t }}
+            </h3>
+          {%- endif -%}
+        {%- endform -%}
+
+        {%- if section.settings.newsletter_disclaimer != blank -%}
+          <p class="store-footer__newsletter-disclaimer">{{ section.settings.newsletter_disclaimer }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.show_social and has_social -%}
+          <div class="store-footer__social">
+            {%- render 'social-icons' -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} Bottom bar — payment icons render whether or not a provider is live {%- endcomment -%}
+    <div class="store-footer__bottom">
+      <div class="store-footer__bottom-payments">
+        {%- render 'payment-icons' -%}
+      </div>
+
+      <div class="store-footer__bottom-meta">
+        <p class="store-footer__copyright">
+          &copy; {{ 'now' | date: '%Y' }} {{ store_name }}.
+          {{ 'universal.footer.rights' | t }}
+        </p>
+        {%- if section.settings.show_powered_by -%}
+          <p class="store-footer__powered">{{ powered_by_link }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Store footer",
+  "class": "store-footer-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Column 1, the policy list and the help links all build themselves from your store settings and policy pages. Edit Settings → Store details and Settings → Policies once, and this footer follows on every store."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Column 1 — Store"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_logo",
+      "label": "Show the logo instead of the store name",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "store_tagline",
+      "label": "Tagline",
+      "default": "Sculptural lighting for rooms that deserve better than a bare bulb."
+    },
+    {
+      "type": "header",
+      "content": "Column 2 — Policies"
+    },
+    {
+      "type": "text",
+      "id": "policies_heading",
+      "label": "Heading",
+      "default": "Policies"
+    },
+    {
+      "type": "text",
+      "id": "payment_policy_label",
+      "label": "Payment policy label",
+      "default": "Payment Policy",
+      "info": "Shown only when a page with the handle payment-policy exists."
+    },
+    {
+      "type": "text",
+      "id": "policies_empty_note",
+      "label": "Note shown when no policies are published",
+      "default": "Policies are being updated."
+    },
+    {
+      "type": "header",
+      "content": "Column 3 — Help center"
+    },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Heading",
+      "default": "Help Center"
+    },
+    {
+      "type": "text",
+      "id": "help_contact_label",
+      "label": "Contact label",
+      "default": "Contact Us"
+    },
+    {
+      "type": "text",
+      "id": "help_about_label",
+      "label": "About label",
+      "default": "About Us"
+    },
+    {
+      "type": "text",
+      "id": "help_track_label",
+      "label": "Track order label",
+      "default": "Track Your Order"
+    },
+    {
+      "type": "text",
+      "id": "help_faq_label",
+      "label": "FAQ label",
+      "default": "FAQs",
+      "info": "Shown only when an FAQ page exists."
+    },
+    {
+      "type": "text",
+      "id": "help_account_label",
+      "label": "Account label",
+      "default": "My Account"
+    },
+    {
+      "type": "text",
+      "id": "help_extra_label",
+      "label": "Extra link label"
+    },
+    {
+      "type": "url",
+      "id": "help_extra_link",
+      "label": "Extra link"
+    },
+    {
+      "type": "header",
+      "content": "Column 4 — Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Text",
+      "default": "New arrivals, lighting ideas and subscriber-only offers. No spam, ever."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_disclaimer",
+      "label": "Disclaimer",
+      "default": "By subscribing you agree to receive marketing emails. Unsubscribe anytime."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "label": "Show social icons",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Bottom bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_powered_by",
+      "label": "Show \"Powered by Shopify\"",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}

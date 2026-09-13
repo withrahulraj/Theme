@@ -1,0 +1,232 @@
+{%- liquid
+  assign store_name = settings.store_name_override | default: shop.name
+
+  capture store_address
+    render 'store-info', field: 'address'
+  endcapture
+  assign store_address = store_address | strip
+
+  capture store_phone
+    render 'store-info', field: 'phone'
+  endcapture
+  assign store_phone = store_phone | strip
+
+  capture store_phone_href
+    render 'store-info', field: 'phone_href'
+  endcapture
+  assign store_phone_href = store_phone_href | strip
+
+  capture store_email
+    render 'store-info', field: 'email'
+  endcapture
+  assign store_email = store_email | strip
+
+  capture store_map
+    render 'store-info', field: 'map'
+  endcapture
+  assign store_map = store_map | strip
+
+  assign card_count = 0
+  if store_email != blank
+    assign card_count = card_count | plus: 1
+  endif
+  if store_phone != blank
+    assign card_count = card_count | plus: 1
+  endif
+  if store_address != blank
+    assign card_count = card_count | plus: 1
+  endif
+  if settings.store_hours_days != blank or settings.store_hours_time != blank
+    assign card_count = card_count | plus: 1
+  endif
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="{{ section.settings.heading_size }}{% if section.settings.center_heading %} center{% endif %}">
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <div class="rte{% if section.settings.center_heading %} center{% endif %}" style="margin-bottom: 2.8rem; opacity: 0.85;">
+        {{ section.settings.subheading }}
+      </div>
+    {%- endif -%}
+
+    <div class="contact-details__grid contact-details__grid--{{ card_count }}">
+      {%- if store_email != blank -%}
+        <div class="contact-card">
+          <span class="contact-card__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'mail' -%}</span>
+          <h3 class="contact-card__title">{{ section.settings.email_title | escape }}</h3>
+          <p class="contact-card__text"><a href="mailto:{{ store_email }}">{{ store_email }}</a></p>
+          {%- if settings.store_support_note != blank -%}
+            <p class="contact-card__text">{{ settings.store_support_note }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if store_phone != blank -%}
+        <div class="contact-card">
+          <span class="contact-card__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'phone' -%}</span>
+          <h3 class="contact-card__title">{{ section.settings.phone_title | escape }}</h3>
+          <p class="contact-card__text"><a href="tel:{{ store_phone_href }}">{{ store_phone }}</a></p>
+        </div>
+      {%- endif -%}
+
+      {%- if settings.store_hours_days != blank or settings.store_hours_time != blank -%}
+        <div class="contact-card">
+          <span class="contact-card__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'clock' -%}</span>
+          <h3 class="contact-card__title">{{ section.settings.hours_title | escape }}</h3>
+          <p class="contact-card__text">
+            {{ settings.store_hours_days }}
+            {%- if settings.store_hours_time != blank -%}
+              <br>{{ settings.store_hours_time }}
+            {%- endif -%}
+          </p>
+        </div>
+      {%- endif -%}
+
+      {%- if store_address != blank -%}
+        <div class="contact-card">
+          <span class="contact-card__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'pin' -%}</span>
+          <h3 class="contact-card__title">{{ section.settings.address_title | escape }}</h3>
+          <p class="contact-card__text">
+            {%- if store_map != blank -%}
+              <a href="{{ store_map }}" target="_blank" rel="noopener">{{ store_address | newline_to_br }}</a>
+            {%- else -%}
+              {{ store_address | newline_to_br }}
+            {%- endif -%}
+          </p>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if card_count == 0 -%}
+      <p class="contact-card__text center">{{ section.settings.empty_note | escape }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact details",
+  "tag": "section",
+  "class": "contact-details-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Every card here reads from Settings → Store details and the theme's Store information settings, so one edit updates the contact page, the footer and the tracking page together."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Talk to a human"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" },
+        { "value": "h0", "label": "Extra large" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "checkbox",
+      "id": "center_heading",
+      "label": "Center the heading",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Questions about a lamp, an order or a return? We answer every message ourselves.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Card titles"
+    },
+    {
+      "type": "text",
+      "id": "email_title",
+      "label": "Email card title",
+      "default": "Email us"
+    },
+    {
+      "type": "text",
+      "id": "phone_title",
+      "label": "Phone card title",
+      "default": "Call us"
+    },
+    {
+      "type": "text",
+      "id": "hours_title",
+      "label": "Hours card title",
+      "default": "Opening hours"
+    },
+    {
+      "type": "text",
+      "id": "address_title",
+      "label": "Address card title",
+      "default": "Our address"
+    },
+    {
+      "type": "text",
+      "id": "empty_note",
+      "label": "Note shown when no store details are filled in",
+      "default": "Add your contact details in Settings → Store details and they will appear here."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact details"
+    }
+  ]
+}
+{% endschema %}

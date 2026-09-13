@@ -1,0 +1,298 @@
+{%- style -%}
+  .section-{{ section.id }}-hero {
+    min-height: {{ section.settings.height_mobile }}px;
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  .section-{{ section.id }}-hero .hero__overlay {
+    background: linear-gradient(
+      {{ section.settings.overlay_direction }},
+      rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 100.0 }}),
+      rgba(0, 0, 0, {{ section.settings.overlay_opacity | times: 0.25 | divided_by: 100.0 }})
+    );
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-hero {
+      min-height: {{ section.settings.height_desktop }}px;
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="hero hero--{{ section.settings.content_position }} color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-hero">
+  <div class="hero__media">
+    {%- if section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 3000
+        | image_tag:
+          loading: 'eager',
+          fetchpriority: 'high',
+          sizes: '100vw',
+          widths: '400, 600, 800, 1000, 1200, 1600, 2000, 2400, 3000',
+          alt: section.settings.image.alt
+      }}
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+  </div>
+  <div class="hero__overlay"></div>
+
+  <div class="hero__inner page-width">
+    <div class="hero__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="hero__heading {{ section.settings.heading_size }}">
+          {{ section.settings.heading }}
+        </h2>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="hero__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.button_label_1 != blank or section.settings.button_label_2 != blank -%}
+        <div class="hero__buttons">
+          {%- if section.settings.button_label_1 != blank -%}
+            <a
+              href="{{ section.settings.button_link_1 | default: routes.all_products_collection_url }}"
+              class="button button--primary"
+            >
+              {{ section.settings.button_label_1 | escape }}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.button_label_2 != blank -%}
+            <a
+              href="{{ section.settings.button_link_2 | default: routes.all_products_collection_url }}"
+              class="button button--secondary"
+            >
+              {{ section.settings.button_label_2 | escape }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_usps -%}
+        <ul class="hero__usps" role="list">
+          {%- for block in section.blocks -%}
+            <li class="hero__usp" {{ block.shopify_attributes }}>
+              <span aria-hidden="true">{%- render 'universal-icon', icon: block.settings.icon, size: 18 -%}</span>
+              {{ block.settings.text | escape }}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "class": "hero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image",
+      "info": "A placeholder is shown until you add one, so the section is never blank on a new store."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Designer lighting, direct to you"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Light that makes the room"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h1", "label": "Large" },
+        { "value": "h0", "label": "Extra large" },
+        { "value": "hxl", "label": "Huge" }
+      ],
+      "default": "h0"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Sculptural lamps and warm, diffused glow — built to last, shipped free, returnable for 30 days."
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_label_1",
+      "label": "Primary button label",
+      "default": "Shop all lighting"
+    },
+    {
+      "type": "url",
+      "id": "button_link_1",
+      "label": "Primary button link",
+      "info": "Defaults to all products when left blank."
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "Secondary button label",
+      "default": "Best sellers"
+    },
+    {
+      "type": "url",
+      "id": "button_link_2",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Highlights"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_usps",
+      "label": "Show highlight row",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "overlay_direction",
+      "label": "Overlay direction",
+      "options": [
+        { "value": "to right", "label": "From the left" },
+        { "value": "to left", "label": "From the right" },
+        { "value": "to top", "label": "From the bottom" }
+      ],
+      "default": "to right"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Mobile height",
+      "min": 300,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "default": 520
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Desktop height",
+      "min": 400,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "default": 660
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "Highlight",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "truck", "label": "Shipping" },
+            { "value": "refresh", "label": "Returns" },
+            { "value": "shield", "label": "Secure" },
+            { "value": "bulb", "label": "Lighting" },
+            { "value": "leaf", "label": "Energy saving" },
+            { "value": "spark", "label": "Quality" },
+            { "value": "headset", "label": "Support" },
+            { "value": "check", "label": "Check" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free shipping"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero",
+      "blocks": [
+        { "type": "usp", "settings": { "icon": "truck", "text": "Free worldwide shipping" } },
+        { "type": "usp", "settings": { "icon": "refresh", "text": "30-day returns" } },
+        { "type": "usp", "settings": { "icon": "shield", "text": "Secure checkout" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
