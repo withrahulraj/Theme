@@ -101,7 +101,8 @@
   </div>
 </div>
 
-<script>
+{%- if provider_url != blank -%}
+  <script>
   if (!customElements.get('order-tracking-form')) {
     customElements.define(
       'order-tracking-form',
@@ -131,7 +132,8 @@
       }
     );
   }
-</script>
+  </script>
+{%- endif -%}
 
 {% schema %}
 {

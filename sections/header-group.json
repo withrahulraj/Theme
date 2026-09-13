@@ -18,8 +18,6 @@
           "type": "announcement",
           "settings": {
             "text": "Free shipping on every order — tracking included",
-            "text_alignment": "center",
-            "color_scheme": "scheme-3",
             "link": ""
           }
         },
@@ -27,8 +25,6 @@
           "type": "announcement",
           "settings": {
             "text": "30-day returns, no questions asked",
-            "text_alignment": "center",
-            "color_scheme": "scheme-3",
             "link": ""
           }
         },
@@ -36,8 +32,6 @@
           "type": "announcement",
           "settings": {
             "text": "Real support Mon–Fri, answered within 24 hours",
-            "text_alignment": "center",
-            "color_scheme": "scheme-3",
             "link": ""
           }
         }
@@ -67,5 +61,8 @@
       }
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
 }

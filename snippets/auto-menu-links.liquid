@@ -11,9 +11,7 @@
 {% enddoc %}
 {%- liquid
   capture track_url
-    render 'resolve-url',
-      handles: 'track-order,track-your-order,order-tracking,tracking,track-my-order',
-      fallback: '/pages/track-order'
+    render 'resolve-url', handles: 'track-order,track-your-order,order-tracking,tracking,track-my-order', fallback: '/pages/track-order'
   endcapture
 
   capture contact_url
@@ -31,9 +29,7 @@
   assign policy_url = shop.policies.refund_policy.url
   if policy_url == blank
     capture policy_url
-      render 'resolve-url',
-        handles: 'refund-policy,return-policy,returns,return-and-refund-policy',
-        fallback: '/policies/refund-policy'
+      render 'resolve-url', handles: 'refund-policy,return-policy,returns,return-and-refund-policy', fallback: '/policies/refund-policy'
     endcapture
   endif
 

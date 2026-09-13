@@ -25,14 +25,19 @@
   assign store_map = store_map | strip
 
   assign card_count = 0
+  assign has_contact_details = false
+
   if store_email != blank
     assign card_count = card_count | plus: 1
+    assign has_contact_details = true
   endif
   if store_phone != blank
     assign card_count = card_count | plus: 1
+    assign has_contact_details = true
   endif
   if store_address != blank
     assign card_count = card_count | plus: 1
+    assign has_contact_details = true
   endif
   if settings.store_hours_days != blank or settings.store_hours_time != blank
     assign card_count = card_count | plus: 1
@@ -115,9 +120,9 @@
       {%- endif -%}
     </div>
 
-    {%- if card_count == 0 -%}
-      <p class="contact-card__text center">{{ section.settings.empty_note | escape }}</p>
-    {%- endif -%}
+    {%- unless has_contact_details -%}
+      <p class="contact-card__text center" style="margin-top: 2rem;">{{ section.settings.empty_note | escape }}</p>
+    {%- endunless -%}
   </div>
 </div>
 

@@ -41,9 +41,7 @@
   assign about_url = about_url | strip
 
   capture track_url
-    render 'resolve-url',
-      handles: 'track-order,track-your-order,order-tracking,tracking,track-my-order',
-      fallback: '/pages/track-order'
+    render 'resolve-url', handles: 'track-order,track-your-order,order-tracking,tracking,track-my-order', fallback: '/pages/track-order'
   endcapture
   assign track_url = track_url | strip
 

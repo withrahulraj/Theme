@@ -43,7 +43,12 @@
           }
         }
       },
-      "block_order": ["shipping", "returns", "secure", "support"],
+      "block_order": [
+        "shipping",
+        "returns",
+        "secure",
+        "support"
+      ],
       "settings": {
         "heading": "",
         "layout": "stacked",
@@ -66,14 +71,18 @@
         "paragraph": {
           "type": "paragraph",
           "settings": {
-            "paragraph": "<p>New arrivals, lighting ideas and subscriber-only offers. No spam, ever.</p>"
+            "text": "<p>New arrivals, lighting ideas and subscriber-only offers. No spam, ever.</p>"
           }
         },
         "email_form": {
           "type": "email_form"
         }
       },
-      "block_order": ["heading", "paragraph", "email_form"],
+      "block_order": [
+        "heading",
+        "paragraph",
+        "email_form"
+      ],
       "settings": {
         "color_scheme": "scheme-1",
         "full_width": true,
@@ -82,5 +91,9 @@
       }
     }
   },
-  "order": ["main", "trust_strip", "newsletter"]
+  "order": [
+    "main",
+    "trust_strip",
+    "newsletter"
+  ]
 }
