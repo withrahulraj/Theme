@@ -866,3 +866,33 @@
   font-size: 1.4rem;
   opacity: 0.7;
 }
+
+/* --------------------------------------------------------------------------
+   Typography calibration
+
+   Dawn tracks headings and body text slightly open (0.06rem). Inter is drawn to
+   be set at zero tracking, and the reference storefront this theme's type is
+   matched to sets both to 0, so the extra letter-spacing is removed here rather
+   than by editing Dawn's base.css.
+   -------------------------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h0,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.hxl,
+.hxxl {
+  letter-spacing: 0;
+}
+
+body,
+.text-body {
+  letter-spacing: 0;
+}

@@ -5,6 +5,12 @@ support pages and product page layered on top. Nothing here is hardcoded to one
 shop: the same theme ZIP can be uploaded to any number of lighting stores and it
 fills itself in from that store's own settings.
 
+## Typography
+
+Inter throughout — headings at weight 500 (`inter_n5`), body at 400
+(`inter_n4`), zero letter-spacing, and a 12px root that puts body copy at 18px.
+Change it in Theme settings → Typography like any Dawn theme.
+
 ## Install on a new store
 
 1. Download this repository as a ZIP (or run `shopify theme push`).
