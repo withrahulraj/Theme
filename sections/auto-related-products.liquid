@@ -1,0 +1,244 @@
+{% comment %}
+  Related products, rendered server-side from the product's own collection.
+
+  Dawn's related-products section asks Shopify's recommendations API, which needs
+  order history to answer — so on a new store it returns nothing and the section
+  renders empty. This one walks the collections the product is already in, then
+  falls back to any collection with stock, so it is populated from day one.
+{% endcomment %}
+
+{%- liquid
+  assign source = nil
+
+  comment
+    Prefer a collection this product actually belongs to, skipping frontpage and
+    any collection too small to show anything but the product itself.
+  endcomment
+  for candidate in product.collections
+    if candidate.handle == 'frontpage'
+      continue
+    endif
+    if candidate.all_products_count > 1
+      assign source = candidate
+      break
+    endif
+  endfor
+
+  if source == nil
+    capture fallback_handle
+      render 'resolve-collection'
+    endcapture
+    assign fallback_handle = fallback_handle | strip
+    if fallback_handle != blank
+      assign source = collections[fallback_handle]
+    endif
+  endif
+
+  assign limit = section.settings.products_to_show
+  assign columns = section.settings.columns_desktop
+
+  assign heading = section.settings.heading
+  if section.settings.use_collection_title and source.title != blank
+    assign heading = section.settings.heading_prefix | append: ' ' | append: source.title | strip
+  endif
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{%- if source != nil -%}
+  {%- liquid
+    assign shown = 0
+    assign available = source.all_products_count | minus: 1
+    if available < columns and available > 0
+      assign columns = available
+    endif
+    if columns < 1
+      assign columns = 1
+    endif
+  -%}
+
+  {%- if available > 0 -%}
+    <div class="color-{{ section.settings.color_scheme }} gradient">
+      <div class="page-width section-{{ section.id }}-padding">
+        {%- if heading != blank -%}
+          <div class="auto-products__header{% if section.settings.center_heading %} auto-products__header--center{% endif %}">
+            <h2 class="auto-products__heading {{ section.settings.heading_size }}">{{ heading }}</h2>
+          </div>
+        {%- endif -%}
+
+        <ul
+          class="auto-products__grid grid product-grid grid--{{ columns }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %}"
+          role="list"
+        >
+          {%- for related in source.products -%}
+            {%- if related.id == product.id -%}
+              {%- continue -%}
+            {%- endif -%}
+            {%- if shown >= limit -%}
+              {%- break -%}
+            {%- endif -%}
+            {%- assign shown = shown | plus: 1 -%}
+            <li class="grid__item">
+              {% render 'card-product',
+                card_product: related,
+                media_aspect_ratio: section.settings.image_ratio,
+                show_secondary_image: section.settings.show_secondary_image,
+                show_vendor: false,
+                show_rating: false,
+                quick_add: section.settings.quick_add,
+                section_id: section.id,
+                skip_styles: true
+              %}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Related products (auto)",
+  "tag": "section",
+  "class": "auto-related-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows other products from the collection this product is in. Unlike Shopify's recommendations, which need order history to return anything, this is populated from the first day the store is open."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_collection_title",
+      "label": "Use the collection name in the heading",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "heading_prefix",
+      "label": "Prefix when using the collection name",
+      "default": "More from"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h3", "label": "Small" },
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "checkbox",
+      "id": "center_heading",
+      "label": "Center the heading",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show second image on hover",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "label": "Quick add",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "standard", "label": "Standard" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [{ "name": "Related products (auto)" }]
+}
+{% endschema %}

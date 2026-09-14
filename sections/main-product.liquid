@@ -95,7 +95,7 @@
                     class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
                     {{ block.shopify_attributes }}
                   >
-                    {{- block.settings.text -}}
+                    {%- render 'store-tokens', content: block.settings.text -%}
                   </p>
                 {%- when 'title' -%}
                   <div class="product__title" {{ block.shopify_attributes }}>
@@ -220,7 +220,8 @@
                   </div>
                 {%- when 'usp_list' -%}
                   <ul class="product__usp-list" role="list" {{ block.shopify_attributes }}>
-                    {%- assign usp_lines = block.settings.items | newline_to_br | split: '<br />' -%}
+                    {%- capture usp_source %}{% render 'store-tokens', content: block.settings.items %}{% endcapture -%}
+                    {%- assign usp_lines = usp_source | newline_to_br | split: '<br />' -%}
                     {%- for usp_line in usp_lines -%}
                       {%- assign usp_text = usp_line | strip -%}
                       {%- if usp_text != blank -%}

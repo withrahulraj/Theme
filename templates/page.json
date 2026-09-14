@@ -57,43 +57,10 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
-    },
-    "newsletter": {
-      "type": "newsletter",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Stay in the loop",
-            "heading_size": "h2"
-          }
-        },
-        "paragraph": {
-          "type": "paragraph",
-          "settings": {
-            "text": "<p>New arrivals, lighting ideas and subscriber-only offers. No spam, ever.</p>"
-          }
-        },
-        "email_form": {
-          "type": "email_form"
-        }
-      },
-      "block_order": [
-        "heading",
-        "paragraph",
-        "email_form"
-      ],
-      "settings": {
-        "color_scheme": "scheme-1",
-        "full_width": true,
-        "padding_top": 40,
-        "padding_bottom": 40
-      }
     }
   },
   "order": [
     "main",
-    "trust_strip",
-    "newsletter"
+    "trust_strip"
   ]
 }

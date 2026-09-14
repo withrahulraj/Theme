@@ -15,7 +15,8 @@
         "padding_top": 48,
         "padding_bottom": 48,
         "store_details_heading": "Store information",
-        "store_details_note": ""
+        "store_details_note": "",
+        "show_store_details": true
       }
     }
   },

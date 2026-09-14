@@ -228,6 +228,39 @@ expect('  -> details block still present', out, 'store-details__list')
 expect('  -> reads as content, not a card',
        (out.to_s.include?('<aside') ? 'aside' : 'inline'), 'inline')
 
+puts "\n--- related products ---"
+lamps = (1..5).map { |i| { 'id' => 100 + i, 'title' => "Lamp #{i}", 'url' => "/products/lamp-#{i}", 'handle' => "lamp-#{i}" } }
+in_collection = coll('wall-lights', 'Wall Lights', 5, lamps)
+current = { 'id' => 101, 'title' => 'Lamp 1', 'collections' => [in_collection] }
+
+out = check('related products come from the product\'s own collection') {
+  render_section('auto-related-products', 'product' => current, 'collections' => [in_collection])
+}
+expect('  -> heading', out, 'You may also like')
+expect('  -> four cards', out.to_s.scan(/grid__item/).size.to_s, '4')
+expect('  -> the product itself is excluded',
+       (out.to_s.include?('/products/lamp-1"') ? 'included' : 'excluded'), 'excluded')
+
+out = check('frontpage is skipped in favour of a real collection') {
+  fp = coll('frontpage', 'Home page', 4)
+  prod = { 'id' => 101, 'title' => 'Lamp 1', 'collections' => [fp, in_collection] }
+  render_section('auto-related-products', 'product' => prod, 'collections' => [fp, in_collection])
+}
+expect('  -> used the real collection', out, '/products/lamp-2')
+
+out = check('a product in no collection still gets suggestions') {
+  prod = { 'id' => 999, 'title' => 'Orphan', 'collections' => [] }
+  render_section('auto-related-products', 'product' => prod, 'collections' => [in_collection])
+}
+expect('  -> fell back to a store collection', out, 'grid__item')
+
+out = check('a collection holding only this product renders nothing') {
+  solo = coll('solo', 'Solo', 1, [{ 'id' => 101, 'title' => 'Lamp 1', 'url' => '/products/lamp-1' }])
+  prod = { 'id' => 101, 'title' => 'Lamp 1', 'collections' => [solo] }
+  render_section('auto-related-products', 'product' => prod, 'collections' => [solo])
+}
+expect('  -> no empty row', (out.to_s.include?('grid__item') ? 'row' : 'clean'), 'clean')
+
 puts "\n--- contact-details ---"
 out = check('contact-details renders all four cards') { render_section('contact-details') }
 expect('  -> email card', out, 'hello@lumen.test')
