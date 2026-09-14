@@ -82,5 +82,41 @@ for name, f in sorted(referenced):
     if name not in known and (name, f) not in DAWN_KNOWN_STALE:
         problems.append(f'{f}: references settings.{name}, which is not declared in settings_schema.json')
 
+# Shopify's theme importer validates section schemas and silently drops any
+# section that fails, taking every template that references it down too. An
+# empty string as the `default` of a text setting is one such failure, and it
+# cost four build-and-import cycles to find. Catch it here instead.
+EMPTY_DEFAULT_TYPES = {'text', 'textarea', 'richtext', 'inline_richtext', 'html', 'liquid', 'url', 'video_url'}
+
+for f in sorted(glob.glob(os.path.join(THEME, 'sections', '*.liquid')) +
+                glob.glob(os.path.join(THEME, 'snippets', '*.liquid')) +
+                glob.glob(os.path.join(THEME, 'blocks', '*.liquid'))):
+    body = open(f, encoding='utf-8').read()
+    m = re.search(r'{%-?\s*schema\s*-?%}(.*?){%-?\s*endschema\s*-?%}', body, re.S)
+    if not m:
+        continue
+    rel = os.path.relpath(f, THEME)
+    try:
+        parsed = json.loads(m.group(1))
+    except ValueError as exc:
+        problems.append(f'{rel}: schema is not valid JSON ({exc})')
+        continue
+
+    groups = [parsed.get('settings') or []]
+    for block in (parsed.get('blocks') or []):
+        if isinstance(block, dict):
+            groups.append(block.get('settings') or [])
+
+    for group in groups:
+        for setting in group:
+            if not isinstance(setting, dict):
+                continue
+            if 'default' not in setting:
+                continue
+            if setting['default'] == '' and setting.get('type') in EMPTY_DEFAULT_TYPES:
+                problems.append(
+                    f'{rel}: setting "{setting.get("id")}" has an empty default. '
+                    'Shopify drops the whole section on import — omit the key instead.')
+
 print('\n'.join(problems) if problems else 'templates, block types, settings and theme settings all resolve')
 sys.exit(1 if problems else 0)

@@ -77,9 +77,9 @@ out = check('store-footer with neither policies nor pages') {
 expect('  -> falls back to the note', out, 'Policies are being updated.')
 
 puts "\n--- policy template ---"
-out = check('policy page renders from the policy object') {
-  render_section('policy-content',
-    'policy' => { 'title' => 'Return and Refund Policy', 'body' => '<h2>30 days</h2><p>Send it back.</p>' })
+out = check('legal page renders from the page') {
+  render_section('legal-document',
+    'page' => { 'title' => 'Return and Refund Policy', 'content' => '<h2>30 days</h2><p>Send it back.</p>' })
 }
 expect('  -> title', out, 'Return and Refund Policy')
 expect('  -> body', out, '<p>Send it back.</p>')
@@ -87,8 +87,8 @@ expect('  -> last updated line', out, 'Last updated')
 expect('  -> contact details not repeated in a help box',
        (out.to_s.scan(/hello@lumen\.test/).size <= 2 ? 'once' : 'repeated'), 'once')
 
-out = check('policy template also serves a plain page') {
-  render_section('policy-content',
+out = check('any page on the template is served') {
+  render_section('legal-document',
     'page' => { 'title' => 'Payment Policy', 'content' => '<p>Cards and wallets.</p>' })
 }
 expect('  -> page title used', out, 'Payment Policy')
@@ -178,7 +178,7 @@ expect('  -> renders nothing on the storefront', (out.to_s.include?('grid__item'
 
 puts "\n--- store details block on policy pages ---"
 out = check('policy page carries trading details') {
-  render_section('policy-content', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
+  render_section('legal-document', 'page' => { 'title' => 'Shipping Policy', 'content' => '<p>Free.</p>' })
 }
 expect('  -> heading', out, 'Store information')
 expect('  -> store name leads, like the footer', out, 'store-details__name')
@@ -196,16 +196,16 @@ expect('  -> no small print by default',
 expect('  -> timezone is fixed, not the store clock', out.to_s.gsub(/\s+/, ' '), '10:00 AM – 6:00 PM EST')
 
 out = check('explicit timezone overrides the store default') {
-  render_section('policy-content',
-    'section_settings' => {}, 'policy' => { 'title' => 'X', 'body' => '<p>y</p>' },
+  render_section('legal-document',
+    'section_settings' => {}, 'page' => { 'title' => 'X', 'content' => '<p>y</p>' },
     'settings' => { 'store_hours_timezone' => 'PST' })
 }
 expect('  -> override used', out.to_s.gsub(/\s+/, ' '), '10:00 AM – 6:00 PM PST')
 
 out = check('rows with no value are skipped, not printed empty') {
-  render_section('policy-content',
+  render_section('legal-document',
     'shop' => shop('phone' => nil, 'address' => {}),
-    'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
+    'page' => { 'title' => 'X', 'content' => '<p>y</p>' })
 }
 expect('  -> no empty tel link', (out.to_s.include?('href="tel:"') ? 'bad' : 'clean'), 'clean')
 expect('  -> address row dropped entirely',
@@ -213,14 +213,14 @@ expect('  -> address row dropped entirely',
 expect('  -> email still shown', out, 'hello@lumen.test')
 
 out = check('block can be switched off') {
-  render_section('policy-content',
+  render_section('legal-document',
     'section_settings' => { 'show_store_details' => false },
-    'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
+    'page' => { 'title' => 'X', 'content' => '<p>y</p>' })
 }
 expect('  -> gone', (out.to_s.include?('store-details__list') ? 'shown' : 'hidden'), 'hidden')
 
 out = check('no duplicate contact block on a policy page') {
-  render_section('policy-content', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
+  render_section('legal-document', 'page' => { 'title' => 'Shipping Policy', 'content' => '<p>Free.</p>' })
 }
 expect('  -> help box off by default',
        (out.to_s.include?('Still have a question') ? 'shown' : 'hidden'), 'hidden')
@@ -306,6 +306,60 @@ out = check('info with image renders') { render_section('info-with-image') }
 expect('  -> placeholder used', out, 'data-ph="detailed-apparel-1"')
 expect('  -> three points', out.to_s.scan(/info-media__list-item/).size.to_s, '3')
 expect('  -> button falls back to all products', out, 'href="/collections/all"')
+
+
+puts "\n--- main-page: store details without a custom template ---"
+# The stock `page` template has to carry trading details on legal pages by
+# itself. Assigning `page.policy` by hand on every store is exactly the setup
+# step this theme exists to avoid, and Shopify's importer has dropped custom
+# page templates before now.
+out = check('main-page adds store details to a policy page') {
+  render_section('main-page',
+    'page' => { 'title' => 'Refund Policy', 'handle' => 'refund-policy', 'content' => '<p>30 days.</p>' })
+}
+expect('  -> page copy still renders', out, '30 days.')
+expect('  -> details heading', out, 'Store information')
+expect('  -> store name', out, 'Lumen Studio')
+expect('  -> address', out, '18 Kiln Road')
+expect('  -> phone', out, 'tel:+15550142')
+expect('  -> email', out, 'mailto:hello@lumen.test')
+expect('  -> working days', out, 'Monday – Friday')
+expect('  -> hours carry a timezone', out.to_s.gsub(/\s+/, ' '), /10:00 AM – 6:00 PM [A-Z]{2,5}/)
+
+%w[privacy-policy shipping-policy terms-of-service payment-policy return-and-refund-policy cookie-policy].each do |h|
+  out = check("main-page detects /#{h}") {
+    render_section('main-page', 'page' => { 'title' => h, 'handle' => h, 'content' => '<p>x</p>' })
+  }
+  expect("  -> #{h} gets details", out, 'store-details__name')
+end
+
+%w[about-us contact track-order faq home].each do |h|
+  out = check("main-page leaves /#{h} alone") {
+    render_section('main-page', 'page' => { 'title' => h, 'handle' => h, 'content' => '<p>x</p>' })
+  }
+  expect("  -> #{h} has no details block", (out.to_s.include?('store-details__name') ? 'present' : 'absent'), 'absent')
+end
+
+out = check('main-page "always" mode overrides detection') {
+  render_section('main-page', 'section_settings' => { 'store_details_mode' => 'always' },
+    'page' => { 'title' => 'About us', 'handle' => 'about-us', 'content' => '<p>x</p>' })
+}
+expect('  -> details forced on', out, 'store-details__name')
+
+out = check('main-page "never" mode overrides detection') {
+  render_section('main-page', 'section_settings' => { 'store_details_mode' => 'never' },
+    'page' => { 'title' => 'Refund Policy', 'handle' => 'refund-policy', 'content' => '<p>x</p>' })
+}
+expect('  -> details forced off', (out.to_s.include?('store-details__name') ? 'present' : 'absent'), 'absent')
+
+out = check('main-page still substitutes tokens') {
+  render_section('main-page',
+    'page' => { 'title' => 'Shipping Policy', 'handle' => 'shipping-policy',
+                'content' => '<p>Arrives in [[delivery_min]]–[[delivery_max]] business days.</p>' })
+}
+expect('  -> no raw token left', (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
+expect('  -> delivery window filled in', out, '4–7 business days')
+
 
 puts "\n#{$failures.zero? ? 'ALL SECTION CHECKS PASSED' : "#{$failures} CHECK(S) FAILED"}"
 exit($failures.zero? ? 0 : 1)

@@ -1,5 +1,30 @@
 {{ 'section-main-page.css' | asset_url | stylesheet_tag }}
 
+{%- comment -%}
+  Legal pages need trading details at the foot of the copy. Rather than asking
+  every store to assign a template by hand, detect them from the page handle so
+  a freshly installed theme gets it right with no setup.
+{%- endcomment -%}
+
+{%- liquid
+  assign show_store_details = false
+
+  case section.settings.store_details_mode
+    when 'always'
+      assign show_store_details = true
+    when 'never'
+      assign show_store_details = false
+    else
+      assign legal_words = 'policy,policies,privacy,refund,return,returns,shipping,delivery,terms,payment,payments,legal,cookie,cookies,disclaimer,accessibility,dmca,warranty,gdpr' | split: ','
+      for word in legal_words
+        if page.handle contains word
+          assign show_store_details = true
+          break
+        endif
+      endfor
+  endcase
+-%}
+
 {%- style -%}
   .section-{{ section.id }}-padding {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
@@ -21,6 +46,10 @@
   <div class="rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
     {% render 'store-tokens', content: page.content %}
   </div>
+
+  {%- if show_store_details -%}
+    {%- render 'store-details-block', heading: section.settings.store_details_heading -%}
+  {%- endif -%}
 </div>
 
 {% schema %}
@@ -29,6 +58,40 @@
   "tag": "section",
   "class": "section",
   "settings": [
+    {
+      "type": "header",
+      "content": "Store details"
+    },
+    {
+      "type": "paragraph",
+      "content": "Name, address, phone, email and working hours, read straight from Settings \u2192 Store details. Automatic mode adds them to legal pages only \u2014 privacy, refund, shipping, terms and the like \u2014 by looking at the page handle."
+    },
+    {
+      "type": "select",
+      "id": "store_details_mode",
+      "label": "Show store details",
+      "options": [
+        {
+          "value": "auto",
+          "label": "On legal pages only"
+        },
+        {
+          "value": "always",
+          "label": "On every page"
+        },
+        {
+          "value": "never",
+          "label": "Never"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "text",
+      "id": "store_details_heading",
+      "label": "Store details heading",
+      "default": "Store information"
+    },
     {
       "type": "header",
       "content": "t:sections.all.padding.section_padding_heading"

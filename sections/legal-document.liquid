@@ -1,18 +1,15 @@
-{% comment %}theme-check-disable UndefinedObject{% endcomment %}
 {% comment %}
   Renders a legal document in a narrow, readable column.
 
   Assign a page to the "policy" template and it renders here.
 
-  Note: Shopify has no `policy` template type — /policies/* URLs are rendered by
-  Shopify itself and cannot be themed. So legal documents that need this layout
-  are published as pages. The `policy` fallback below costs nothing and covers a
-  store that does reach this section with a policy object.
+  Shopify renders /policies/* URLs itself and they cannot be themed, so legal
+  documents that need this layout are published as pages.
 {% endcomment %}
 
 {%- liquid
-  assign legal_title = policy.title | default: page.title
-  assign legal_body = policy.body | default: page.content
+  assign legal_title = page.title
+  assign legal_body = page.content
 
   capture contact_url
     render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
@@ -81,7 +78,7 @@
 
 {% schema %}
 {
-  "name": "Policy content",
+  "name": "Legal document",
   "tag": "section",
   "class": "section",
   "settings": [
@@ -152,7 +149,6 @@
       "type": "text",
       "id": "store_details_note",
       "label": "Small print",
-      "default": "",
       "info": "Optional. Left blank by default."
     },
     {

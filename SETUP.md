@@ -97,8 +97,30 @@ The timezone comes from your Shopify store timezone by default (shown as EST,
 PST and so on), so opening hours are never ambiguous. Set one explicitly in
 Theme settings → Store information if you want to override it.
 
-Turn the block off, or change its heading, in the Policy content section. To put
-the same block on an ordinary page, write `[[store_details]]` in the page body.
+This happens two ways, so it survives a store where nobody assigned templates:
+
+- Pages on the **policy** template render through the Legal document section,
+  which always carries the block.
+- The **stock page template** adds it too, on any page whose handle reads as a
+  legal document — `privacy-policy`, `refund-policy`, `shipping-policy`,
+  `terms-of-service`, `payment-policy`, `cookie-policy` and so on. Nothing to
+  assign; a page created today gets it.
+
+Ordinary pages — About, Contact, Track Order, FAQ — are left alone. Change that
+in Page → Store details, which offers *On legal pages only* (the default), *On
+every page* or *Never*. Turn it off on the policy template in the Legal document
+section instead. To put the same block anywhere by hand, write
+`[[store_details]]` in the page body.
+
+### Do not put an empty `"default": ""` in a section schema
+
+Shopify's theme importer validates every section schema and **silently drops**
+any section that fails — and then drops every template referencing it, with no
+error anywhere. An empty string as the `default` of a `text` setting is one such
+failure. Omit the key instead of defaulting it to `""`.
+
+This cost four build-and-import cycles to find, so `.dev/validate_templates.py`
+now fails the build on it. Run it before packaging a ZIP.
 
 ## Write policy copy once, not per store
 
@@ -270,7 +292,7 @@ in the theme editor instead of an empty row.
 
 `store-footer`, `hero-lighting`, `trust-strip`, `info-with-image`,
 `contact-details`, `order-lookup`, `auto-featured-products`,
-`auto-collection-list`, `policy-content`. All of Dawn's own sections are untouched
+`auto-collection-list`, `legal-document`. All of Dawn's own sections are untouched
 and still available — including its stock `featured-collection` and
 `collection-list` if you would rather pick collections by hand.
 

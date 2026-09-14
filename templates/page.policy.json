@@ -1,7 +1,7 @@
 {
   "sections": {
     "main": {
-      "type": "policy-content",
+      "type": "legal-document",
       "settings": {
         "heading_size": "h1",
         "show_updated": true,
