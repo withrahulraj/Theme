@@ -200,7 +200,7 @@
       "sku_autogenerate": true,
       "sku_prefix": "",
       "store_hours_time": "10:00 AM – 6:00 PM",
-      "store_hours_timezone": ""
+      "store_hours_timezone": "EST"
     }
   }
 }

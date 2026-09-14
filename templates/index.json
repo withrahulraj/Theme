@@ -223,6 +223,58 @@
         "padding_top": 48,
         "padding_bottom": 48
       }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "t1": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>The light it throws is so much softer than I expected. It completely changed how the room feels in the evening.</p>",
+            "rating": 5,
+            "name": "Sarah M.",
+            "detail": "Portland, OR",
+            "verified": true
+          }
+        },
+        "t2": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Arrived quicker than the estimate and the packaging was genuinely good — no dents, nothing rattling.</p>",
+            "rating": 5,
+            "name": "James T.",
+            "detail": "Austin, TX",
+            "verified": true
+          }
+        },
+        "t3": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>I asked a question about the fitting and got a real answer the same day. Ordered two more since.</p>",
+            "rating": 5,
+            "name": "Priya R.",
+            "detail": "Chicago, IL",
+            "verified": true
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "settings": {
+        "heading": "What customers say",
+        "heading_size": "h2",
+        "subheading": "Real rooms, real light.",
+        "center_heading": true,
+        "show_stars": true,
+        "columns_desktop": 3,
+        "empty_note": "Add a testimonial block to fill this section.",
+        "color_scheme": "scheme-2",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
     }
   },
   "order": [
@@ -231,6 +283,7 @@
     "featured_bestsellers",
     "info_with_image",
     "featured_new",
+    "testimonials",
     "trust_strip"
   ]
 }

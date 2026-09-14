@@ -62,12 +62,14 @@ expect('  -> terms page linked', out, '/pages/terms-of-service')
 expect('  -> payment policy linked', out, '/pages/payment-policy')
 expect('  -> no "policies being updated" note', (out.to_s.include?('Policies are being updated') ? 'shown' : 'hidden'), 'hidden')
 
-out = check('store-footer prefers a real policy over a page of the same name') {
+out = check('store-footer prefers a themed page over the untheme-able policy URL') {
   render_section('store-footer',
-    'pages' => { 'refund-policy' => { 'handle' => 'refund-policy', 'url' => '/pages/refund-policy', 'title' => 'Page version' } })
+    'pages' => { 'refund-policy' => { 'handle' => 'refund-policy', 'url' => '/pages/refund-policy', 'title' => 'Return and Refund Policy' } })
 }
-expect('  -> policy URL wins', out, '/policies/refund-policy')
-expect('  -> page version not linked', (out.to_s.include?('/pages/refund-policy') ? 'leaked' : 'clean'), 'clean')
+expect('  -> page wins, so the layout matches the other policies', out, '/pages/refund-policy')
+expect('  -> raw policy URL not used when a page exists',
+       (out.to_s.include?('/policies/refund-policy') ? 'leaked' : 'clean'), 'clean')
+expect('  -> policies without a page still fall back', out, '/policies/privacy-policy')
 
 out = check('store-footer with neither policies nor pages') {
   render_section('store-footer', 'shop' => shop('policies' => {}))
@@ -178,14 +180,20 @@ puts "\n--- store details block on policy pages ---"
 out = check('policy page carries trading details') {
   render_section('main-policy', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
 }
-expect('  -> heading', out, 'Our details')
-expect('  -> store name row', out, 'Lumen Studio')
+expect('  -> heading', out, 'Store information')
+expect('  -> store name leads, like the footer', out, 'store-details__name')
+expect('  -> store name', out, 'Lumen Studio')
 expect('  -> address row', out, '18 Kiln Road')
 expect('  -> phone as a tel link', out, 'href="tel:+15550142"')
 expect('  -> email as a mailto link', out, 'mailto:hello@lumen.test')
 expect('  -> working days', out, 'Monday – Friday')
 expect('  -> hours carry a timezone', out.to_s.gsub(/\s+/, ' '), /10:00 AM – 6:00 PM [A-Z]{2,5}/)
-expect('  -> five labelled rows', out.to_s.scan(/store-details__row/).size.to_s, '5')
+expect('  -> four icon rows under the name', out.to_s.scan(/store-details__row/).size.to_s, '4')
+expect('  -> icons used, as in the footer', out, 'universal-icon--pin')
+expect('  -> labels kept for screen readers', out, 'visually-hidden')
+expect('  -> no small print by default',
+       (out.to_s.include?('kept up to date') ? 'shown' : 'gone'), 'gone')
+expect('  -> timezone is fixed, not the store clock', out.to_s.gsub(/\s+/, ' '), '10:00 AM – 6:00 PM EST')
 
 out = check('explicit timezone overrides the store default') {
   render_section('main-policy',
@@ -200,8 +208,8 @@ out = check('rows with no value are skipped, not printed empty') {
     'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
 }
 expect('  -> no empty tel link', (out.to_s.include?('href="tel:"') ? 'bad' : 'clean'), 'clean')
-expect('  -> no Address label without an address',
-       (out.to_s.include?('>Address<') ? 'shown' : 'hidden'), 'hidden')
+expect('  -> address row dropped entirely',
+       (out.to_s.include?('universal-icon--pin') ? 'shown' : 'hidden'), 'hidden')
 expect('  -> email still shown', out, 'hello@lumen.test')
 
 out = check('block can be switched off') {

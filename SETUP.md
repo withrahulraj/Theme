@@ -154,15 +154,15 @@ executed — `{{ shop.email }}` in a page stays literal text.
 Shopify renders `/policies/*` URLs itself and they **cannot be themed** — there
 is no `policy` template type. So the theme covers policies two ways:
 
-1. **Settings → Policies** — the footer links these first. They also appear at
-   checkout, which is what Merchant Center and Shopify's own compliance checks
-   read, so publish them here whenever you can.
-2. **Pages** — a page whose handle is `refund-policy`, `shipping-policy`,
-   `terms-of-service`, `privacy-policy` or `payment-policy`. Assign it the
-   **policy** template for the narrow legal layout.
+1. **Pages** — a page whose handle is `refund-policy`, `shipping-policy`,
+   `terms-of-service`, `privacy-policy` or `payment-policy`, on the **policy**
+   template. The footer links these first, because they are the ones that can
+   carry the theme's layout and store details block.
+2. **Settings → Policies** — used when no matching page exists. Publish these
+   as well regardless: they are what checkout links, and what Merchant Center
+   and Shopify's compliance checks read.
 
-The footer prefers a published policy and falls back to a matching page, so the
-column populates either way and never shows a dead link.
+So keep both in step. The footer never shows a dead link either way.
 
 ## Tracking page
 

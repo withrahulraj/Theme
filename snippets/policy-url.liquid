@@ -36,9 +36,14 @@
       assign handles = 'contact-information'
   endcase
 
-  assign resolved = policy_object.url
+  comment
+    Prefer a page on the policy template: Shopify renders /policies/* itself and
+    it cannot be themed, so a page keeps every legal page looking the same. The
+    published policy is the fallback.
+  endcomment
+  assign resolved = ''
 
-  if resolved == blank and handles != blank
+  if handles != blank
     assign candidates = handles | split: ','
     for candidate in candidates
       assign candidate_handle = candidate | strip
@@ -48,6 +53,10 @@
         break
       endif
     endfor
+  endif
+
+  if resolved == blank
+    assign resolved = policy_object.url
   endif
 -%}
 {{- resolved -}}

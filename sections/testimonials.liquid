@@ -1,0 +1,269 @@
+{% comment %}
+  Customer testimonials.
+
+  Kept deliberately separate from the product rating markup: nothing here is
+  published as review structured data, because Google requires marked-up reviews
+  to be genuine and collected from real customers. These are display only.
+{% endcomment %}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="testimonials__header{% if section.settings.center_heading %} testimonials__header--center{% endif %}">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="testimonials__heading {{ section.settings.heading_size }}">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="testimonials__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul
+        class="testimonials__grid testimonials__grid--{{ section.settings.columns_desktop }}"
+        role="list"
+      >
+        {%- for block in section.blocks -%}
+          <li class="testimonial" {{ block.shopify_attributes }}>
+            <figure class="testimonial__figure">
+              {%- if section.settings.show_stars and block.settings.rating > 0 -%}
+                <div
+                  class="testimonial__stars rating-stars"
+                  role="img"
+                  aria-label="{{ block.settings.rating }} {{ 'universal.testimonials.out_of_five' | t }}"
+                >
+                  {%- for i in (1..block.settings.rating) -%}
+                    {%- render 'universal-icon', icon: 'star' -%}
+                  {%- endfor -%}
+                  {%- assign empty_stars = 5 | minus: block.settings.rating -%}
+                  {%- if empty_stars > 0 -%}
+                    {%- for i in (1..empty_stars) -%}
+                      {%- render 'universal-icon', icon: 'star_empty' -%}
+                    {%- endfor -%}
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              <blockquote class="testimonial__quote">{{ block.settings.quote }}</blockquote>
+
+              <figcaption class="testimonial__author">
+                {%- if block.settings.image != blank -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 120
+                    | image_tag:
+                      loading: 'lazy',
+                      width: 44,
+                      height: 44,
+                      class: 'testimonial__avatar',
+                      alt: block.settings.name
+                  }}
+                {%- endif -%}
+                <span class="testimonial__author-text">
+                  {%- if block.settings.name != blank -%}
+                    <span class="testimonial__name">{{ block.settings.name | escape }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.detail != blank -%}
+                    <span class="testimonial__detail">{{ block.settings.detail | escape }}</span>
+                  {%- endif -%}
+                </span>
+                {%- if block.settings.verified -%}
+                  <span class="testimonial__verified">
+                    {%- render 'universal-icon', icon: 'check', size: '16' -%}
+                    {{ 'universal.testimonials.verified' | t }}
+                  </span>
+                {%- endif -%}
+              </figcaption>
+            </figure>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- elsif request.design_mode -%}
+      <p class="auto-products__empty center">{{ section.settings.empty_note }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "tag": "section",
+  "class": "testimonials-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Display only — testimonials here are never published as review structured data, because Google requires marked-up reviews to be genuine and collected from customers. Use a reviews app if you want stars in search results."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What customers say"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h3", "label": "Small" },
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real rooms, real light."
+    },
+    {
+      "type": "checkbox",
+      "id": "center_heading",
+      "label": "Center the heading",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show star ratings",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "empty_note",
+      "label": "Editor note when no testimonials are added",
+      "default": "Add a testimonial block to fill this section."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "Quote",
+          "default": "<p>The light it throws is so much softer than I expected. It completely changed how the room feels in the evening.</p>"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Sarah M."
+        },
+        {
+          "type": "text",
+          "id": "detail",
+          "label": "Detail",
+          "info": "Location, or which product they bought.",
+          "default": "Portland, OR"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Show a \"Verified buyer\" mark",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>The light it throws is so much softer than I expected. It completely changed how the room feels in the evening.</p>",
+            "name": "Sarah M.",
+            "detail": "Portland, OR"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Arrived quicker than the estimate and the packaging was genuinely good — no dents, nothing rattling.</p>",
+            "name": "James T.",
+            "detail": "Austin, TX"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>I asked a question about the fitting and got a real answer the same day. Ordered two more since.</p>",
+            "name": "Priya R.",
+            "detail": "Chicago, IL"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

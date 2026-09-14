@@ -57,7 +57,8 @@
         "type": "text",
         "id": "store_hours_timezone",
         "label": "Timezone",
-        "info": "Leave blank to use the store's own timezone from Settings → Store details, shown as EST, PST and so on."
+        "info": "Shown after the opening hours. Set explicitly so it stays the same on every store, rather than following each store's own clock.",
+        "default": "EST"
       },
       {
         "type": "text",

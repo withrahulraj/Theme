@@ -1,17 +1,18 @@
 {% doc %}
-  Renders the store's identity and contact details as a labelled block.
+  Renders the store's trading details in the same shape as the footer's store
+  column — the store name, then icon rows for address, phone, email and hours.
 
   Every value comes from Settings → Store details (or the theme's Store
   information overrides), so a policy page carries correct trading details
-  without anyone retyping them — and one change in admin updates every page.
+  without anyone retyping them, and one change in admin updates every page.
 
   Rows with no value behind them are skipped rather than printed empty.
 
   @param {string} [heading] - Block heading. Pass blank to omit it.
-  @param {string} [note] - Small print under the rows.
+  @param {string} [note] - Optional small print under the rows.
 
   @example
-  {% render 'store-details-block', heading: 'Our details' %}
+  {% render 'store-details-block', heading: 'Store information' %}
 {% enddoc %}
 
 {%- liquid
@@ -37,10 +38,6 @@
   endcapture
   assign detail_email = detail_email | strip
 
-  comment
-    With no timezone set, fall back to the store's own timezone abbreviation, so
-    the hours are never ambiguous about which clock they refer to.
-  endcomment
   capture detail_hours
     render 'store-info', field: 'hours_time'
   endcapture
@@ -52,50 +49,56 @@
     <h2 class="store-details__heading">{{ heading | escape }}</h2>
   {%- endif -%}
 
-  <dl class="store-details__list">
-    {%- if detail_name != blank -%}
-      <div class="store-details__row">
-        <dt class="store-details__label">{{ 'universal.store_details.name' | t }}</dt>
-        <dd class="store-details__value">{{ detail_name }}</dd>
-      </div>
-    {%- endif -%}
+  {%- if detail_name != blank -%}
+    <p class="store-details__name">{{ detail_name }}</p>
+  {%- endif -%}
 
+  <ul class="store-details__list list-unstyled" role="list">
     {%- if detail_address != blank -%}
-      <div class="store-details__row">
-        <dt class="store-details__label">{{ 'universal.store_details.address' | t }}</dt>
-        <dd class="store-details__value">{{ detail_address | newline_to_br }}</dd>
-      </div>
+      <li class="store-details__row">
+        <span class="store-details__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'pin' -%}</span>
+        <span class="store-details__value">
+          <span class="visually-hidden">{{ 'universal.store_details.address' | t }}: </span>
+          {{- detail_address | newline_to_br -}}
+        </span>
+      </li>
     {%- endif -%}
 
     {%- if detail_phone != blank -%}
-      <div class="store-details__row">
-        <dt class="store-details__label">{{ 'universal.store_details.phone' | t }}</dt>
-        <dd class="store-details__value">
+      <li class="store-details__row">
+        <span class="store-details__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'phone' -%}</span>
+        <span class="store-details__value">
+          <span class="visually-hidden">{{ 'universal.store_details.phone' | t }}: </span>
           <a href="tel:{{ detail_phone_href }}">{{ detail_phone }}</a>
-        </dd>
-      </div>
+        </span>
+      </li>
     {%- endif -%}
 
     {%- if detail_email != blank -%}
-      <div class="store-details__row">
-        <dt class="store-details__label">{{ 'universal.store_details.email' | t }}</dt>
-        <dd class="store-details__value">
+      <li class="store-details__row">
+        <span class="store-details__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'mail' -%}</span>
+        <span class="store-details__value">
+          <span class="visually-hidden">{{ 'universal.store_details.email' | t }}: </span>
           <a href="mailto:{{ detail_email }}">{{ detail_email }}</a>
-        </dd>
-      </div>
+        </span>
+      </li>
     {%- endif -%}
 
     {%- if settings.store_hours_days != blank or detail_hours != blank -%}
-      <div class="store-details__row">
-        <dt class="store-details__label">{{ 'universal.store_details.hours' | t }}</dt>
-        <dd class="store-details__value">
-          {{- settings.store_hours_days -}}
-          {%- if settings.store_hours_days != blank and detail_hours != blank %}, {% endif -%}
-          {{- detail_hours -}}
-        </dd>
-      </div>
+      <li class="store-details__row">
+        <span class="store-details__icon" aria-hidden="true">{%- render 'universal-icon', icon: 'clock' -%}</span>
+        <span class="store-details__value">
+          <span class="visually-hidden">{{ 'universal.store_details.hours' | t }}: </span>
+          {%- if settings.store_hours_days != blank -%}
+            <span class="store-details__strong">{{ settings.store_hours_days }}</span>
+          {%- endif -%}
+          {%- if detail_hours != blank -%}
+            <br>{{ detail_hours }}
+          {%- endif -%}
+        </span>
+      </li>
     {%- endif -%}
-  </dl>
+  </ul>
 
   {%- if note != blank -%}
     <p class="store-details__note">{{ note | escape }}</p>

@@ -542,6 +542,10 @@
       "phone": "Phone",
       "email": "Email",
       "hours": "Working hours"
+    },
+    "testimonials": {
+      "verified": "Verified buyer",
+      "out_of_five": "out of 5 stars"
     }
   }
 }
