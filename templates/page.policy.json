@@ -1,7 +1,7 @@
 {
   "sections": {
     "main": {
-      "type": "main-policy",
+      "type": "policy-content",
       "settings": {
         "heading_size": "h1",
         "show_updated": true,

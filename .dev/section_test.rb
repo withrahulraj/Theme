@@ -78,7 +78,7 @@ expect('  -> falls back to the note', out, 'Policies are being updated.')
 
 puts "\n--- policy template ---"
 out = check('policy page renders from the policy object') {
-  render_section('main-policy',
+  render_section('policy-content',
     'policy' => { 'title' => 'Return and Refund Policy', 'body' => '<h2>30 days</h2><p>Send it back.</p>' })
 }
 expect('  -> title', out, 'Return and Refund Policy')
@@ -88,7 +88,7 @@ expect('  -> contact details not repeated in a help box',
        (out.to_s.scan(/hello@lumen\.test/).size <= 2 ? 'once' : 'repeated'), 'once')
 
 out = check('policy template also serves a plain page') {
-  render_section('main-policy',
+  render_section('policy-content',
     'page' => { 'title' => 'Payment Policy', 'content' => '<p>Cards and wallets.</p>' })
 }
 expect('  -> page title used', out, 'Payment Policy')
@@ -178,7 +178,7 @@ expect('  -> renders nothing on the storefront', (out.to_s.include?('grid__item'
 
 puts "\n--- store details block on policy pages ---"
 out = check('policy page carries trading details') {
-  render_section('main-policy', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
+  render_section('policy-content', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
 }
 expect('  -> heading', out, 'Store information')
 expect('  -> store name leads, like the footer', out, 'store-details__name')
@@ -196,14 +196,14 @@ expect('  -> no small print by default',
 expect('  -> timezone is fixed, not the store clock', out.to_s.gsub(/\s+/, ' '), '10:00 AM – 6:00 PM EST')
 
 out = check('explicit timezone overrides the store default') {
-  render_section('main-policy',
+  render_section('policy-content',
     'section_settings' => {}, 'policy' => { 'title' => 'X', 'body' => '<p>y</p>' },
     'settings' => { 'store_hours_timezone' => 'PST' })
 }
 expect('  -> override used', out.to_s.gsub(/\s+/, ' '), '10:00 AM – 6:00 PM PST')
 
 out = check('rows with no value are skipped, not printed empty') {
-  render_section('main-policy',
+  render_section('policy-content',
     'shop' => shop('phone' => nil, 'address' => {}),
     'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
 }
@@ -213,14 +213,14 @@ expect('  -> address row dropped entirely',
 expect('  -> email still shown', out, 'hello@lumen.test')
 
 out = check('block can be switched off') {
-  render_section('main-policy',
+  render_section('policy-content',
     'section_settings' => { 'show_store_details' => false },
     'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
 }
 expect('  -> gone', (out.to_s.include?('store-details__list') ? 'shown' : 'hidden'), 'hidden')
 
 out = check('no duplicate contact block on a policy page') {
-  render_section('main-policy', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
+  render_section('policy-content', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
 }
 expect('  -> help box off by default',
        (out.to_s.include?('Still have a question') ? 'shown' : 'hidden'), 'hidden')

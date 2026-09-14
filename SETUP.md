@@ -270,7 +270,7 @@ in the theme editor instead of an empty row.
 
 `store-footer`, `hero-lighting`, `trust-strip`, `info-with-image`,
 `contact-details`, `order-lookup`, `auto-featured-products`,
-`auto-collection-list`, `main-policy`. All of Dawn's own sections are untouched
+`auto-collection-list`, `policy-content`. All of Dawn's own sections are untouched
 and still available — including its stock `featured-collection` and
 `collection-list` if you would rather pick collections by hand.
 
