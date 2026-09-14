@@ -46,40 +46,73 @@ tracking page all follow. There is nothing to re-enter per store.
 
 **A theme carries templates and sections; it does not carry pages.** Uploading
 the ZIP to a new store gives it the layouts, but the pages themselves are store
-content and have to be created there. This is the one step that is genuinely
-per-store, and it is the usual reason policy pages look wrong on a store the
-theme was only uploaded to.
+content and have to be created there. This is the one genuinely per-store step,
+and it is the usual reason pages look wrong on a store the theme was only
+uploaded to.
 
-**The five legal documents need no content.** They are built into the theme, so
-creating the page and leaving the body empty is enough — the document appears,
-with that store's own name, delivery windows and contact details filled in.
+**Nothing needs pasting.** Create these eight pages and leave every body empty.
+The theme supplies the copy and fills in that store's own name, address,
+delivery windows, returns window, timezone and policy links.
 
-To change one on a single store, type into the page body; that replaces the
-built-in document, and clearing the body brings it back. To change one across
-every store, edit `snippets/policy-body-*.liquid` and re-upload the theme.
+| Page title | Handle | Body |
+|---|---|---|
+| Privacy Policy | `privacy-policy` | empty |
+| Return and Refund Policy | `refund-policy` | empty |
+| Shipping Policy | `shipping-policy` | empty |
+| Payment Policy | `payment-policy` | empty |
+| Terms of Service | `terms-of-service` | empty |
+| About Us | `about-us` | empty — then rewrite it, see below |
+| Contact | `contact` | empty, always |
+| Track Your Order | `track-order` | empty, always |
 
-Only About Us needs pasting, and it is in `store-content/`. See
-`store-content/README.md`.
+Contact and Track Your Order are rendered entirely by theme sections, so their
+bodies stay empty permanently — anything typed there appears above the form.
+
+Common alternative handles work too, so an existing store needs no renaming:
+`privacy`, `returns`, `return-policy`, `return-and-refund-policy`, `shipping`,
+`delivery-policy`, `terms`, `terms-and-conditions`, `payments`, `about`,
+`our-story`, `contact-us`, `track-your-order`, `order-tracking`.
+
+### Rewrite About Us
+
+About Us is the one page where the built-in copy is a draft rather than an
+answer. Identical About text across several stores reads as a template to
+customers and as duplicate content to Google, and it is the page people check
+to decide the shop is real. Everything else on this list can ship as-is.
+
+### Changing any of the copy
+
+**One store** — type into the page body in Content → Pages. That replaces the
+built-in document entirely; clearing the body brings it back. There is no
+setting to find.
+
+**Every store** — edit `snippets/page-body-*.liquid` and re-upload the theme.
+Every store on that version follows.
+
+Either way, never hardcode a store name, email, address, delivery window or
+state in `snippets/page-body-*.liquid`. Those are `[[placeholders]]` that the
+theme substitutes per store, which is what makes one document correct
+everywhere. `.dev/validate_templates.py` fails the build on a hardcoded store
+name, email or state in that copy, and on a placeholder the theme cannot
+substitute.
+
+### Templates
 
 Shopify does not assign templates by handle, so pick the template in the page
-editor's **Theme template** dropdown. The one exception is the store details
-block on legal pages, which the stock `page` template adds by itself — so a
-policy page still carries trading details if you forget.
-
-The menu and footer start linking to a page the moment it exists.
+editor's **Theme template** dropdown: `page.contact` for Contact,
+`page.track-order` for tracking, `page.policy` for the five legal pages.
+The legal pages work without it — the stock `page` template detects them from
+the handle and adds the trading details block anyway — so that one is cosmetic.
+Contact and Track Your Order genuinely need theirs, or they render blank.
 
 | Page handle | Template | What it renders |
 |---|---|---|
 | `contact` | `page.contact` | Contact cards + contact form + trust strip |
 | `track-order` | `page.track-order` | Tracking form + timeline + contact cards |
-| `privacy-policy`, `refund-policy`, `shipping-policy`, `terms-of-service`, `payment-policy` | `page.policy` | Narrow legal layout with a last-updated line and a help box |
-| `about-us` | `page` (default) | Your content + trust strip + newsletter |
-| an empty `privacy-policy` etc. | either | The theme's built-in document for that handle |
-| anything else | `page` (default) | Your content + trust strip + newsletter |
+| the five legal handles | `page.policy` | Narrow legal layout with a last-updated line |
+| anything else | `page` (default) | The body + trust strip |
 
-Alternative handles are recognised too, so an existing store does not need its
-pages renamed: `contact-us`, `track-your-order`, `order-tracking`, `tracking`,
-`about`, `our-story`, `faq`, `payment-policy`.
+The menu and footer start linking to a page the moment it exists.
 
 Until a page exists, the footer falls back to whatever is published under
 Settings → Policies. Those URLs work, but Shopify renders `/policies/*` itself

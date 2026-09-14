@@ -361,18 +361,6 @@ expect('  -> no raw token left', (out.to_s.include?('[[') ? 'raw' : 'clean'), 'c
 expect('  -> delivery window filled in', out, '4–7 business days')
 
 
-puts "\n--- store-content renders through the page template ---"
-# What is left in store-content/ is still pasted by hand. Render it the way a
-# live page would and prove nothing leaks.
-Dir[File.join(THEME, 'store-content', '*.html')].sort.each do |path|
-  name = File.basename(path, '.html')
-  out = check("#{name} renders clean") {
-    render_section('main-page',
-      'page' => { 'title' => name, 'handle' => name, 'content' => File.read(path) })
-  }
-  expect("  -> no raw token left", (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
-end
-
 puts "\n--- built-in policy copy fills an empty page ---"
 # The whole point: a new store creates the page and stops there.
 {
@@ -405,12 +393,29 @@ out = check('a page body overrides the built-in copy') {
 expect('  -> merchant copy used', out, 'carrier pigeon')
 expect('  -> built-in copy not appended', (out.to_s.include?('Where we ship') ? 'both' : 'override'), 'override')
 
-%w[about-us contact faq shipping-information random-page].each do |handle|
+%w[contact faq shipping-information our-team random-page].each do |handle|
   out = check("empty /#{handle} stays empty") {
     render_section('main-page', 'page' => { 'title' => handle, 'handle' => handle, 'content' => '' })
   }
   expect("  -> no policy copy invented", (out.to_s.include?('<h2>') ? 'invented' : 'empty'), 'empty')
 end
+
+%w[about-us about our-story].each do |handle|
+  out = check("empty /#{handle} fills itself in") {
+    render_section('main-page', 'page' => { 'title' => 'About Us', 'handle' => handle, 'content' => '' })
+  }
+  expect("  -> about copy rendered", out, 'Light is the cheapest renovation')
+  expect("  -> no raw token left", (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
+  expect("  -> store name filled in", out, 'Lumen Studio')
+  expect("  -> no trading details block on About", (out.to_s.include?('store-details__name') ? 'present' : 'absent'), 'absent')
+end
+
+out = check('a written About replaces the built-in draft') {
+  render_section('main-page',
+    'page' => { 'title' => 'About Us', 'handle' => 'about-us', 'content' => '<p>We started in a garage.</p>' })
+}
+expect('  -> merchant copy used', out, 'garage')
+expect('  -> draft not appended', (out.to_s.include?('cheapest renovation') ? 'both' : 'override'), 'override')
 
 out = check('the legal-document template fills an empty page too') {
   render_section('legal-document', 'page' => { 'title' => 'Privacy Policy', 'handle' => 'privacy-policy', 'content' => '' })

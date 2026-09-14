@@ -118,16 +118,13 @@ for f in sorted(glob.glob(os.path.join(THEME, 'sections', '*.liquid')) +
                     f'{rel}: setting "{setting.get("id")}" has an empty default. '
                     'Shopify drops the whole section on import — omit the key instead.')
 
-# store-content/ is pasted into pages by hand on every store, so a token that
-# the theme does not implement would sit there as literal [[text]] on a live
-# legal page. Check the two stay in step.
+# The built-in page copy ships to every store, so a placeholder the theme does
+# not implement would sit on a live legal page as literal [[text]]. Check the
+# two stay in step.
 tokens_src = open(os.path.join(THEME, 'snippets', 'store-tokens.liquid'), encoding='utf-8').read()
 implemented = set(re.findall(r"replace:\s*'\[\[([a-z0-9_]+)\]\]'", tokens_src))
 
-token_sources = (glob.glob(os.path.join(THEME, 'store-content', '*.html')) +
-                 glob.glob(os.path.join(THEME, 'snippets', 'policy-body-*.liquid')))
-
-for f in sorted(token_sources):
+for f in sorted(glob.glob(os.path.join(THEME, 'snippets', 'page-body-*.liquid'))):
     rel = os.path.relpath(f, THEME)
     for token in sorted(set(re.findall(r'\[\[([a-z0-9_]+)\]\]', open(f, encoding='utf-8').read()))):
         if token not in implemented:
@@ -141,7 +138,7 @@ LEAKED = [
     (r'\b(?:State of )?Michigan\b', 'a hardcoded state'),
 ]
 
-for f in sorted(glob.glob(os.path.join(THEME, 'snippets', 'policy-body-*.liquid'))):
+for f in sorted(glob.glob(os.path.join(THEME, 'snippets', 'page-body-*.liquid'))):
     rel = os.path.relpath(f, THEME)
     body = open(f, encoding='utf-8').read()
     for pattern, what in LEAKED:

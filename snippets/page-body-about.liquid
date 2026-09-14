@@ -1,3 +1,18 @@
+{% comment %}
+  Default copy for the about-us page.
+  
+  Rendered when the page body is empty, so a new store is never left with a
+  blank About page. Anything typed into the page body replaces this.
+  
+  Unlike the legal documents, this one is meant to be rewritten. Identical
+  About copy across several stores reads as a template to customers and as
+  duplicate content to Google — it is the page people check to decide the
+  shop is real. Treat it as a starting draft, not a finished document.
+  
+  Written with placeholders in double brackets, which store-tokens.liquid
+  substitutes at render time. Do not hardcode a store name, email, address
+  or delivery window.
+{% endcomment %}
 <h2>Light is the cheapest renovation there is</h2>
 <p>[[store_name]] started from a simple frustration: most homes are lit by whatever fixture the last owner left behind. A bare bulb in a plain shade, throwing hard light into every corner of a room that deserved better.</p>
 <p>So we went looking for the opposite. Sconces and pendants built around the quality of the light they throw, not just how they look switched off. Frosted, seamless shades that soften the output so a room reads calm instead of clinical. Warm, dimmable LEDs you can tune from a working brightness down to a low evening glow.</p>

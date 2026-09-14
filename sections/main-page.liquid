@@ -16,7 +16,7 @@
   assign page_body = page.content
   if page_body == blank
     capture page_body
-      render 'policy-default', handle: page.handle
+      render 'page-default', handle: page.handle
     endcapture
   endif
 

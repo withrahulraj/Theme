@@ -1,0 +1,54 @@
+{% doc %}
+  Outputs the theme's built-in copy for a page, or nothing when the handle is
+  not one it knows.
+
+  A theme cannot create pages, so every store still needs the page itself. It
+  can supply what goes inside it, which is the part that would otherwise be
+  pasted in by hand on every store. Create a page with the right handle, leave
+  the body empty, and the document appears.
+
+  Anything typed into the page body replaces this — that is the edit path, and
+  it is per store. Editing the page-body snippets changes every store on the
+  next theme upload.
+
+  @param {string} handle - The page handle, usually page.handle.
+
+  @example
+  {% capture body %}{% render 'page-default', handle: page.handle %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  comment
+    Aliases match the lists the footer resolves links with, so a store that
+    names its return policy "returns" gets the document too. Exact handles
+    only: a blank page called "shipping-information" should stay blank rather
+    than sprout a shipping policy nobody asked for.
+  endcomment
+  assign lookup = handle | strip | downcase
+  assign key = ''
+
+  assign groups = 'privacy=privacy-policy|privacy;refund=refund-policy|return-policy|returns|return-and-refund-policy;shipping=shipping-policy|shipping|delivery-policy;payment=payment-policy|payments|payment-information;terms=terms-of-service|terms|terms-and-conditions;about=about-us|about|our-story|about-me' | split: ';'
+
+  if lookup != blank
+    for group in groups
+      assign parts = group | split: '='
+      assign group_aliases = parts[1] | split: '|'
+      for group_alias in group_aliases
+        if group_alias == lookup
+          assign key = parts[0]
+          break
+        endif
+      endfor
+      if key != blank
+        break
+      endif
+    endfor
+  endif
+-%}
+{%- case key -%}
+  {%- when 'privacy' -%}{% render 'page-body-privacy' %}
+  {%- when 'refund' -%}{% render 'page-body-refund' %}
+  {%- when 'shipping' -%}{% render 'page-body-shipping' %}
+  {%- when 'payment' -%}{% render 'page-body-payment' %}
+  {%- when 'terms' -%}{% render 'page-body-terms' %}
+  {%- when 'about' -%}{% render 'page-body-about' %}
+{%- endcase -%}
