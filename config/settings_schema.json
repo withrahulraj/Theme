@@ -386,8 +386,8 @@
         "type": "text",
         "id": "sd_shipping_countries",
         "label": "Ships to",
-        "default": "US, CA, GB, AU",
-        "info": "Comma separated two-letter country codes. Must match the countries your shipping profile actually covers."
+        "default": "US",
+        "info": "Comma separated two-letter country codes. Must match the countries your shipping profile actually covers — Google compares this against your store, and listing a country you do not ship to gets items disapproved."
       },
       {
         "type": "range",

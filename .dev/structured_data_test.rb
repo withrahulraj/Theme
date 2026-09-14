@@ -71,8 +71,8 @@ expect('  -> seller links to the Organization', offer.dig('seller', '@id').to_s,
 ship = offer['shippingDetails'] || {}
 expect('  -> shippingDetails type', ship['@type'].to_s, 'OfferShippingDetails')
 expect('  -> free shipping rate', ship.dig('shippingRate', 'value').to_s, '0')
-expect('  -> four destinations', (ship['shippingDestination'] || []).size.to_s, '4')
-expect('  -> first destination', ship['shippingDestination'].first['addressCountry'].to_s, 'US')
+expect('  -> ships to one country by default', (ship['shippingDestination'] || []).size.to_s, '1')
+expect('  -> and it is the US', ship['shippingDestination'].first['addressCountry'].to_s, 'US')
 expect('  -> handling time', ship.dig('deliveryTime', 'handlingTime', 'maxValue').to_s, '2')
 expect('  -> transit time', ship.dig('deliveryTime', 'transitTime', 'maxValue').to_s, '9')
 
@@ -81,7 +81,19 @@ expect('  -> return policy type', ret['@type'].to_s, 'MerchantReturnPolicy')
 expect('  -> 30 day window', ret['merchantReturnDays'].to_s, '30')
 expect('  -> finite window category', ret['returnPolicyCategory'].to_s, 'MerchantReturnFiniteReturnWindow')
 expect('  -> free returns', ret['returnFees'].to_s, 'https://schema.org/FreeReturn')
-expect('  -> applicable countries', (ret['applicableCountry'] || []).size.to_s, '4')
+expect('  -> returns apply to the same country', (ret['applicableCountry'] || []).size.to_s, '1')
+
+puts "\n--- Product: a store that does ship internationally ---"
+out = check('multi-country shipping markup') {
+  render_snippet('structured-data-product',
+    base_ctx('settings' => { 'sd_shipping_countries' => 'US, CA, GB, AU' }).merge('product' => egg_lamp))
+}
+prod = (ld_blocks(out, 'multi country').first || {})
+offer = (prod['offers'] || []).first || {}
+dests = offer.dig('shippingDetails', 'shippingDestination') || []
+expect('  -> four destinations', dests.size.to_s, '4')
+expect('  -> in the order listed', dests.map { |d| d['addressCountry'] }.inspect, '["US", "CA", "GB", "AU"]')
+expect('  -> returns cover the same four', (offer.dig('hasMerchantReturnPolicy', 'applicableCountry') || []).size.to_s, '4')
 
 puts "\n--- Product: multi-variant, mixed availability ---"
 multi = egg_lamp('variants' => [
