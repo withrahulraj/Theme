@@ -109,8 +109,8 @@ expect('  -> phone', out, '+1 555 0142')
 expect('  -> working days', out, 'Monday – Friday')
 expect('  -> working hours', out, '10:00 AM – 6:00 PM EST')
 expect('  -> returns window from settings', out, 'You have 30 days to return')
-expect('  -> delivery window is computed, not hardcoded', out, 'Delivery takes 6-11 business days')
-expect('  -> handling and transit', out, '(1-2 handling, 5-9 transit)')
+expect('  -> delivery window is computed, not hardcoded', out, 'Delivery takes 4-7 business days')
+expect('  -> handling and transit', out, '(1-2 handling, 3-5 transit)')
 expect('  -> shipping countries', out, 'We ship to US')
 expect('  -> refund policy url', out, 'href="/policies/refund-policy"')
 expect('  -> track order url', out, 'href="/pages/track-order"')
@@ -126,7 +126,7 @@ out = check('tokens follow a changed setting') {
       .merge('content' => body))
 }
 expect('  -> new returns window', out, 'You have 60 days to return')
-expect('  -> recomputed delivery window', out, 'Delivery takes 6-17 business days')
+expect('  -> recomputed delivery window', out, 'Delivery takes 4-17 business days')
 expect('  -> new hours', out, 'Monday – Saturday')
 expect('  -> shipping countries follow the setting too',
        render_snippet('store-tokens',

@@ -191,7 +191,11 @@
           }
         }
       },
-      "sd_shipping_countries": "US"
+      "sd_shipping_countries": "US",
+      "sd_handling_min": 1,
+      "sd_handling_max": 2,
+      "sd_transit_min": 3,
+      "sd_transit_max": 5
     }
   }
 }

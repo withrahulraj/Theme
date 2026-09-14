@@ -74,7 +74,8 @@ expect('  -> free shipping rate', ship.dig('shippingRate', 'value').to_s, '0')
 expect('  -> ships to one country by default', (ship['shippingDestination'] || []).size.to_s, '1')
 expect('  -> and it is the US', ship['shippingDestination'].first['addressCountry'].to_s, 'US')
 expect('  -> handling time', ship.dig('deliveryTime', 'handlingTime', 'maxValue').to_s, '2')
-expect('  -> transit time', ship.dig('deliveryTime', 'transitTime', 'maxValue').to_s, '9')
+expect('  -> transit time', ship.dig('deliveryTime', 'transitTime', 'maxValue').to_s, '5')
+expect('  -> transit minimum', ship.dig('deliveryTime', 'transitTime', 'minValue').to_s, '3')
 
 ret = offer['hasMerchantReturnPolicy'] || {}
 expect('  -> return policy type', ret['@type'].to_s, 'MerchantReturnPolicy')
