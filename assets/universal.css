@@ -896,3 +896,64 @@ body,
 .text-body {
   letter-spacing: 0;
 }
+
+/* --------------------------------------------------------------------------
+   Store details block — trading details at the foot of a policy page
+   -------------------------------------------------------------------------- */
+.store-details {
+  margin-top: 4rem;
+  padding: 2.8rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  border-radius: 1rem;
+  background: rgba(var(--color-foreground), 0.02);
+}
+
+.store-details__heading {
+  margin: 0 0 1.8rem;
+  font-size: 1.7rem;
+}
+
+.store-details__list {
+  display: grid;
+  gap: 1.2rem;
+  margin: 0;
+}
+
+.store-details__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.2rem;
+}
+
+@media screen and (min-width: 600px) {
+  .store-details__row {
+    grid-template-columns: 14rem 1fr;
+    gap: 1.6rem;
+    align-items: baseline;
+  }
+}
+
+.store-details__label {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+.store-details__value {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.55;
+}
+
+.store-details__value a {
+  color: inherit;
+  text-underline-offset: 0.3rem;
+}
+
+.store-details__note {
+  margin: 1.8rem 0 0;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  opacity: 0.6;
+}

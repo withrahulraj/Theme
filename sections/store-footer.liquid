@@ -198,8 +198,10 @@
                 {%- if settings.store_hours_days != blank -%}
                   <span class="store-footer__detail-strong">{{ settings.store_hours_days }}</span>
                 {%- endif -%}
-                {%- if settings.store_hours_time != blank -%}
-                  <br>{{ settings.store_hours_time }}
+                {%- capture footer_hours %}{% render 'store-info', field: 'hours_time' %}{% endcapture -%}
+                {%- assign footer_hours = footer_hours | strip -%}
+                {%- if footer_hours != blank -%}
+                  <br>{{ footer_hours }}
                 {%- endif -%}
               </span>
             </li>

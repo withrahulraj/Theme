@@ -50,7 +50,14 @@
         "type": "text",
         "id": "store_hours_time",
         "label": "Working hours",
-        "default": "10:00 AM – 6:00 PM EST"
+        "default": "10:00 AM – 6:00 PM",
+        "info": "Without the timezone — that is added separately below."
+      },
+      {
+        "type": "text",
+        "id": "store_hours_timezone",
+        "label": "Timezone",
+        "info": "Leave blank to use the store's own timezone from Settings → Store details, shown as EST, PST and so on."
       },
       {
         "type": "text",

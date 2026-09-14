@@ -535,6 +535,13 @@
     },
     "footer": {
       "rights": "All rights reserved."
+    },
+    "store_details": {
+      "name": "Store name",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "hours": "Working hours"
     }
   }
 }

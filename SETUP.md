@@ -83,6 +83,23 @@ counter, so the same variant produces the same code on every render.
 
 Both are on by default and can be turned off in Theme settings → Product page.
 
+## Trading details on every policy page
+
+Every policy page ends with a labelled block of the store's details — name,
+address, phone, email, and working days with hours and timezone. It reads
+straight from Settings → Store details, so the pages carry correct trading
+details without anyone retyping them, and one change in admin updates them all.
+
+Rows with nothing behind them are skipped rather than printed empty, so a store
+with no phone number does not get a blank "Phone" row.
+
+The timezone comes from your Shopify store timezone by default (shown as EST,
+PST and so on), so opening hours are never ambiguous. Set one explicitly in
+Theme settings → Store information if you want to override it.
+
+Turn the block off, or change its heading, in the Policy content section. To put
+the same block on an ordinary page, write `[[store_details]]` in the page body.
+
 ## Page tokens — write it once, keep it current
 
 Legal pages usually go stale because the support email or returns window is
@@ -97,7 +114,9 @@ every page and on the policy template.
 | `[[email]]` / `[[email_link]]` | Support email — plain, or as a `mailto:` link |
 | `[[phone]]` / `[[phone_link]]` | Phone — plain, or as a `tel:` link |
 | `[[address]]` | Store address, on one line |
-| `[[hours_days]]` / `[[hours_time]]` | Working days and hours |
+| `[[hours_days]]` / `[[hours_time]]` | Working days, and hours with the timezone already appended |
+| `[[timezone]]` | Timezone on its own |
+| `[[store_details]]` | The whole labelled details block |
 | `[[support_note]]` | Support note |
 | `[[returns_days]]` | Returns window |
 | `[[handling_min]]` / `[[handling_max]]` | Handling time |

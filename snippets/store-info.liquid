@@ -5,7 +5,7 @@
 
   Capture the result — this snippet prints a bare value with no markup.
 
-  @param {string} field - One of: name, address, address_inline, street, city, region, phone, phone_href, email, map.
+  @param {string} field - One of: name, address, address_inline, street, city, region, phone, phone_href, email, timezone, hours_time, map.
 
   @example
   {% capture store_phone %}{% render 'store-info', field: 'phone' %}{% endcapture %}
@@ -50,6 +50,26 @@
 
     when 'email'
       assign value = settings.store_email_override | default: shop.email
+
+    when 'timezone'
+      assign value = settings.store_hours_timezone | strip
+      if value == blank
+        comment
+          Falls back to the store's own timezone abbreviation, so opening hours
+          are never ambiguous about which clock they mean.
+        endcomment
+        assign value = 'now' | date: '%Z'
+      endif
+
+    when 'hours_time'
+      assign value = settings.store_hours_time | strip
+      assign tz = settings.store_hours_timezone | strip
+      if tz == blank
+        assign tz = 'now' | date: '%Z'
+      endif
+      if value != blank and tz != blank
+        assign value = value | append: ' ' | append: tz
+      endif
 
     when 'map'
       if settings.store_map_link != blank

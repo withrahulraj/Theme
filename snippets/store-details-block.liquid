@@ -1,0 +1,103 @@
+{% doc %}
+  Renders the store's identity and contact details as a labelled block.
+
+  Every value comes from Settings → Store details (or the theme's Store
+  information overrides), so a policy page carries correct trading details
+  without anyone retyping them — and one change in admin updates every page.
+
+  Rows with no value behind them are skipped rather than printed empty.
+
+  @param {string} [heading] - Block heading. Pass blank to omit it.
+  @param {string} [note] - Small print under the rows.
+
+  @example
+  {% render 'store-details-block', heading: 'Our details' %}
+{% enddoc %}
+
+{%- liquid
+  assign detail_name = settings.store_name_override | default: shop.name
+
+  capture detail_address
+    render 'store-info', field: 'address'
+  endcapture
+  assign detail_address = detail_address | strip
+
+  capture detail_phone
+    render 'store-info', field: 'phone'
+  endcapture
+  assign detail_phone = detail_phone | strip
+
+  capture detail_phone_href
+    render 'store-info', field: 'phone_href'
+  endcapture
+  assign detail_phone_href = detail_phone_href | strip
+
+  capture detail_email
+    render 'store-info', field: 'email'
+  endcapture
+  assign detail_email = detail_email | strip
+
+  comment
+    With no timezone set, fall back to the store's own timezone abbreviation, so
+    the hours are never ambiguous about which clock they refer to.
+  endcomment
+  capture detail_hours
+    render 'store-info', field: 'hours_time'
+  endcapture
+  assign detail_hours = detail_hours | strip
+-%}
+
+<aside class="store-details">
+  {%- if heading != blank -%}
+    <h2 class="store-details__heading">{{ heading | escape }}</h2>
+  {%- endif -%}
+
+  <dl class="store-details__list">
+    {%- if detail_name != blank -%}
+      <div class="store-details__row">
+        <dt class="store-details__label">{{ 'universal.store_details.name' | t }}</dt>
+        <dd class="store-details__value">{{ detail_name }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if detail_address != blank -%}
+      <div class="store-details__row">
+        <dt class="store-details__label">{{ 'universal.store_details.address' | t }}</dt>
+        <dd class="store-details__value">{{ detail_address | newline_to_br }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if detail_phone != blank -%}
+      <div class="store-details__row">
+        <dt class="store-details__label">{{ 'universal.store_details.phone' | t }}</dt>
+        <dd class="store-details__value">
+          <a href="tel:{{ detail_phone_href }}">{{ detail_phone }}</a>
+        </dd>
+      </div>
+    {%- endif -%}
+
+    {%- if detail_email != blank -%}
+      <div class="store-details__row">
+        <dt class="store-details__label">{{ 'universal.store_details.email' | t }}</dt>
+        <dd class="store-details__value">
+          <a href="mailto:{{ detail_email }}">{{ detail_email }}</a>
+        </dd>
+      </div>
+    {%- endif -%}
+
+    {%- if settings.store_hours_days != blank or detail_hours != blank -%}
+      <div class="store-details__row">
+        <dt class="store-details__label">{{ 'universal.store_details.hours' | t }}</dt>
+        <dd class="store-details__value">
+          {{- settings.store_hours_days -}}
+          {%- if settings.store_hours_days != blank and detail_hours != blank %}, {% endif -%}
+          {{- detail_hours -}}
+        </dd>
+      </div>
+    {%- endif -%}
+  </dl>
+
+  {%- if note != blank -%}
+    <p class="store-details__note">{{ note | escape }}</p>
+  {%- endif -%}
+</aside>

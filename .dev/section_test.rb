@@ -10,7 +10,7 @@ expect('  -> address', out, '18 Kiln Road')
 expect('  -> tel link', out, 'href="tel:+15550142"')
 expect('  -> mailto link', out, 'mailto:hello@lumen.test')
 expect('  -> working days', out, 'Monday – Friday')
-expect('  -> working hours', out, '10:00 AM – 6:00 PM EST')
+expect('  -> working hours carry a timezone', out.to_s.gsub(/\s+/, ' '), /10:00 AM – 6:00 PM [A-Z]{2,5}/)
 expect('  -> privacy policy', out, '/policies/privacy-policy')
 expect('  -> refund policy', out, '/policies/refund-policy')
 expect('  -> shipping policy', out, '/policies/shipping-policy')
@@ -173,11 +173,48 @@ out = check('auto collection list on an empty store') {
 }
 expect('  -> renders nothing on the storefront', (out.to_s.include?('grid__item') ? 'grid' : 'clean'), 'clean')
 
+puts "\n--- store details block on policy pages ---"
+out = check('policy page carries trading details') {
+  render_section('main-policy', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
+}
+expect('  -> heading', out, 'Our details')
+expect('  -> store name row', out, 'Lumen Studio')
+expect('  -> address row', out, '18 Kiln Road')
+expect('  -> phone as a tel link', out, 'href="tel:+15550142"')
+expect('  -> email as a mailto link', out, 'mailto:hello@lumen.test')
+expect('  -> working days', out, 'Monday – Friday')
+expect('  -> hours carry a timezone', out.to_s.gsub(/\s+/, ' '), /10:00 AM – 6:00 PM [A-Z]{2,5}/)
+expect('  -> five labelled rows', out.to_s.scan(/store-details__row/).size.to_s, '5')
+
+out = check('explicit timezone overrides the store default') {
+  render_section('main-policy',
+    'section_settings' => {}, 'policy' => { 'title' => 'X', 'body' => '<p>y</p>' },
+    'settings' => { 'store_hours_timezone' => 'PST' })
+}
+expect('  -> override used', out.to_s.gsub(/\s+/, ' '), '10:00 AM – 6:00 PM PST')
+
+out = check('rows with no value are skipped, not printed empty') {
+  render_section('main-policy',
+    'shop' => shop('phone' => nil, 'address' => {}),
+    'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
+}
+expect('  -> no empty tel link', (out.to_s.include?('href="tel:"') ? 'bad' : 'clean'), 'clean')
+expect('  -> no Address label without an address',
+       (out.to_s.include?('>Address<') ? 'shown' : 'hidden'), 'hidden')
+expect('  -> email still shown', out, 'hello@lumen.test')
+
+out = check('block can be switched off') {
+  render_section('main-policy',
+    'section_settings' => { 'show_store_details' => false },
+    'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
+}
+expect('  -> gone', (out.to_s.include?('store-details__list') ? 'shown' : 'hidden'), 'hidden')
+
 puts "\n--- contact-details ---"
 out = check('contact-details renders all four cards') { render_section('contact-details') }
 expect('  -> email card', out, 'hello@lumen.test')
 expect('  -> phone card', out, '+1 555 0142')
-expect('  -> hours card', out, '10:00 AM – 6:00 PM EST')
+expect('  -> hours card carries a timezone', out.to_s.gsub(/\s+/, ' '), /10:00 AM – 6:00 PM [A-Z]{2,5}/)
 expect('  -> address card', out, '18 Kiln Road')
 expect('  -> four-up grid', out, 'contact-details__grid--4')
 

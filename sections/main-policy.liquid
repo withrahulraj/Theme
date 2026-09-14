@@ -56,6 +56,13 @@
         {% render 'store-tokens', content: legal_body %}
       </div>
 
+      {%- if section.settings.show_store_details -%}
+        {%- render 'store-details-block',
+          heading: section.settings.store_details_heading,
+          note: section.settings.store_details_note
+        -%}
+      {%- endif -%}
+
       {%- if section.settings.show_footer_help -%}
         <aside class="legal-page__help">
           <h2 class="legal-page__help-title">{{ section.settings.help_heading }}</h2>
@@ -87,9 +94,18 @@
       "id": "heading_size",
       "label": "Title size",
       "options": [
-        { "value": "h2", "label": "Medium" },
-        { "value": "h1", "label": "Large" },
-        { "value": "h0", "label": "Extra large" }
+        {
+          "value": "h2",
+          "label": "Medium"
+        },
+        {
+          "value": "h1",
+          "label": "Large"
+        },
+        {
+          "value": "h0",
+          "label": "Extra large"
+        }
       ],
       "default": "h1"
     },
@@ -111,6 +127,32 @@
       "label": "Date format",
       "default": "%B %Y",
       "info": "Uses Liquid date formatting. %B %Y gives \"September 2026\"."
+    },
+    {
+      "type": "header",
+      "content": "Store details"
+    },
+    {
+      "type": "paragraph",
+      "content": "Name, address, phone, email and working hours, read straight from Settings → Store details so every policy page carries correct trading details."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_store_details",
+      "label": "Show the store details block",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "store_details_heading",
+      "label": "Heading",
+      "default": "Our details"
+    },
+    {
+      "type": "text",
+      "id": "store_details_note",
+      "label": "Small print",
+      "default": "These details are kept up to date in our store settings."
     },
     {
       "type": "header",

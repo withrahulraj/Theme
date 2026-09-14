@@ -96,6 +96,36 @@ puts "\n--- product-assurance ---"
 out = check('assurance box') { render_snippet('product-assurance', base_ctx) }
 expect('  -> tracking highlight', out, 'Each Package Includes Tracking.')
 
+puts "\n--- store details token ---"
+out = check('[[store_details]] expands to the whole block') {
+  render_snippet('store-tokens', base_ctx.merge('content' => '<p>Before.</p>[[store_details]]<p>After.</p>'))
+}
+expect('  -> block rendered', out, 'store-details__list')
+expect('  -> name inside it', out, 'Lumen Studio')
+expect('  -> surrounding content kept', out, '<p>Before.</p>')
+expect('  -> token consumed', (out.to_s.include?('[[store_details]]') ? 'left' : 'replaced'), 'replaced')
+
+out = check('[[hours_time]] already carries the timezone') {
+  render_snippet('store-tokens', base_ctx.merge('content' => '<p>We answer [[hours_time]].</p>'))
+}
+expect('  -> hours and zone together', out.to_s, /We answer 10:00 AM – 6:00 PM [A-Z]{2,5}\./)
+
+out = check('[[timezone]] resolves on its own') {
+  render_snippet('store-tokens', base_ctx.merge('content' => '<p>All times [[timezone]].</p>'))
+}
+expect('  -> zone alone', out.to_s, /All times [A-Z]{2,5}\./)
+
+out = check('an explicit timezone setting wins over the store default') {
+  render_snippet('store-tokens',
+    base_ctx('settings' => { 'store_hours_timezone' => 'EST' }).merge('content' => '<p>[[hours_time]]</p>'))
+}
+expect('  -> override used', out.to_s, '10:00 AM – 6:00 PM EST')
+
+out = check('pages without the token are unaffected') {
+  render_snippet('store-tokens', base_ctx.merge('content' => '<p>Nothing special.</p>'))
+}
+expect('  -> no block injected', (out.to_s.include?('store-details__list') ? 'injected' : 'clean'), 'clean')
+
 puts "\n--- generated SKUs ---"
 v_no_sku = { 'id' => 58011727331468, 'sku' => nil }
 v_real = { 'id' => 58011727331468, 'sku' => 'LMP-EGG-S' }
@@ -181,7 +211,7 @@ out = check('tokens resolve from settings') { render_snippet('store-tokens', bas
 expect('  -> email becomes a mailto link', out, '<a href="mailto:hello@lumen.test">hello@lumen.test</a>')
 expect('  -> phone', out, '+1 555 0142')
 expect('  -> working days', out, 'Monday – Friday')
-expect('  -> working hours', out, '10:00 AM – 6:00 PM EST')
+expect('  -> working hours carry a timezone', out.to_s.gsub(/\s+/, ' '), /10:00 AM – 6:00 PM [A-Z]{2,5}/)
 expect('  -> returns window from settings', out, 'You have 30 days to return')
 expect('  -> delivery window is computed, not hardcoded', out, 'Delivery takes 4-7 business days')
 expect('  -> handling and transit', out, '(1-2 handling, 3-5 transit)')

@@ -41,6 +41,11 @@
   endcapture
   assign token_address = token_address | strip
 
+  capture token_hours
+    render 'store-info', field: 'hours_time'
+  endcapture
+  assign token_hours = token_hours | strip
+
   capture token_contact_url
     render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
   endcapture
@@ -107,7 +112,7 @@
   assign output = output | replace: '[[phone]]', token_phone
   assign output = output | replace: '[[address]]', token_address
   assign output = output | replace: '[[hours_days]]', settings.store_hours_days
-  assign output = output | replace: '[[hours_time]]', settings.store_hours_time
+  assign output = output | replace: '[[hours_time]]', token_hours
   assign output = output | replace: '[[support_note]]', settings.store_support_note
 
   assign output = output | replace: '[[returns_days]]', settings.trust_returns_days
@@ -129,5 +134,21 @@
   assign output = output | replace: '[[terms_url]]', token_terms_url
 
   assign output = output | replace: '[[year]]', current_year
+
+  comment
+    A whole labelled details block, for pages that want it inline rather than
+    from the policy template.
+  endcomment
+  if output contains '[[store_details]]'
+    capture details_block
+      render 'store-details-block'
+    endcapture
+    assign output = output | replace: '[[store_details]]', details_block
+  endif
+
+  capture timezone_token
+    render 'store-info', field: 'timezone'
+  endcapture
+  assign output = output | replace: '[[timezone]]', timezone_token
 -%}
 {{- output -}}
