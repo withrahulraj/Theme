@@ -63,6 +63,26 @@ pages renamed: `contact-us`, `track-your-order`, `order-tracking`, `tracking`,
 Until a page exists, links point at the handle above so nothing 404s silently
 once you create it.
 
+## Two things the theme fills in for you
+
+**Image alt text.** Empty alt text is the most common accessibility failure in a
+Shopify catalogue, and it costs image-search traffic. Where a merchant has not
+written alt text, the theme builds it from the product or collection title —
+adding the variant name and a gallery position where they apply. Alt text you
+*have* written always wins.
+
+**SKUs in structured data.** Where a variant has no SKU, the theme generates a
+stable one from your store name (`brightloft` → `BRI-317421-331468`) so every
+offer in the Google markup carries an identifier. It is derived from IDs, not a
+counter, so the same variant produces the same code on every render.
+
+> This fills a gap in the storefront markup only. **It does not write SKUs into
+> your product records** — no theme can do that, and your Shopify admin and
+> product feed will still show the SKU field as empty. To have matching codes
+> everywhere, write them to the variants via an app, a CSV import, or the API.
+
+Both are on by default and can be turned off in Theme settings → Product page.
+
 ## Page tokens — write it once, keep it current
 
 Legal pages usually go stale because the support email or returns window is

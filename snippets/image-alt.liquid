@@ -1,0 +1,36 @@
+{% doc %}
+  Outputs alt text for an image, falling back to a description built from the
+  product or collection title when the merchant has not written one.
+
+  Empty alt text is the most common accessibility failure in a Shopify catalogue
+  and it costs image search traffic, so the theme fills the gap itself rather
+  than leaving it to per-product data entry.
+
+  The result is already HTML-escaped — use it directly in an attribute, without
+  piping it through `escape` again.
+
+  @param {string} [alt] - The image's own alt text. Used as-is when present.
+  @param {string} [title] - Product or collection title to build a fallback from.
+  @param {string} [suffix] - Extra detail, such as a variant name.
+  @param {number} [index] - Position in a gallery. Adds "image N" for the second image onward.
+
+  @example
+  <img alt="{% render 'image-alt', alt: media.alt, title: product.title, index: forloop.index %}">
+{% enddoc %}
+{%- liquid
+  assign resolved = alt | strip
+
+  if resolved == blank
+    assign resolved = title | strip
+
+    if suffix != blank
+      assign resolved = resolved | append: ' — ' | append: suffix
+    endif
+
+    assign position = index | plus: 0
+    if position > 1
+      assign resolved = resolved | append: ' — image ' | append: position
+    endif
+  endif
+-%}
+{{- resolved | escape -}}

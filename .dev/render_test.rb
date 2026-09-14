@@ -96,6 +96,80 @@ puts "\n--- product-assurance ---"
 out = check('assurance box') { render_snippet('product-assurance', base_ctx) }
 expect('  -> tracking highlight', out, 'Each Package Includes Tracking.')
 
+puts "\n--- generated SKUs ---"
+v_no_sku = { 'id' => 58011727331468, 'sku' => nil }
+v_real = { 'id' => 58011727331468, 'sku' => 'LMP-EGG-S' }
+prod = { 'id' => 10292317421708 }
+
+out = check('generates a SKU when the variant has none') {
+  render_snippet('variant-sku', base_ctx.merge('variant' => v_no_sku, 'product' => prod))
+}
+expect('  -> prefixed from the store name', out.to_s.strip, /\ALUM-/)
+expect('  -> has all three parts', out.to_s.strip, /\A[A-Z]{3}-\d+-\d+\z/)
+
+again = render_snippet('variant-sku', base_ctx.merge('variant' => v_no_sku, 'product' => prod))
+expect('  -> stable across renders', (again.to_s.strip == out.to_s.strip ? 'stable' : 'changed'), 'stable')
+
+other = render_snippet('variant-sku',
+  base_ctx.merge('variant' => { 'id' => 58011727364236, 'sku' => nil }, 'product' => prod))
+expect('  -> different variant gets a different code',
+       (other.to_s.strip == out.to_s.strip ? 'collision' : 'unique'), 'unique')
+
+out = check('a real SKU always wins') {
+  render_snippet('variant-sku', base_ctx.merge('variant' => v_real, 'product' => prod))
+}
+expect('  -> untouched', out.to_s.strip, 'LMP-EGG-S')
+
+out = check('prefix can be overridden') {
+  render_snippet('variant-sku',
+    base_ctx('settings' => { 'sku_prefix' => 'brl' }).merge('variant' => v_no_sku, 'product' => prod))
+}
+expect('  -> uppercased override used', out.to_s.strip, /\ABRL-/)
+
+out = check('generation can be switched off') {
+  render_snippet('variant-sku',
+    base_ctx('settings' => { 'sku_autogenerate' => false }).merge('variant' => v_no_sku, 'product' => prod))
+}
+expect('  -> nothing emitted', out.to_s.strip, '')
+
+out = check('a store whose name has no letters still gets a prefix') {
+  render_snippet('variant-sku',
+    base_ctx('shop' => shop('name' => '!!! ???')).merge('variant' => v_no_sku, 'product' => prod))
+}
+expect('  -> falls back to SKU-', out.to_s.strip, /\ASKU-/)
+
+puts "\n--- image alt text ---"
+out = check('falls back to the product title') {
+  render_snippet('image-alt', base_ctx.merge('alt' => '', 'title' => 'Floor Lamp with Egg Shape'))
+}
+expect('  -> title used', out.to_s.strip, 'Floor Lamp with Egg Shape')
+
+out = check('real alt text is kept') {
+  render_snippet('image-alt', base_ctx.merge('alt' => 'Lamp glowing on a walnut side table', 'title' => 'Floor Lamp'))
+}
+expect('  -> merchant text wins', out.to_s.strip, 'Lamp glowing on a walnut side table')
+
+out = check('gallery images are distinguished') {
+  render_snippet('image-alt', base_ctx.merge('alt' => '', 'title' => 'Floor Lamp', 'index' => 3))
+}
+expect('  -> numbered', out.to_s.strip, 'Floor Lamp — image 3')
+
+out = check('first image is not numbered') {
+  render_snippet('image-alt', base_ctx.merge('alt' => '', 'title' => 'Floor Lamp', 'index' => 1))
+}
+expect('  -> no suffix', out.to_s.strip, 'Floor Lamp')
+
+out = check('variant detail is included') {
+  render_snippet('image-alt', base_ctx.merge('alt' => '', 'title' => 'Floor Lamp', 'suffix' => 'Small'))
+}
+expect('  -> suffix appended', out.to_s.strip, 'Floor Lamp — Small')
+
+out = check('alt text is escaped for attribute use') {
+  render_snippet('image-alt', base_ctx.merge('alt' => '', 'title' => 'Bert & Ernie\'s "Lamp"'))
+}
+expect('  -> ampersand escaped', out, '&amp;')
+expect('  -> quotes escaped', out, '&quot;')
+
 puts "\n--- store tokens ---"
 body = '<p>Email [[email_link]] or call [[phone]]. We are open [[hours_days]], [[hours_time]]. ' \
        'You have [[returns_days]] days to return. Delivery takes [[delivery_min]]-[[delivery_max]] ' \

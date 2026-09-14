@@ -83,6 +83,13 @@ expect('  -> 30 day window', ret['merchantReturnDays'].to_s, '30')
 expect('  -> finite window category', ret['returnPolicyCategory'].to_s, 'MerchantReturnFiniteReturnWindow')
 expect('  -> free returns', ret['returnFees'].to_s, 'https://schema.org/FreeReturn')
 expect('  -> returns apply to the same country', (ret['applicableCountry'] || []).size.to_s, '1')
+expect('  -> business days declared', (ship.dig('deliveryTime', 'businessDays', 'dayOfWeek') || []).size.to_s, '5')
+expect('  -> weekends excluded',
+       ((ship.dig('deliveryTime', 'businessDays', 'dayOfWeek') || []).any? { |d| d =~ /Saturday|Sunday/ } ? 'included' : 'excluded'),
+       'excluded')
+expect('  -> cut-off time published', ship.dig('deliveryTime', 'cutoffTime').to_s, '17:00:00-05:00')
+expect('  -> return policy country', (ret['returnPolicyCountry'] || []).first.to_s, 'US')
+expect('  -> refund type', ret['refundType'].to_s, 'FullRefund')
 
 puts "\n--- Product: a store that does ship internationally ---"
 out = check('multi-country shipping markup') {
@@ -114,6 +121,16 @@ expect('  -> prices differ per variant', offers.map { |o| o['price'] }.inspect, 
 expect('  -> sold-out variant marked OutOfStock', offers[2]['availability'].to_s, 'OutOfStock')
 expect('  -> blank barcode emits no gtin', (offers[1].key?('gtin') ? 'present' : 'absent'), 'absent')
 expect('  -> non-numeric barcode emits no gtin', (offers[2].key?('gtin') ? 'present' : 'absent'), 'absent')
+
+puts "\n--- Product: variants with no SKU ---"
+no_sku = egg_lamp('variants' => [variant('sku' => nil), variant('id' => 2, 'sku' => '', 'url' => '/products/egg-lamp?variant=2')])
+out = check('offers still carry an identifier') {
+  render_snippet('structured-data-product', base_ctx.merge('product' => no_sku))
+}
+skus = ((ld_blocks(out, 'no sku').first || {})['offers'] || []).map { |o| o['sku'] }
+expect('  -> every offer has a sku', (skus.all? { |s| s.to_s != '' } ? 'all' : 'missing'), 'all')
+expect('  -> generated from the store name', skus.first.to_s, /\ALUM-/)
+expect('  -> unique per variant', (skus.uniq.size == skus.size ? 'unique' : 'duplicated'), 'unique')
 
 puts "\n--- Product: ratings ---"
 expect('  -> no aggregateRating without real reviews', (prod.key?('aggregateRating') ? 'present' : 'absent'), 'absent')

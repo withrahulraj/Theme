@@ -146,7 +146,7 @@
                         <img
                           class="predictive-search__image"
                           src="{{ product.featured_media | image_url: width: 150 }}"
-                          alt="{{ product.featured_media.alt | escape }}"
+                          alt="{% render 'image-alt', alt: product.featured_media.alt, title: product.title %}"
                           width="50"
                           height="{{ 50 | divided_by: product.featured_media.preview_image.aspect_ratio }}"
                         >

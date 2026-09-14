@@ -195,7 +195,10 @@
       "sd_handling_min": 1,
       "sd_handling_max": 2,
       "sd_transit_min": 3,
-      "sd_transit_max": 5
+      "sd_transit_max": 5,
+      "sd_cutoff_time": "17:00:00-05:00",
+      "sku_autogenerate": true,
+      "sku_prefix": ""
     }
   }
 }

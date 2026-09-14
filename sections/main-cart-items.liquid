@@ -97,7 +97,7 @@
                           <img
                             src="{{ item.image | image_url: width: 300 }}"
                             class="cart-item__image {% if item.parent_relationship.parent != null %}global-media-settings{% endif %}"
-                            alt="{{ item.image.alt | escape }}"
+                            alt="{% render 'image-alt', alt: item.image.alt, title: item.product.title, suffix: item.variant.title %}"
                             loading="lazy"
                             width="150"
                             height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"

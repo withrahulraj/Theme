@@ -308,6 +308,26 @@
         "step": 1,
         "default": 20,
         "unit": "qty"
+      },
+      {
+        "type": "header",
+        "content": "SKUs"
+      },
+      {
+        "type": "paragraph",
+        "content": "When a variant has no SKU, the theme generates a stable one from your store name for the product's structured data. This does not write SKUs into your products — only an app or the API can do that."
+      },
+      {
+        "type": "checkbox",
+        "id": "sku_autogenerate",
+        "label": "Generate a SKU when a variant has none",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sku_prefix",
+        "label": "SKU prefix",
+        "info": "Leave blank to derive it from your store name — “brightloft” becomes BRI."
       }
     ]
   },
@@ -428,6 +448,13 @@
         "step": 1,
         "unit": "d",
         "default": 5
+      },
+      {
+        "type": "text",
+        "id": "sd_cutoff_time",
+        "label": "Order cut-off time",
+        "default": "17:00:00-05:00",
+        "info": "Orders placed before this time start handling the same day. Format HH:MM:SS with a UTC offset — 17:00:00-05:00 is 5pm US Eastern. Google uses it to show a delivery date."
       },
       {
         "type": "header",

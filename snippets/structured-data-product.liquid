@@ -65,7 +65,20 @@
           "minValue": {{ settings.sd_transit_min | default: 5 }},
           "maxValue": {{ settings.sd_transit_max | default: 9 }},
           "unitCode": "DAY"
+        },
+        "businessDays": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "https://schema.org/Monday",
+            "https://schema.org/Tuesday",
+            "https://schema.org/Wednesday",
+            "https://schema.org/Thursday",
+            "https://schema.org/Friday"
+          ]
         }
+        {%- if settings.sd_cutoff_time != blank -%}
+          ,"cutoffTime": {{ settings.sd_cutoff_time | json }}
+        {%- endif -%}
       }
     }
   {%- endif -%}
@@ -81,8 +94,14 @@
           {{ sd_country | strip | upcase | json }}{% unless forloop.last %},{% endunless %}
         {%- endfor -%}
       ],
+      "returnPolicyCountry": [
+        {%- for sd_country in sd_return_countries -%}
+          {{ sd_country | strip | upcase | json }}{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ],
       "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
       "merchantReturnDays": {{ settings.trust_returns_days | default: 30 }},
+      "refundType": "https://schema.org/FullRefund",
       "returnMethod": "https://schema.org/{{ settings.sd_return_method | default: 'ReturnByMail' }}",
       "returnFees": "https://schema.org/{{ settings.sd_return_fees | default: 'FreeReturn' }}"
       {%- if settings.sd_return_fees == 'ReturnShippingFees' -%}
@@ -144,6 +163,11 @@
 
         assign sd_mpn = sd_variant.metafields.custom.mpn | default: product.metafields.custom.mpn
 
+        capture sd_sku
+          render 'variant-sku', variant: sd_variant, product: product
+        endcapture
+        assign sd_sku = sd_sku | strip
+
         if sd_variant.available
           assign sd_availability = 'InStock'
         else
@@ -159,8 +183,8 @@
         "priceValidUntil": {{ sd_valid_until | json }},
         "availability": "https://schema.org/{{ sd_availability }}",
         "itemCondition": "https://schema.org/{{ sd_condition }}",
-        {%- if sd_variant.sku != blank %}
-          "sku": {{ sd_variant.sku | json }},
+        {%- if sd_sku != blank %}
+          "sku": {{ sd_sku | json }},
         {%- endif %}
         {%- if sd_gtin != blank %}
           "gtin": {{ sd_gtin | json }},

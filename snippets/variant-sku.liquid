@@ -1,0 +1,43 @@
+{% doc %}
+  Outputs a variant's SKU, generating a stable one from the store name when the
+  variant has none.
+
+  A generated value only ever fills a gap: a real SKU always wins. It is derived
+  from IDs rather than a counter, so the same variant produces the same code on
+  every render and on every page.
+
+  Note this identifies the variant in the storefront's structured data. It does
+  not write a SKU into the product record — no theme can do that. To have the
+  same codes in Shopify admin and your product feed, they must be written to the
+  variants themselves.
+
+  @param {object} variant - The variant to identify.
+  @param {object} product - The product the variant belongs to.
+
+  @example
+  {% capture sku %}{% render 'variant-sku', variant: variant, product: product %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign resolved = variant.sku | strip
+
+  if resolved == blank and settings.sku_autogenerate
+    assign prefix = settings.sku_prefix | strip | upcase
+
+    if prefix == blank
+      comment
+        handleize strips punctuation and accents, leaving letters, digits and
+        hyphens — so any store name reduces to a usable code.
+      endcomment
+      assign prefix = shop.name | handleize | replace: '-', '' | upcase | slice: 0, 3
+    endif
+
+    if prefix == blank
+      assign prefix = 'SKU'
+    endif
+
+    assign product_part = product.id | modulo: 1000000
+    assign variant_part = variant.id | modulo: 1000000
+    assign resolved = prefix | append: '-' | append: product_part | append: '-' | append: variant_part
+  endif
+-%}
+{{- resolved -}}
