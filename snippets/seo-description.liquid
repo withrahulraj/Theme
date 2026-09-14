@@ -1,0 +1,22 @@
+{% doc %}
+  Outputs a meta-description-safe version of a page description.
+
+  Shopify builds page_description from the page body when no SEO description is
+  set, and the bodies on this theme carry [[tokens]]. Left alone they reach
+  Google's snippet and the social preview card verbatim, which is worse than
+  the same leak on the page itself — a search result cannot be corrected by
+  scrolling. Substitute first, then flatten to plain text.
+
+  Prints unescaped text; escape it at the call site.
+
+  @param {string} source - Usually page_description.
+
+  @example
+  {% capture meta_description %}{% render 'seo-description', source: page_description %}{% endcapture %}
+{% enddoc %}
+{%- capture seo_description_raw -%}
+  {% render 'store-tokens', content: source %}
+{%- endcapture -%}
+{%- assign seo_description_text = seo_description_raw | strip_html | strip_newlines -%}
+{%- assign seo_description_text = seo_description_text | replace: '   ', ' ' | replace: '  ', ' ' | replace: '  ', ' ' -%}
+{{- seo_description_text | strip -}}

@@ -396,5 +396,23 @@ out = check('terms-of-service still reads on a store with no address') {
 expect('  -> no hole in the sentence', (out.to_s.include?('laws of ,') ? 'broken' : 'clean'), 'clean')
 expect('  -> falls back to a real jurisdiction', out, 'governed by the laws of the United States')
 
+puts "\n--- seo-description ---"
+# page_description falls back to the page body, so tokens would otherwise reach
+# Google's snippet and the social preview card verbatim.
+out = check('seo-description substitutes tokens') {
+  render_snippet('seo-description', base_ctx.merge(
+    'source' => '<h2>Where we ship</h2><p>[[store_name]] ships in [[delivery_min]]–[[delivery_max]] business days.</p>'))
+}
+expect('  -> no raw token', (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
+expect('  -> store name substituted', out, 'Lumen Studio')
+expect('  -> delivery window substituted', out, '4–7 business days')
+expect('  -> markup stripped', (out.to_s.include?('<') ? 'markup' : 'plain'), 'plain')
+expect('  -> no double spaces', (out.to_s.include?('  ') ? 'padded' : 'tidy'), 'tidy')
+
+out = check('seo-description on a page with no description') {
+  render_snippet('seo-description', base_ctx.merge('source' => nil))
+}
+expect('  -> renders nothing', out.to_s.strip, '')
+
 puts "\n#{$failures.zero? ? 'ALL SECTION CHECKS PASSED' : "#{$failures} CHECK(S) FAILED"}"
 exit($failures.zero? ? 0 : 1)
