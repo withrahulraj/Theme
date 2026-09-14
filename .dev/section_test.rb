@@ -362,8 +362,8 @@ expect('  -> delivery window filled in', out, '4–7 business days')
 
 
 puts "\n--- store-content renders through the page template ---"
-# The HTML in store-content/ is pasted into pages by hand on every store. Render
-# each file the way a live policy page would and prove nothing leaks.
+# What is left in store-content/ is still pasted by hand. Render it the way a
+# live page would and prove nothing leaks.
 Dir[File.join(THEME, 'store-content', '*.html')].sort.each do |path|
   name = File.basename(path, '.html')
   out = check("#{name} renders clean") {
@@ -373,9 +373,53 @@ Dir[File.join(THEME, 'store-content', '*.html')].sort.each do |path|
   expect("  -> no raw token left", (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
 end
 
+puts "\n--- built-in policy copy fills an empty page ---"
+# The whole point: a new store creates the page and stops there.
+{
+  'privacy-policy'   => 'What we collect',
+  'refund-policy'    => 'days to change your mind',
+  'shipping-policy'  => 'Where we ship',
+  'payment-policy'   => 'How you can pay',
+  'terms-of-service' => 'About these terms',
+}.each do |handle, marker|
+  out = check("empty /#{handle} fills itself in") {
+    render_section('main-page', 'page' => { 'title' => handle, 'handle' => handle, 'content' => '' })
+  }
+  expect("  -> document rendered", out, marker)
+  expect("  -> no raw token left", (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
+  expect("  -> store details follow it", out, 'store-details__name')
+end
+
+%w[refund-policy return-policy returns return-and-refund-policy].each do |handle|
+  out = check("alias /#{handle} resolves to the refund document") {
+    render_section('main-page', 'page' => { 'title' => handle, 'handle' => handle, 'content' => '' })
+  }
+  expect("  -> refund copy", out, 'days to change your mind')
+end
+
+out = check('a page body overrides the built-in copy') {
+  render_section('main-page',
+    'page' => { 'title' => 'Shipping Policy', 'handle' => 'shipping-policy',
+                'content' => '<p>We ship by carrier pigeon.</p>' })
+}
+expect('  -> merchant copy used', out, 'carrier pigeon')
+expect('  -> built-in copy not appended', (out.to_s.include?('Where we ship') ? 'both' : 'override'), 'override')
+
+%w[about-us contact faq shipping-information random-page].each do |handle|
+  out = check("empty /#{handle} stays empty") {
+    render_section('main-page', 'page' => { 'title' => handle, 'handle' => handle, 'content' => '' })
+  }
+  expect("  -> no policy copy invented", (out.to_s.include?('<h2>') ? 'invented' : 'empty'), 'empty')
+end
+
+out = check('the legal-document template fills an empty page too') {
+  render_section('legal-document', 'page' => { 'title' => 'Privacy Policy', 'handle' => 'privacy-policy', 'content' => '' })
+}
+expect('  -> document rendered', out, 'What we collect')
+expect('  -> no raw token left', (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
+
 out = check('shipping-policy fills in the delivery window') {
-  render_section('main-page', 'page' => { 'title' => 'Shipping Policy', 'handle' => 'shipping-policy',
-                                          'content' => File.read(File.join(THEME, 'store-content', 'shipping-policy.html')) })
+  render_section('main-page', 'page' => { 'title' => 'Shipping Policy', 'handle' => 'shipping-policy', 'content' => '' })
 }
 expect('  -> handling window', out, '1–2 business days')
 expect('  -> transit window', out, '3–5 business days')
@@ -383,15 +427,13 @@ expect('  -> total window', out, '4–7 business days')
 expect('  -> store details follow the copy', out, 'store-details__name')
 
 out = check('terms-of-service fills in the governing state') {
-  render_section('main-page', 'page' => { 'title' => 'Terms of Service', 'handle' => 'terms-of-service',
-                                          'content' => File.read(File.join(THEME, 'store-content', 'terms-of-service.html')) })
+  render_section('main-page', 'page' => { 'title' => 'Terms of Service', 'handle' => 'terms-of-service', 'content' => '' })
 }
 expect('  -> governing law names the jurisdiction', out, 'governed by the laws of New York, United States')
 
 out = check('terms-of-service still reads on a store with no address') {
   render_section('main-page', 'shop' => shop('address' => {}),
-    'page' => { 'title' => 'Terms of Service', 'handle' => 'terms-of-service',
-                'content' => File.read(File.join(THEME, 'store-content', 'terms-of-service.html')) })
+    'page' => { 'title' => 'Terms of Service', 'handle' => 'terms-of-service', 'content' => '' })
 }
 expect('  -> no hole in the sentence', (out.to_s.include?('laws of ,') ? 'broken' : 'clean'), 'clean')
 expect('  -> falls back to a real jurisdiction', out, 'governed by the laws of the United States')

@@ -9,7 +9,17 @@
 
 {%- liquid
   assign legal_title = page.title
+
+  comment
+    An empty page falls back to the theme's own copy for that handle, so a new
+    store needs the page to exist and nothing more. Typing into the body wins.
+  endcomment
   assign legal_body = page.content
+  if legal_body == blank
+    capture legal_body
+      render 'policy-default', handle: page.handle
+    endcapture
+  endif
 
   capture contact_url
     render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'

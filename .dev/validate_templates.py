@@ -124,11 +124,31 @@ for f in sorted(glob.glob(os.path.join(THEME, 'sections', '*.liquid')) +
 tokens_src = open(os.path.join(THEME, 'snippets', 'store-tokens.liquid'), encoding='utf-8').read()
 implemented = set(re.findall(r"replace:\s*'\[\[([a-z0-9_]+)\]\]'", tokens_src))
 
-for f in sorted(glob.glob(os.path.join(THEME, 'store-content', '*.html'))):
+token_sources = (glob.glob(os.path.join(THEME, 'store-content', '*.html')) +
+                 glob.glob(os.path.join(THEME, 'snippets', 'policy-body-*.liquid')))
+
+for f in sorted(token_sources):
     rel = os.path.relpath(f, THEME)
     for token in sorted(set(re.findall(r'\[\[([a-z0-9_]+)\]\]', open(f, encoding='utf-8').read()))):
         if token not in implemented:
             problems.append(f'{rel}: uses [[{token}]], which store-tokens.liquid does not substitute')
+
+# The built-in policy copy is shared by every store that installs the theme, so
+# a hardcoded store name or email in it would be wrong on all but one of them.
+LEAKED = [
+    (r'\bbrightloft\b', 'the brightloft store name'),
+    (r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}', 'a literal email address'),
+    (r'\b(?:State of )?Michigan\b', 'a hardcoded state'),
+]
+
+for f in sorted(glob.glob(os.path.join(THEME, 'snippets', 'policy-body-*.liquid'))):
+    rel = os.path.relpath(f, THEME)
+    body = open(f, encoding='utf-8').read()
+    for pattern, what in LEAKED:
+        m = re.search(pattern, body, re.I)
+        if m:
+            problems.append(f'{rel}: contains {what} ("{m.group(0)}"). '
+                            'This copy ships to every store — use a [[token]].')
 
 print('\n'.join(problems) if problems else 'templates, block types, settings and theme settings all resolve')
 sys.exit(1 if problems else 0)

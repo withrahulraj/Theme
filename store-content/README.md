@@ -2,21 +2,42 @@
 
 A theme carries templates and sections. It does not carry pages.
 
-Uploading the theme ZIP to a new store gives that store the *layouts* for
-policy, contact and tracking pages, but the pages themselves are store
-content and have to exist before anything renders. That is why policy pages
-look wrong — or 404 — on a store the theme was only uploaded to.
+Uploading the theme ZIP to a new store gives that store the layouts, but the
+pages themselves are store content and have to exist before anything renders.
+That is why policy pages look wrong — or 404 — on a store the theme was only
+uploaded to.
 
-This folder is the content, kept here so it is written once rather than once
-per store.
+## The policies need no content at all
 
-## Why it needs no editing per store
+The five legal documents are built into the theme
+(`snippets/policy-body-*.liquid`). **Create the page, leave the body empty, and
+the document appears.** Nothing to paste.
 
-Every file is written with `[[tokens]]`. The theme substitutes them at render
-time from that store's own settings, so the same HTML produces correct copy on
-any store:
+| Create a page titled | Handle | Leave body |
+| --- | --- | --- |
+| Privacy Policy | `privacy-policy` | empty |
+| Return and Refund Policy | `refund-policy` | empty |
+| Shipping Policy | `shipping-policy` | empty |
+| Payment Policy | `payment-policy` | empty |
+| Terms of Service | `terms-of-service` | empty |
 
-| In the file | Becomes |
+Common alternatives are recognised too — `returns`, `return-policy`,
+`terms`, `terms-and-conditions`, `delivery-policy`, `privacy`.
+
+## Changing the text
+
+**One store only** — type into the page body in Content → Pages. Anything there
+replaces the built-in document completely. Clear the body again to go back to
+the built-in one. Nothing else to switch.
+
+**Every store** — edit `snippets/policy-body-*.liquid` and re-upload the theme.
+Every store on that version follows.
+
+Either way, do not hardcode a store name, email, address, delivery window or
+state. Those are written as `[[placeholders]]` that the theme substitutes from
+each store's own settings, which is what makes one document correct everywhere:
+
+| Placeholder | Becomes |
 | --- | --- |
 | `[[store_name]]` | Settings → Store details → store name |
 | `[[jurisdiction]]` | The store's state and country, for the governing-law clause |
@@ -27,33 +48,27 @@ any store:
 | `[[timezone]]` | Theme settings → Store information |
 | `[[refund_policy_url]]` and friends | Resolved to whichever exists on this store |
 
-Paste the HTML as it is. Do not replace the tokens by hand — that is the whole
-point of them, and doing it breaks the automatic updates.
+`validate_templates.py` fails the build on a hardcoded store name, email
+address or state in that copy, and on a placeholder the theme does not
+substitute.
+
+## The rest of the pages
+
+`about-us.html` is here rather than in the theme because the story is yours,
+not a template — paste it in HTML view and rewrite it. Contact and Track Your
+Order are rendered entirely by theme sections, so their bodies stay empty.
+
+`pages.json` lists all eight pages with handles and templates.
 
 ## Setting up a new store
 
 1. Upload the theme ZIP and publish it.
 2. Fill in **Settings → Store details** — name, address, phone, support email.
    Everything on the storefront reads from here.
-3. Create the pages in **Content → Pages**, one per row of `pages.json`:
-   - Title and handle exactly as listed (the handle drives the footer links,
-     and the theme detects legal pages from it).
-   - Paste the matching file into the body in **HTML view**, not rich text.
-     Rich text mangles the tables and escapes the tokens.
-   - Set the theme template where the row names one. Pages with `"body": null`
-     are rendered entirely by theme sections — leave those bodies empty.
-4. Check the footer. If a policy link is missing, the page handle does not
-   match.
+3. Create the pages in `pages.json`. Title and handle exactly as listed — the
+   handle is what the footer links to and what selects the document.
+4. Set the theme template where a row names one, in the page editor's **Theme
+   template** dropdown. Policy pages work without it, so this is cosmetic.
+5. Check the footer. A missing policy link means the handle does not match.
 
-Step 3 is the only per-store typing, and it is paste-only.
-
-## If you skip step 3
-
-The footer falls back to Shopify's own `/policies/*` URLs for any policy
-filled in under **Settings → Policies**. Those pages work, but Shopify renders
-them itself — they cannot use theme sections, so they have no store details
-block and do not match the rest of the site. Pages are the reason the legal
-pages look like the store.
-
-If neither a page nor a Settings → Policies entry exists, the footer prints
-"Policies are being updated." rather than a dead link.
+Only About Us needs anything typed into it.

@@ -1,3 +1,14 @@
+{% comment %}
+  Default copy for the shipping-policy page.
+  
+  Rendered when the page body is empty, so a new store gets a complete
+  legal document without anyone pasting one in. Anything typed into the
+  page body replaces this entirely.
+  
+  Written with placeholders in double brackets, which store-tokens.liquid
+  substitutes at render time, so this text is correct on any store without
+  editing. Do not hardcode a store name, email, address or delivery window.
+{% endcomment %}
 <h2>Where we ship</h2>
 <p>[[store_name]] ships to addresses in the United States only. We do not ship internationally and cannot accept orders with a delivery address outside the US.</p>
 <h2>What shipping costs</h2>

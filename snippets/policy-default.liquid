@@ -1,0 +1,69 @@
+{% doc %}
+  Outputs the theme's built-in copy for a legal page, or nothing when the
+  handle is not one of them.
+
+  A theme cannot create pages, so every store still needs the page itself. It
+  can supply what goes inside it, which is the part that would otherwise be
+  pasted in by hand on every store. Create a page with the right handle, leave
+  the body empty, and the document appears.
+
+  Anything typed into the page body replaces this — that is the edit path, and
+  it is per store. Editing the snippets themselves changes every store on the
+  next theme upload.
+
+  @param {string} handle - The page handle, usually page.handle.
+
+  @example
+  {% capture body %}{% render 'policy-default', handle: page.handle %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  comment
+    Matched against the same alias lists the footer resolves links with, so a
+    store that names its return policy "returns" gets the document too. Exact
+    handles only — a blank page called "shipping-information" should stay blank
+    rather than sprout a shipping policy nobody asked for.
+  endcomment
+  assign known = false
+
+  assign privacy_handles = 'privacy-policy,privacy'
+  assign refund_handles = 'refund-policy,return-policy,returns,return-and-refund-policy'
+  assign shipping_handles = 'shipping-policy,shipping,delivery-policy'
+  assign payment_handles = 'payment-policy,payments,payment-information'
+  assign terms_handles = 'terms-of-service,terms,terms-and-conditions'
+
+  assign lookup = handle | strip | downcase
+-%}
+{%- if lookup != blank -%}
+  {%- assign candidates = privacy_handles | split: ',' -%}
+  {%- for candidate in candidates -%}
+    {%- if candidate == lookup -%}{% render 'policy-body-privacy' %}{%- assign known = true -%}{%- break -%}{%- endif -%}
+  {%- endfor -%}
+
+  {%- unless known -%}
+    {%- assign candidates = refund_handles | split: ',' -%}
+    {%- for candidate in candidates -%}
+      {%- if candidate == lookup -%}{% render 'policy-body-refund' %}{%- assign known = true -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+
+  {%- unless known -%}
+    {%- assign candidates = shipping_handles | split: ',' -%}
+    {%- for candidate in candidates -%}
+      {%- if candidate == lookup -%}{% render 'policy-body-shipping' %}{%- assign known = true -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+
+  {%- unless known -%}
+    {%- assign candidates = payment_handles | split: ',' -%}
+    {%- for candidate in candidates -%}
+      {%- if candidate == lookup -%}{% render 'policy-body-payment' %}{%- assign known = true -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+
+  {%- unless known -%}
+    {%- assign candidates = terms_handles | split: ',' -%}
+    {%- for candidate in candidates -%}
+      {%- if candidate == lookup -%}{% render 'policy-body-terms' %}{%- assign known = true -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+{%- endif -%}

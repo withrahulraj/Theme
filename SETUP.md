@@ -50,9 +50,16 @@ content and have to be created there. This is the one step that is genuinely
 per-store, and it is the usual reason policy pages look wrong on a store the
 theme was only uploaded to.
 
-The copy is in **`store-content/`**, written with `[[tokens]]` so the same HTML
-is correct on every store — paste it in HTML view and change nothing. See
-`store-content/README.md` for the procedure.
+**The five legal documents need no content.** They are built into the theme, so
+creating the page and leaving the body empty is enough — the document appears,
+with that store's own name, delivery windows and contact details filled in.
+
+To change one on a single store, type into the page body; that replaces the
+built-in document, and clearing the body brings it back. To change one across
+every store, edit `snippets/policy-body-*.liquid` and re-upload the theme.
+
+Only About Us needs pasting, and it is in `store-content/`. See
+`store-content/README.md`.
 
 Shopify does not assign templates by handle, so pick the template in the page
 editor's **Theme template** dropdown. The one exception is the store details
@@ -67,6 +74,7 @@ The menu and footer start linking to a page the moment it exists.
 | `track-order` | `page.track-order` | Tracking form + timeline + contact cards |
 | `privacy-policy`, `refund-policy`, `shipping-policy`, `terms-of-service`, `payment-policy` | `page.policy` | Narrow legal layout with a last-updated line and a help box |
 | `about-us` | `page` (default) | Your content + trust strip + newsletter |
+| an empty `privacy-policy` etc. | either | The theme's built-in document for that handle |
 | anything else | `page` (default) | Your content + trust strip + newsletter |
 
 Alternative handles are recognised too, so an existing store does not need its

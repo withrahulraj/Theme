@@ -7,6 +7,19 @@
 {%- endcomment -%}
 
 {%- liquid
+  comment
+    A theme cannot create pages, but it can fill one in. An empty legal page
+    renders the theme's own copy, so setting up a store is "create the page"
+    rather than "create the page and paste three thousand words into it".
+    Typing anything into the body replaces it.
+  endcomment
+  assign page_body = page.content
+  if page_body == blank
+    capture page_body
+      render 'policy-default', handle: page.handle
+    endcapture
+  endif
+
   assign show_store_details = false
 
   case section.settings.store_details_mode
@@ -44,7 +57,7 @@
     {{ page.title | escape }}
   </h1>
   <div class="rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-    {% render 'store-tokens', content: page.content %}
+    {% render 'store-tokens', content: page_body %}
   </div>
 
   {%- if show_store_details -%}

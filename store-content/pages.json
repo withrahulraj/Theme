@@ -1,13 +1,53 @@
 {
-  "comment": "Pages to create on each store. `body` names a file in this folder; null means the page is rendered entirely by theme sections and its body must stay empty.",
+  "comment": "Pages to create on each store. body \"built-in\" means the theme supplies the document when the page body is left empty; null means the page is rendered entirely by theme sections and its body must stay empty.",
   "pages": [
-    { "title": "Privacy Policy",           "handle": "privacy-policy",   "template": "policy",      "body": "privacy-policy.html" },
-    { "title": "Return and Refund Policy", "handle": "refund-policy",    "template": "policy",      "body": "refund-policy.html" },
-    { "title": "Shipping Policy",          "handle": "shipping-policy",  "template": "policy",      "body": "shipping-policy.html" },
-    { "title": "Payment Policy",           "handle": "payment-policy",   "template": "policy",      "body": "payment-policy.html" },
-    { "title": "Terms of Service",         "handle": "terms-of-service", "template": "policy",      "body": "terms-of-service.html" },
-    { "title": "About Us",                 "handle": "about-us",         "template": null,          "body": "about-us.html" },
-    { "title": "Contact",                  "handle": "contact",          "template": "contact",     "body": null },
-    { "title": "Track Your Order",         "handle": "track-order",      "template": "track-order", "body": null }
+    {
+      "title": "Privacy Policy",
+      "handle": "privacy-policy",
+      "template": "policy",
+      "body": "built-in"
+    },
+    {
+      "title": "Return and Refund Policy",
+      "handle": "refund-policy",
+      "template": "policy",
+      "body": "built-in"
+    },
+    {
+      "title": "Shipping Policy",
+      "handle": "shipping-policy",
+      "template": "policy",
+      "body": "built-in"
+    },
+    {
+      "title": "Payment Policy",
+      "handle": "payment-policy",
+      "template": "policy",
+      "body": "built-in"
+    },
+    {
+      "title": "Terms of Service",
+      "handle": "terms-of-service",
+      "template": "policy",
+      "body": "built-in"
+    },
+    {
+      "title": "About Us",
+      "handle": "about-us",
+      "template": null,
+      "body": "about-us.html"
+    },
+    {
+      "title": "Contact",
+      "handle": "contact",
+      "template": "contact",
+      "body": null
+    },
+    {
+      "title": "Track Your Order",
+      "handle": "track-order",
+      "template": "track-order",
+      "body": null
+    }
   ]
 }

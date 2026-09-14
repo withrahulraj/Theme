@@ -1,3 +1,14 @@
+{% comment %}
+  Default copy for the refund-policy page.
+  
+  Rendered when the page body is empty, so a new store gets a complete
+  legal document without anyone pasting one in. Anything typed into the
+  page body replaces this entirely.
+  
+  Written with placeholders in double brackets, which store-tokens.liquid
+  substitutes at render time, so this text is correct on any store without
+  editing. Do not hardcode a store name, email, address or delivery window.
+{% endcomment %}
 <h2>[[returns_days]] days to change your mind</h2>
 <p>If a light is not right for the room, you have <strong>[[returns_days]] days from the day it is delivered</strong> to return it for a full refund. You do not need to explain why.</p>
 <p>We ship and accept returns within the United States only.</p>

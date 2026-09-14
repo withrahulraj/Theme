@@ -1,3 +1,14 @@
+{% comment %}
+  Default copy for the terms-of-service page.
+  
+  Rendered when the page body is empty, so a new store gets a complete
+  legal document without anyone pasting one in. Anything typed into the
+  page body replaces this entirely.
+  
+  Written with placeholders in double brackets, which store-tokens.liquid
+  substitutes at render time, so this text is correct on any store without
+  editing. Do not hardcode a store name, email, address or delivery window.
+{% endcomment %}
 <h2>1. About these terms</h2>
 <p>This website is operated by [[store_name]]. Throughout the site, the terms “we”, “us” and “our” refer to [[store_name]]. By visiting our site or buying something from us, you agree to these Terms of Service and to our <a href="[[privacy_policy_url]]">Privacy Policy</a>, <a href="[[shipping_policy_url]]">Shipping Policy</a> and <a href="[[refund_policy_url]]">Return and Refund Policy</a>, which form part of these terms. If you do not agree with them, please do not use this site.</p>
 <h2>2. Who can order</h2>
