@@ -100,6 +100,21 @@ Theme settings → Store information if you want to override it.
 Turn the block off, or change its heading, in the Policy content section. To put
 the same block on an ordinary page, write `[[store_details]]` in the page body.
 
+## Write policy copy once, not per store
+
+Policy pages, and the shipping / returns / payments tabs on the product page,
+are all written with tokens. Change a setting and every one of them follows —
+there is no per-store copy to rewrite when handling time or the returns window
+differs.
+
+The product page tabs ship with token copy out of the box, so on a new store
+they already state that store's real shipping window and returns period rather
+than numbers typed for somebody else's shop.
+
+Contact details appear once per policy page, in the store details block. The
+separate help box is off by default because it repeats them; turn it on in the
+Policy content section if you want it.
+
 ## Page tokens — write it once, keep it current
 
 Legal pages usually go stale because the support email or returns window is

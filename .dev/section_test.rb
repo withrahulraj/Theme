@@ -82,7 +82,8 @@ out = check('policy page renders from the policy object') {
 expect('  -> title', out, 'Return and Refund Policy')
 expect('  -> body', out, '<p>Send it back.</p>')
 expect('  -> last updated line', out, 'Last updated')
-expect('  -> help box email', out, 'hello@lumen.test')
+expect('  -> contact details not repeated in a help box',
+       (out.to_s.scan(/hello@lumen\.test/).size <= 2 ? 'once' : 'repeated'), 'once')
 
 out = check('policy template also serves a plain page') {
   render_section('main-policy',
@@ -209,6 +210,15 @@ out = check('block can be switched off') {
     'policy' => { 'title' => 'X', 'body' => '<p>y</p>' })
 }
 expect('  -> gone', (out.to_s.include?('store-details__list') ? 'shown' : 'hidden'), 'hidden')
+
+out = check('no duplicate contact block on a policy page') {
+  render_section('main-policy', 'policy' => { 'title' => 'Shipping Policy', 'body' => '<p>Free.</p>' })
+}
+expect('  -> help box off by default',
+       (out.to_s.include?('Still have a question') ? 'shown' : 'hidden'), 'hidden')
+expect('  -> details block still present', out, 'store-details__list')
+expect('  -> reads as content, not a card',
+       (out.to_s.include?('<aside') ? 'aside' : 'inline'), 'inline')
 
 puts "\n--- contact-details ---"
 out = check('contact-details renders all four cards') { render_section('contact-details') }

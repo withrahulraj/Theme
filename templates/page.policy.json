@@ -7,7 +7,7 @@
         "show_updated": true,
         "updated_label": "Last updated",
         "date_format": "%B %Y",
-        "show_footer_help": true,
+        "show_footer_help": false,
         "help_heading": "Still have a question?",
         "help_text": "We answer every message ourselves, Monday to Friday. Email us at",
         "help_button_label": "Contact us",

@@ -47,7 +47,7 @@
   assign detail_hours = detail_hours | strip
 -%}
 
-<aside class="store-details">
+<div class="store-details">
   {%- if heading != blank -%}
     <h2 class="store-details__heading">{{ heading | escape }}</h2>
   {%- endif -%}
@@ -100,4 +100,4 @@
   {%- if note != blank -%}
     <p class="store-details__note">{{ note | escape }}</p>
   {%- endif -%}
-</aside>
+</div>

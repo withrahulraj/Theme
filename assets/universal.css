@@ -901,21 +901,20 @@ body,
    Store details block — trading details at the foot of a policy page
    -------------------------------------------------------------------------- */
 .store-details {
-  margin-top: 4rem;
-  padding: 2.8rem;
-  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
-  border-radius: 1rem;
-  background: rgba(var(--color-foreground), 0.02);
+  margin-top: 3.6rem;
+  padding-top: 2.4rem;
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.12);
 }
 
 .store-details__heading {
-  margin: 0 0 1.8rem;
-  font-size: 1.7rem;
+  margin: 0 0 1.2rem;
+  font-size: 1.9rem;
+  line-height: 1.3;
 }
 
 .store-details__list {
   display: grid;
-  gap: 1.2rem;
+  gap: 0.8rem;
   margin: 0;
 }
 
@@ -935,15 +934,14 @@ body,
 
 .store-details__label {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  opacity: 0.65;
 }
 
 .store-details__value {
   margin: 0;
-  font-size: 1.45rem;
-  line-height: 1.55;
+  font-size: 1.5rem;
+  line-height: 1.75;
 }
 
 .store-details__value a {
@@ -953,7 +951,7 @@ body,
 
 .store-details__note {
   margin: 1.8rem 0 0;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   line-height: 1.5;
   opacity: 0.6;
 }
