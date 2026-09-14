@@ -361,5 +361,40 @@ expect('  -> no raw token left', (out.to_s.include?('[[') ? 'raw' : 'clean'), 'c
 expect('  -> delivery window filled in', out, '4–7 business days')
 
 
+puts "\n--- store-content renders through the page template ---"
+# The HTML in store-content/ is pasted into pages by hand on every store. Render
+# each file the way a live policy page would and prove nothing leaks.
+Dir[File.join(THEME, 'store-content', '*.html')].sort.each do |path|
+  name = File.basename(path, '.html')
+  out = check("#{name} renders clean") {
+    render_section('main-page',
+      'page' => { 'title' => name, 'handle' => name, 'content' => File.read(path) })
+  }
+  expect("  -> no raw token left", (out.to_s.include?('[[') ? 'raw' : 'clean'), 'clean')
+end
+
+out = check('shipping-policy fills in the delivery window') {
+  render_section('main-page', 'page' => { 'title' => 'Shipping Policy', 'handle' => 'shipping-policy',
+                                          'content' => File.read(File.join(THEME, 'store-content', 'shipping-policy.html')) })
+}
+expect('  -> handling window', out, '1–2 business days')
+expect('  -> transit window', out, '3–5 business days')
+expect('  -> total window', out, '4–7 business days')
+expect('  -> store details follow the copy', out, 'store-details__name')
+
+out = check('terms-of-service fills in the governing state') {
+  render_section('main-page', 'page' => { 'title' => 'Terms of Service', 'handle' => 'terms-of-service',
+                                          'content' => File.read(File.join(THEME, 'store-content', 'terms-of-service.html')) })
+}
+expect('  -> governing law names the jurisdiction', out, 'governed by the laws of New York, United States')
+
+out = check('terms-of-service still reads on a store with no address') {
+  render_section('main-page', 'shop' => shop('address' => {}),
+    'page' => { 'title' => 'Terms of Service', 'handle' => 'terms-of-service',
+                'content' => File.read(File.join(THEME, 'store-content', 'terms-of-service.html')) })
+}
+expect('  -> no hole in the sentence', (out.to_s.include?('laws of ,') ? 'broken' : 'clean'), 'clean')
+expect('  -> falls back to a real jurisdiction', out, 'governed by the laws of the United States')
+
 puts "\n#{$failures.zero? ? 'ALL SECTION CHECKS PASSED' : "#{$failures} CHECK(S) FAILED"}"
 exit($failures.zero? ? 0 : 1)

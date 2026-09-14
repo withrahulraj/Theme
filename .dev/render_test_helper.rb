@@ -97,7 +97,8 @@ def shop(overrides = {})
     'name' => 'Lumen Studio', 'email' => 'hello@lumen.test', 'phone' => '+1 555 0142',
     'address' => { 'summary' => '18 Kiln Road, Brooklyn NY 11222, United States',
                    'street' => '18 Kiln Road', 'city' => 'Brooklyn',
-                   'province_code' => 'NY', 'zip' => '11222' },
+                   'province' => 'New York', 'province_code' => 'NY', 'zip' => '11222',
+                   'country' => 'United States' },
     'policies' => {
       'privacy_policy' => { 'url' => '/policies/privacy-policy', 'title' => 'Privacy Policy' },
       'refund_policy' => { 'url' => '/policies/refund-policy', 'title' => 'Refund Policy' },

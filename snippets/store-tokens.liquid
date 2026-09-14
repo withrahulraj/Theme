@@ -46,6 +46,11 @@
   endcapture
   assign token_hours = token_hours | strip
 
+  capture token_jurisdiction
+    render 'store-info', field: 'jurisdiction'
+  endcapture
+  assign token_jurisdiction = token_jurisdiction | strip
+
   capture token_contact_url
     render 'resolve-url', handles: 'contact,contact-us,get-in-touch', fallback: '/pages/contact'
   endcapture
@@ -111,6 +116,7 @@
   assign output = output | replace: '[[phone_link]]', phone_link
   assign output = output | replace: '[[phone]]', token_phone
   assign output = output | replace: '[[address]]', token_address
+  assign output = output | replace: '[[jurisdiction]]', token_jurisdiction
   assign output = output | replace: '[[hours_days]]', settings.store_hours_days
   assign output = output | replace: '[[hours_time]]', token_hours
   assign output = output | replace: '[[support_note]]', settings.store_support_note

@@ -44,15 +44,28 @@ tracking page all follow. There is nothing to re-enter per store.
 
 ## Pages to create
 
-Create these as normal Shopify pages. They pick up the right template
-automatically, and the menu and footer start linking to them the moment they
-exist.
+**A theme carries templates and sections; it does not carry pages.** Uploading
+the ZIP to a new store gives it the layouts, but the pages themselves are store
+content and have to be created there. This is the one step that is genuinely
+per-store, and it is the usual reason policy pages look wrong on a store the
+theme was only uploaded to.
+
+The copy is in **`store-content/`**, written with `[[tokens]]` so the same HTML
+is correct on every store — paste it in HTML view and change nothing. See
+`store-content/README.md` for the procedure.
+
+Shopify does not assign templates by handle, so pick the template in the page
+editor's **Theme template** dropdown. The one exception is the store details
+block on legal pages, which the stock `page` template adds by itself — so a
+policy page still carries trading details if you forget.
+
+The menu and footer start linking to a page the moment it exists.
 
 | Page handle | Template | What it renders |
 |---|---|---|
 | `contact` | `page.contact` | Contact cards + contact form + trust strip |
 | `track-order` | `page.track-order` | Tracking form + timeline + contact cards |
-| `refund-policy`, `shipping-policy`, `terms-of-service`, `payment-policy` | `page.policy` | Narrow legal layout with a last-updated line and a help box |
+| `privacy-policy`, `refund-policy`, `shipping-policy`, `terms-of-service`, `payment-policy` | `page.policy` | Narrow legal layout with a last-updated line and a help box |
 | `about-us` | `page` (default) | Your content + trust strip + newsletter |
 | anything else | `page` (default) | Your content + trust strip + newsletter |
 
@@ -60,8 +73,11 @@ Alternative handles are recognised too, so an existing store does not need its
 pages renamed: `contact-us`, `track-your-order`, `order-tracking`, `tracking`,
 `about`, `our-story`, `faq`, `payment-policy`.
 
-Until a page exists, links point at the handle above so nothing 404s silently
-once you create it.
+Until a page exists, the footer falls back to whatever is published under
+Settings → Policies. Those URLs work, but Shopify renders `/policies/*` itself
+and they cannot use theme sections — no store details block, and a layout that
+does not match the rest of the site. That is why the legal documents are
+published as pages.
 
 ## Two things the theme fills in for you
 

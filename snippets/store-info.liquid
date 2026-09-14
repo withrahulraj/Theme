@@ -5,7 +5,7 @@
 
   Capture the result — this snippet prints a bare value with no markup.
 
-  @param {string} field - One of: name, address, address_inline, street, city, region, phone, phone_href, email, timezone, hours_time, map.
+  @param {string} field - One of: name, address, address_inline, street, city, region, jurisdiction, phone, phone_href, email, timezone, hours_time, map.
 
   @example
   {% capture store_phone %}{% render 'store-info', field: 'phone' %}{% endcapture %}
@@ -40,6 +40,25 @@
     when 'region'
       assign region_parts = shop.address.province_code | append: ' ' | append: shop.address.zip
       assign value = region_parts | strip
+
+    when 'jurisdiction'
+      comment
+        A complete place phrase for governing-law clauses — "New York, United
+        States". Built rather than printed raw, because a governing-law
+        sentence with a hole in it is worse than a broad one, and a store that
+        has not filled in its address would leave exactly that.
+      endcomment
+      assign juris_state = shop.address.province | default: shop.address.province_code
+      assign juris_country = shop.address.country
+      if juris_state != blank and juris_country != blank
+        assign value = juris_state | append: ', ' | append: juris_country
+      elsif juris_state != blank
+        assign value = juris_state
+      elsif juris_country != blank
+        assign value = juris_country
+      else
+        assign value = 'the United States'
+      endif
 
     when 'phone'
       assign value = settings.store_phone_override | default: shop.phone

@@ -1,3 +1,5 @@
 .dev/
 .dev/**
 SETUP.md
+store-content/
+store-content/**

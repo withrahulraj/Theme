@@ -118,5 +118,17 @@ for f in sorted(glob.glob(os.path.join(THEME, 'sections', '*.liquid')) +
                     f'{rel}: setting "{setting.get("id")}" has an empty default. '
                     'Shopify drops the whole section on import — omit the key instead.')
 
+# store-content/ is pasted into pages by hand on every store, so a token that
+# the theme does not implement would sit there as literal [[text]] on a live
+# legal page. Check the two stay in step.
+tokens_src = open(os.path.join(THEME, 'snippets', 'store-tokens.liquid'), encoding='utf-8').read()
+implemented = set(re.findall(r"replace:\s*'\[\[([a-z0-9_]+)\]\]'", tokens_src))
+
+for f in sorted(glob.glob(os.path.join(THEME, 'store-content', '*.html'))):
+    rel = os.path.relpath(f, THEME)
+    for token in sorted(set(re.findall(r'\[\[([a-z0-9_]+)\]\]', open(f, encoding='utf-8').read()))):
+        if token not in implemented:
+            problems.append(f'{rel}: uses [[{token}]], which store-tokens.liquid does not substitute')
+
 print('\n'.join(problems) if problems else 'templates, block types, settings and theme settings all resolve')
 sys.exit(1 if problems else 0)
